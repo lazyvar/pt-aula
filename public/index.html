@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brazilian Portuguese Flashcards</title>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0a;
+    --card-front: #1a1a2e;
+    --card-back: #16213e;
+    --accent: #e94560;
+    --text: #f0f0f0;
+    --text-dim: #8892a4;
+    --green: #2ecc71;
+    --red: #e74c3c;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 20px;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, rgba(233,69,96,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(15,52,96,0.1) 0%, transparent 50%);
+    z-index: 0;
+    animation: bgShift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes bgShift {
+    0% { transform: translate(0,0); }
+    100% { transform: translate(3%,-3%); }
+  }
+
+  .app { position: relative; z-index: 1; width: 100%; max-width: 520px; padding: 20px; }
+
+  .header { text-align: center; margin-bottom: 24px; }
+
+  .header h1 {
+    font-family: 'Dela Gothic One', cursive;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--accent), #ff8a80);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin: 12px 0;
+  }
+
+  .filter-btn {
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover { background: rgba(255,255,255,0.07); }
+  .filter-btn.active { background: rgba(233,69,96,0.2); color: var(--accent); border-color: rgba(233,69,96,0.3); }
+
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #ff8a80);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .stats span { display: flex; align-items: center; gap: 5px; }
+  .stats .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .dot.green { background: var(--green); }
+  .dot.red { background: var(--red); }
+  .dot.gray { background: var(--text-dim); }
+
+  .card-container {
+    perspective: 1200px;
+    width: 100%;
+    height: 300px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+
+  .card.flipped { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .card-front {
+    background: linear-gradient(145deg, var(--card-front), #12122a);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+
+  .card-back {
+    background: linear-gradient(145deg, var(--card-back), #0d1b30);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
+    transform: rotateY(180deg);
+  }
+
+  .card-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+
+  .card-word {
+    font-family: 'Dela Gothic One', cursive;
+    font-size: 1.4rem;
+    line-height: 1.35;
+    margin-bottom: 10px;
+  }
+
+  .card-hint {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.18);
+    position: absolute;
+    bottom: 16px;
+  }
+
+  .category-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .cat-fitness { background: rgba(233,69,96,0.15); color: #e94560; }
+  .cat-vocab { background: rgba(52,152,219,0.15); color: #3498db; }
+  .cat-phrases { background: rgba(46,204,113,0.15); color: #2ecc71; }
+  .cat-verbs { background: rgba(241,196,15,0.15); color: #f1c40f; }
+  .cat-weather { background: rgba(155,89,182,0.15); color: #bb6bd9; }
+  .cat-daily { background: rgba(230,126,34,0.15); color: #e67e22; }
+  .cat-time { background: rgba(26,188,156,0.15); color: #1abc9c; }
+
+  .buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+
+  .btn {
+    padding: 13px 30px;
+    border: none;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn:active { transform: scale(0.96); }
+
+  .btn-wrong {
+    background: rgba(231,76,60,0.12);
+    color: var(--red);
+    border: 1px solid rgba(231,76,60,0.2);
+  }
+  .btn-wrong:hover { background: rgba(231,76,60,0.2); }
+
+  .btn-right {
+    background: rgba(46,204,113,0.12);
+    color: var(--green);
+    border: 1px solid rgba(46,204,113,0.2);
+  }
+  .btn-right:hover { background: rgba(46,204,113,0.2); }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .ctrl-btn {
+    padding: 9px 18px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .ctrl-btn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+
+  .done-screen { text-align: center; padding: 40px 20px; }
+  .done-screen h2 {
+    font-family: 'Dela Gothic One', cursive;
+    font-size: 1.8rem;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, var(--green), #a8e6cf);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .done-screen p { color: var(--text-dim); margin-bottom: 20px; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in { animation: slideIn 0.4s ease forwards; }
+
+  .keyboard-hint {
+    text-align: center;
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.15);
+    margin-top: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app"></div>
+
+<script>
+const allCards = [
+  { pt: "Algo novo", en: "Something new", cat: "vocab" },
+  { pt: "Sobre", en: "About", cat: "vocab" },
+  { pt: "Atualmente só corro", en: "Currently I only run", cat: "phrases" },
+  { pt: "Eu não treino", en: "I don't work out", cat: "phrases" },
+  { pt: "Eu não tenho paciência", en: "I don't have patience", cat: "phrases" },
+  { pt: "Eu preciso de um plano", en: "I need a plan", cat: "phrases" },
+  { pt: "Musculação", en: "Weight training / Bodybuilding", cat: "fitness" },
+  { pt: "Levantar peso", en: "To lift weights", cat: "fitness" },
+  { pt: "Hoje é dia de…", en: "Today is the day for…", cat: "phrases" },
+  { pt: "Hoje eu vou treinar…", en: "Today I'm going to train…", cat: "phrases" },
+  { pt: "Hoje eu vou fazer cardio", en: "Today I'm going to do cardio", cat: "phrases" },
+  { pt: "Abdômen", en: "Abs", cat: "fitness" },
+  { pt: "Pernas", en: "Legs", cat: "fitness" },
+  { pt: "Inferiores", en: "Lower (body)", cat: "fitness" },
+  { pt: "Posteriores", en: "Hamstrings", cat: "fitness" },
+  { pt: "Quadríceps", en: "Quads", cat: "fitness" },
+  { pt: "Panturrilha", en: "Calves", cat: "fitness" },
+  { pt: "Glúteos", en: "Glutes", cat: "fitness" },
+  { pt: "Braços", en: "Arms", cat: "fitness" },
+  { pt: "Superiores", en: "Upper (body)", cat: "fitness" },
+  { pt: "Peito", en: "Chest", cat: "fitness" },
+  { pt: "Ombros", en: "Shoulders", cat: "fitness" },
+  { pt: "Bíceps", en: "Biceps", cat: "fitness" },
+  { pt: "Tríceps", en: "Triceps", cat: "fitness" },
+  { pt: "Trapézio", en: "Traps / Trapezius", cat: "fitness" },
+  { pt: "Costas", en: "Back", cat: "fitness" },
+  { pt: "Pescoço", en: "Neck", cat: "fitness" },
+  { pt: "Antebraço", en: "Forearm", cat: "fitness" },
+  { pt: "Elevação pélvica", en: "Hip thrust", cat: "fitness" },
+  { pt: "Barra", en: "Barbell / Bar", cat: "fitness" },
+  { pt: "Agachamento", en: "Squat", cat: "fitness" },
+  { pt: "Supino", en: "Bench press", cat: "fitness" },
+  { pt: "Elevação lateral", en: "Lateral raise", cat: "fitness" },
+  { pt: "Elevação frontal", en: "Front raise", cat: "fitness" },
+  { pt: "Peso livre", en: "Free weight", cat: "fitness" },
+  { pt: "Pular caixa", en: "Box jump", cat: "fitness" },
+  { pt: "Esteira", en: "Treadmill", cat: "fitness" },
+  { pt: "Meu barbeiro", en: "My barber", cat: "vocab" },
+  { pt: "Recomendou / Recomendar", en: "Recommended / To recommend", cat: "verbs" },
+  { pt: "Antes de ontem", en: "Day before yesterday", cat: "time" },
+  { pt: "Depois de amanhã", en: "Day after tomorrow", cat: "time" },
+  { pt: "Da manhã", en: "In the morning", cat: "time" },
+  { pt: "Da tarde", en: "In the afternoon", cat: "time" },
+  { pt: "Da noite", en: "In the evening / At night", cat: "time" },
+  { pt: "Duas", en: "Two (feminine, used for time/hours)", cat: "vocab" },
+  { pt: "Chateado", en: "Upset / Annoyed", cat: "vocab" },
+  { pt: "Com raiva", en: "Angry", cat: "vocab" },
+  { pt: "Ninguém falava", en: "Nobody was talking", cat: "phrases" },
+  { pt: "Talvez", en: "Maybe", cat: "vocab" },
+  { pt: "Eu prometo que", en: "I promise that", cat: "phrases" },
+  { pt: "Próxima vez", en: "Next time", cat: "time" },
+  { pt: "Complicada", en: "Complicated", cat: "vocab" },
+  { pt: "Prédio", en: "Building / Apartment building", cat: "vocab" },
+  { pt: "Rua", en: "Street", cat: "vocab" },
+  { pt: "Chuva", en: "Rain", cat: "weather" },
+  { pt: "Por causa de/da/do", en: "Because of…", cat: "vocab" },
+  { pt: "Escada", en: "Stairs", cat: "vocab" },
+  { pt: "Eu estou bem", en: "I'm fine / I'm good", cat: "phrases" },
+  { pt: "Eu cortei o cabelo", en: "I cut my hair", cat: "phrases" },
+  { pt: "Eu passei muita raiva", en: "I was very angry", cat: "phrases" },
+  { pt: "Eles não permitiram meu reembolso", en: "They didn't allow my refund", cat: "phrases" },
+  { pt: "Eu não pude devolver minha calça", en: "I couldn't return my pants", cat: "phrases" },
+  { pt: "Eu disse ao meu banco e eles me ajudaram", en: "I told my bank and they helped me", cat: "phrases" },
+  { pt: "Eles removeram o pagamento", en: "They removed the payment", cat: "phrases" },
+  { pt: "Eu só como batatas fritas quando eu treino", en: "I only eat fries when I work out", cat: "phrases" },
+  { pt: "Estar (eu estava)", en: "To be — I was (past)", cat: "verbs" },
+  { pt: "Estar (eu estou)", en: "To be — I am (present)", cat: "verbs" },
+  { pt: "Estar (eu vou estar / estarei)", en: "To be — I will be (future)", cat: "verbs" },
+  { pt: "Esperar (eu esperei)", en: "To wait/hope — I waited (past)", cat: "verbs" },
+  { pt: "Esperar (eu espero)", en: "To wait/hope — I wait (present)", cat: "verbs" },
+  { pt: "Esperar (eu vou esperar / esperarei)", en: "To wait/hope — I will wait (future)", cat: "verbs" },
+  { pt: "Buscar (eu busquei)", en: "To search/fetch — I searched (past)", cat: "verbs" },
+  { pt: "Buscar (eu busco)", en: "To search/fetch — I search (present)", cat: "verbs" },
+  { pt: "Buscar (eu vou buscar / buscarei)", en: "To search/fetch — I will search (future)", cat: "verbs" },
+  { pt: "Tomar (eu tomei)", en: "To take/drink — I took (past)", cat: "verbs" },
+  { pt: "Tomar (eu tomo)", en: "To take/drink — I take (present)", cat: "verbs" },
+  { pt: "Tomar (eu vou tomar / tomarei)", en: "To take/drink — I will take (future)", cat: "verbs" },
+  { pt: "Doze", en: "Twelve (12)", cat: "vocab" },
+  { pt: "Eu tenho", en: "I have", cat: "verbs" },
+  { pt: "Tive", en: "I had (past)", cat: "verbs" },
+  { pt: "Você tá perdendo", en: "You're missing out", cat: "phrases" },
+  { pt: "Que horas?", en: "What time?", cat: "time" },
+  { pt: "Próximo", en: "Next", cat: "time" },
+  { pt: "Depois", en: "After", cat: "time" },
+  { pt: "Perto", en: "Close / Nearby", cat: "vocab" },
+  { pt: "Foi", en: "It was / He/She went", cat: "verbs" },
+  { pt: "Eu fui", en: "I was / I went", cat: "verbs" },
+  { pt: "Você foi", en: "You were / You went", cat: "verbs" },
+  { pt: "Dormi", en: "I slept", cat: "verbs" },
+  { pt: "Comi", en: "I ate", cat: "verbs" },
+  { pt: "Corri", en: "I ran", cat: "verbs" },
+  { pt: "Quilômetros", en: "Kilometers", cat: "vocab" },
+  { pt: "Edifício", en: "Building / Edifice", cat: "vocab" },
+  { pt: "Manhã", en: "Morning", cat: "time" },
+  { pt: "Amanhã", en: "Tomorrow", cat: "time" },
+  { pt: "Sextar / Sextou", en: "To celebrate Friday / It's Friday!", cat: "daily" },
+  { pt: "Empresa", en: "Company", cat: "vocab" },
+  { pt: "Ir (eu vou)", en: "To go — I go", cat: "verbs" },
+  { pt: "Ir (você vai)", en: "To go — You go", cat: "verbs" },
+  { pt: "Ir (ele/ela vai)", en: "To go — He/She goes", cat: "verbs" },
+  { pt: "Fazer (eu fiz)", en: "To do/make — I did (past)", cat: "verbs" },
+  { pt: "Fazer (eu estou fazendo)", en: "To do/make — I'm doing (present)", cat: "verbs" },
+  { pt: "Fazer (eu vou fazer)", en: "To do/make — I will do (future)", cat: "verbs" },
+  { pt: "Fazer (você fez)", en: "To do/make — You did (past)", cat: "verbs" },
+  { pt: "Fazer (você está fazendo)", en: "To do/make — You're doing (present)", cat: "verbs" },
+  { pt: "Trabalhar (eu trabalhei)", en: "To work — I worked (past)", cat: "verbs" },
+  { pt: "Trabalhar (eu trabalho)", en: "To work — I work (present)", cat: "verbs" },
+  { pt: "Trabalhar (eu vou trabalhar)", en: "To work — I will work (future)", cat: "verbs" },
+  { pt: "Hoje eu vou fazer meu CPF no Banco do Brasil", en: "Today I'll get my CPF at Banco do Brasil", cat: "phrases" },
+  { pt: "Hoje eu vou cortar o meu cabelo", en: "Today I'm going to cut my hair", cat: "phrases" },
+  { pt: "Eu não comprei ainda", en: "I haven't bought it yet", cat: "phrases" },
+  { pt: "Eu não agendei ainda", en: "I haven't scheduled it yet", cat: "phrases" },
+  { pt: "Não tenho certeza", en: "I'm not sure", cat: "phrases" },
+  { pt: "Dessa vez sério", en: "This time for real", cat: "phrases" },
+  { pt: "No final de semana, o que você vai fazer?", en: "On the weekend, what are you going to do?", cat: "phrases" },
+  { pt: "Não tenho planos ainda", en: "I don't have plans yet", cat: "phrases" },
+  { pt: "Ontem eu fui preguiçoso", en: "Yesterday I was lazy", cat: "phrases" },
+  { pt: "Como está o trabalho?", en: "How is work?", cat: "phrases" },
+  { pt: "Com o que você trabalha?", en: "What do you work with?", cat: "phrases" },
+  { pt: "Você já ouviu falar", en: "Have you already heard of", cat: "phrases" },
+  { pt: "Você é o desenvolvedor do aplicativo?", en: "Are you the app developer?", cat: "phrases" },
+  { pt: "Eu criei o aplicativo", en: "I created the app", cat: "phrases" },
+  { pt: "Desenvolvedor de software", en: "Software developer", cat: "vocab" },
+  { pt: "Sócio", en: "Partner / Associate", cat: "vocab" },
+  { pt: "Meio-tempo / Tempo-parcial", en: "Part-time", cat: "vocab" },
+  { pt: "Conselheiro / Assessor", en: "Advisor / Counselor", cat: "vocab" },
+  { pt: "Segunda-feira", en: "Monday", cat: "time" },
+  { pt: "Terça-feira", en: "Tuesday", cat: "time" },
+  { pt: "Quarta-feira", en: "Wednesday", cat: "time" },
+  { pt: "Quinta-feira", en: "Thursday", cat: "time" },
+  { pt: "Sexta-feira", en: "Friday", cat: "time" },
+  { pt: "Sábado", en: "Saturday", cat: "time" },
+  { pt: "Domingo", en: "Sunday", cat: "time" },
+  { pt: "Essa / Esse", en: "This (feminine / masculine)", cat: "vocab" },
+  { pt: "A próxima / O próximo", en: "The next (fem / masc)", cat: "vocab" },
+  { pt: "Passada / Passado", en: "Last / Past (fem / masc)", cat: "vocab" },
+  { pt: "Agora", en: "Now", cat: "vocab" },
+  { pt: "Pesquisando / Buscando", en: "Searching", cat: "vocab" },
+  { pt: "Escritório", en: "Office", cat: "vocab" },
+  { pt: "Morar", en: "To live (reside)", cat: "vocab" },
+  { pt: "Então", en: "So / Then", cat: "vocab" },
+  { pt: "Aluguel", en: "Rent", cat: "vocab" },
+  { pt: "Comprar", en: "To buy", cat: "vocab" },
+  { pt: "Encontrar", en: "To find", cat: "vocab" },
+  { pt: "Provavelmente", en: "Probably", cat: "vocab" },
+  { pt: "Normalmente", en: "Normally", cat: "vocab" },
+  { pt: "Igualmente", en: "Equally / Likewise", cat: "vocab" },
+  { pt: "Pai", en: "Dad / Father", cat: "daily" },
+  { pt: "Avô", en: "Grandpa", cat: "daily" },
+  { pt: "Avó", en: "Grandma", cat: "daily" },
+  { pt: "Meio-dia", en: "Noon / Midday", cat: "time" },
+  { pt: "Meia-noite", en: "Midnight", cat: "time" },
+  { pt: "Hambúrguer", en: "Hamburger", cat: "daily" },
+  { pt: "Chá quente", en: "Hot tea", cat: "daily" },
+  { pt: "Eu necessito / Eu preciso", en: "I need", cat: "vocab" },
+  { pt: "Só isso", en: "That's it", cat: "vocab" },
+  { pt: "Mais do mesmo", en: "More of the same", cat: "vocab" },
+  { pt: "Gostoso", en: "Delicious / Hot (attractive)", cat: "vocab" },
+  { pt: "Buscando personal trainer para academia", en: "Looking for a personal trainer for the gym", cat: "phrases" },
+  { pt: "Eu preciso ficar forte", en: "I need to get strong", cat: "phrases" },
+  { pt: "Eu vou ao mercado", en: "I will go to the market", cat: "phrases" },
+  { pt: "No próximo final de semana eu vou…", en: "Next weekend I'm going to…", cat: "phrases" },
+  { pt: "Eu estou tendo uma classe boa", en: "I'm having a good class", cat: "phrases" },
+  { pt: "Estou buscando um escritório para trabalhar", en: "I'm looking for an office to work in", cat: "phrases" },
+  { pt: "Calor", en: "Heat / Hot (weather)", cat: "weather" },
+  { pt: "Frio", en: "Cold", cat: "weather" },
+  { pt: "Ai que calor", en: "Oh it's so hot", cat: "weather" },
+  { pt: "Muito calor", en: "Very hot", cat: "weather" },
+  { pt: "Estou com calor", en: "I'm hot (feeling)", cat: "weather" },
+  { pt: "Hoje está muito calor", en: "It's very hot today", cat: "weather" },
+  { pt: "Quente", en: "Hot (temperature)", cat: "weather" },
+  { pt: "Gelado", en: "Freezing / Ice cold", cat: "weather" },
+  { pt: "Gelo", en: "Ice", cat: "weather" },
+  { pt: "Fora", en: "Outside", cat: "vocab" },
+  { pt: "Lá fora", en: "Out there / Outside", cat: "vocab" },
+  { pt: "Bebê, está frio lá fora", en: "Baby, it's cold outside", cat: "phrases" },
+  { pt: "Dentro", en: "Inside", cat: "vocab" },
+  { pt: "Demorar", en: "To take long / To delay", cat: "verbs" },
+  { pt: "Atrasar / Atrasado(a)", en: "To be late / Late", cat: "verbs" },
+  { pt: "Acordar", en: "To wake up", cat: "daily" },
+  { pt: "Dormir", en: "To sleep", cat: "daily" },
+  { pt: "Comer", en: "To eat", cat: "daily" },
+  // Aula — Carnaval & Weekend
+  { pt: "Como foi o seu fim de semana?", en: "How was your weekend?", cat: "phrases" },
+  { pt: "Descansar / Eu descansei", en: "To rest / I rested", cat: "verbs" },
+  { pt: "Temos", en: "We have", cat: "verbs" },
+  { pt: "Começar / Terminar", en: "To start / To finish", cat: "verbs" },
+  { pt: "Gastar energia", en: "To spend energy", cat: "vocab" },
+  { pt: "Celebrou", en: "Celebrated", cat: "verbs" },
+  { pt: "Combina com sua personalidade", en: "It matches your personality", cat: "phrases" },
+  { pt: "Por que eu gosto de carnaval?", en: "Why do I like carnaval?", cat: "phrases" },
+  { pt: "Gosto", en: "I like / Taste", cat: "vocab" },
+  { pt: "Divertida", en: "Fun", cat: "vocab" },
+  { pt: "Colorida", en: "Colorful", cat: "vocab" },
+  { pt: "Vibrante", en: "Vibrant", cat: "vocab" },
+  { pt: "Elogio", en: "Compliment", cat: "vocab" },
+  { pt: "Novo(a) / Velho(a)", en: "New / Old", cat: "vocab" },
+  { pt: "Mais nova / Mais velha", en: "Younger / Older", cat: "vocab" },
+  { pt: "Dançarina / Dançarino", en: "Dancer (fem / masc)", cat: "vocab" },
+  { pt: "Bloco de carnaval", en: "Carnival street party / block", cat: "vocab" },
+  { pt: "Desfile", en: "Parade", cat: "vocab" },
+  { pt: "Eu ia ir", en: "I was going to go", cat: "phrases" },
+  { pt: "De novo", en: "Again", cat: "vocab" },
+  { pt: "2 vezes", en: "2 times", cat: "vocab" },
+  { pt: "Foi bom o carnaval ano passado aí?", en: "Was carnaval good last year there?", cat: "phrases" },
+  { pt: "Ano retrasado", en: "Two years ago", cat: "time" },
+  { pt: "Deveria", en: "Should", cat: "verbs" },
+  { pt: "Sair", en: "To get out / To leave", cat: "verbs" },
+  { pt: "Conhecer", en: "To know / To meet", cat: "verbs" },
+  { pt: "Algumas pessoas", en: "Some people", cat: "vocab" },
+  { pt: "Aí / Ali / Daí", en: "There / There (farther) / From there", cat: "vocab" },
+  { pt: "Aqui / Cá / Para cá", en: "Here / Here / Over here", cat: "vocab" },
+  { pt: "Mas você foi para o do Rio ano retrasado", en: "But you went to the one in Rio two years ago", cat: "phrases" },
+  { pt: "De abrir os olhos", en: "Eye-opening", cat: "vocab" },
+  { pt: "Foi uma nova experiência", en: "It was a new experience", cat: "phrases" },
+  { pt: "Mudou minha mente", en: "Changed my mind", cat: "phrases" },
+  { pt: "Explodiu minha mente", en: "Blew my mind", cat: "phrases" },
+  { pt: "Foi uma experiência de abrir os olhos", en: "It was an eye-opening experience", cat: "phrases" },
+  { pt: "Viajar", en: "To travel", cat: "verbs" },
+  { pt: "Para", en: "To / For", cat: "vocab" },
+  { pt: "No meio de março", en: "In the middle of March", cat: "time" },
+  { pt: "Mais cedo", en: "Earlier", cat: "time" },
+  { pt: "Mais tarde", en: "Later", cat: "time" },
+  { pt: "Desculpa", en: "Sorry / Excuse me", cat: "vocab" },
+  { pt: "Águas de janeiro", en: "January waters (famous Brazilian song)", cat: "vocab" },
+  { pt: "Eu tenho que trabalhar muito ainda hoje", en: "I still have to work a lot today", cat: "phrases" },
+  { pt: "Ainda", en: "Still / Yet", cat: "vocab" },
+  { pt: "Cardio", en: "Cardio", cat: "fitness" },
+  // IR — Pretérito Imperfeito
+  { pt: "Ir (eu ia)", en: "To go — I used to go (Imperfeito)", cat: "verbs" },
+  { pt: "Ir (você ia)", en: "To go — You used to go (Imperfeito)", cat: "verbs" },
+  { pt: "Ir (ele/ela ia)", en: "To go — He/She used to go (Imperfeito)", cat: "verbs" },
+  { pt: "Ir (nós íamos)", en: "To go — We used to go (Imperfeito)", cat: "verbs" },
+  { pt: "Ir (vocês iam)", en: "To go — You (pl.) used to go (Imperfeito)", cat: "verbs" },
+  { pt: "Ir (eles/elas iam)", en: "To go — They used to go (Imperfeito)", cat: "verbs" },
+  // IR — Pretérito Perfeito
+  { pt: "Ir (eu fui)", en: "To go — I went (Perfeito)", cat: "verbs" },
+  { pt: "Ir (você foi)", en: "To go — You went (Perfeito)", cat: "verbs" },
+  { pt: "Ir (ele/ela foi)", en: "To go — He/She went (Perfeito)", cat: "verbs" },
+  { pt: "Ir (nós fomos)", en: "To go — We went (Perfeito)", cat: "verbs" },
+  { pt: "Ir (vocês foram)", en: "To go — You (pl.) went (Perfeito)", cat: "verbs" },
+  { pt: "Ir (eles/elas foram)", en: "To go — They went (Perfeito)", cat: "verbs" },
+  // IR — Presente
+  { pt: "Ir (nós vamos)", en: "To go — We go (Presente)", cat: "verbs" },
+  { pt: "Ir (vocês vão)", en: "To go — You (pl.) go (Presente)", cat: "verbs" },
+  { pt: "Ir (eles/elas vão)", en: "To go — They go (Presente)", cat: "verbs" },
+  // IR — Futuro do Presente
+  { pt: "Ir (eu irei)", en: "To go — I will go (Futuro)", cat: "verbs" },
+  { pt: "Ir (você irá)", en: "To go — You will go (Futuro)", cat: "verbs" },
+  { pt: "Ir (ele/ela irá)", en: "To go — He/She will go (Futuro)", cat: "verbs" },
+  { pt: "Ir (nós iremos)", en: "To go — We will go (Futuro)", cat: "verbs" },
+  { pt: "Ir (vocês irão)", en: "To go — You (pl.) will go (Futuro)", cat: "verbs" },
+  { pt: "Ir (eles/elas irão)", en: "To go — They will go (Futuro)", cat: "verbs" },
+  // IR — Futuro do Pretérito (Conditional)
+  { pt: "Ir (eu iria)", en: "To go — I would go (Conditional)", cat: "verbs" },
+  { pt: "Ir (você iria)", en: "To go — You would go (Conditional)", cat: "verbs" },
+  { pt: "Ir (ele/ela iria)", en: "To go — He/She would go (Conditional)", cat: "verbs" },
+  { pt: "Ir (nós iríamos)", en: "To go — We would go (Conditional)", cat: "verbs" },
+  { pt: "Ir (vocês iriam)", en: "To go — You (pl.) would go (Conditional)", cat: "verbs" },
+  { pt: "Ir (eles/elas iriam)", en: "To go — They would go (Conditional)", cat: "verbs" },
+  // ESTAR — Pretérito Imperfeito
+  { pt: "Estar (eu estava)", en: "To be — I was (Imperfeito)", cat: "verbs" },
+  { pt: "Estar (você estava)", en: "To be — You were (Imperfeito)", cat: "verbs" },
+  { pt: "Estar (ele/ela estava)", en: "To be — He/She was (Imperfeito)", cat: "verbs" },
+  { pt: "Estar (nós estávamos)", en: "To be — We were (Imperfeito)", cat: "verbs" },
+  { pt: "Estar (vocês estavam)", en: "To be — You (pl.) were (Imperfeito)", cat: "verbs" },
+  { pt: "Estar (eles/elas estavam)", en: "To be — They were (Imperfeito)", cat: "verbs" },
+  // ESTAR — Presente
+  { pt: "Estar (nós estamos)", en: "To be — We are (Presente)", cat: "verbs" },
+  { pt: "Estar (vocês estão)", en: "To be — You (pl.) are (Presente)", cat: "verbs" },
+  { pt: "Estar (eles/elas estão)", en: "To be — They are (Presente)", cat: "verbs" },
+  // ESTAR — Futuro do Presente
+  { pt: "Estar (eu vou estar)", en: "To be — I will be (Futuro)", cat: "verbs" },
+  { pt: "Estar (você vai estar)", en: "To be — You will be (Futuro)", cat: "verbs" },
+  { pt: "Estar (ele/ela vai estar)", en: "To be — He/She will be (Futuro)", cat: "verbs" },
+  { pt: "Estar (nós vamos estar)", en: "To be — We will be (Futuro)", cat: "verbs" },
+  { pt: "Estar (vocês vão estar)", en: "To be — You (pl.) will be (Futuro)", cat: "verbs" },
+  { pt: "Estar (eles/elas vão estar)", en: "To be — They will be (Futuro)", cat: "verbs" },
+];
+
+const catConfig = {
+  fitness: { cls: "cat-fitness", label: "Fitness" },
+  vocab: { cls: "cat-vocab", label: "Vocabulary" },
+  phrases: { cls: "cat-phrases", label: "Phrases" },
+  verbs: { cls: "cat-verbs", label: "Verbs" },
+  weather: { cls: "cat-weather", label: "Weather" },
+  daily: { cls: "cat-daily", label: "Daily Life" },
+  time: { cls: "cat-time", label: "Time & Days" },
+};
+
+let activeCats = new Set(Object.keys(catConfig));
+let deck = [];
+let currentIndex = 0;
+let isFlipped = false;
+let correct = 0;
+let wrong = 0;
+let mode = "pt-to-en";
+let wrongCards = [];
+
+let statsCache = {};
+
+function getCardId(card) {
+  return card.pt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+async function fetchAllStats() {
+  statsCache = await fetch("/api/stats").then(r => r.json());
+}
+
+function getCardStats(card) {
+  return statsCache[getCardId(card)] || { right: 0, wrong: 0 };
+}
+
+async function resetStats() {
+  await fetch("/api/stats", { method: "DELETE" });
+  await fetch("/api/session", { method: "DELETE" });
+  statsCache = {};
+  startDeck();
+}
+
+function saveSession() {
+  const deckOrder = deck.map(c => allCards.indexOf(c));
+  const wc = wrongCards.map(c => allCards.indexOf(c));
+  fetch("/api/session", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ deckOrder, currentIndex, correct, wrong, mode, activeCats: [...activeCats], wrongCards: wc })
+  });
+}
+
+async function loadSession() {
+  const s = await fetch("/api/session").then(r => r.json());
+  if (!s) return false;
+  deck = s.deckOrder.map(i => allCards[i]);
+  currentIndex = s.currentIndex;
+  correct = s.correct;
+  wrong = s.wrong;
+  mode = s.mode;
+  activeCats = new Set(s.activeCats);
+  wrongCards = (s.wrongCards || []).map(i => allCards[i]);
+  return true;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startDeck() {
+  deck = shuffle(allCards.filter(c => activeCats.has(c.cat)));
+  currentIndex = 0;
+  isFlipped = false;
+  correct = 0;
+  wrong = 0;
+  wrongCards = [];
+  saveSession();
+  render();
+}
+
+function reviewWrongCards() {
+  deck = shuffle(wrongCards);
+  currentIndex = 0;
+  isFlipped = false;
+  correct = 0;
+  wrong = 0;
+  wrongCards = [];
+  saveSession();
+  render();
+}
+
+function toggleCat(cat) {
+  if (activeCats.has(cat)) {
+    if (activeCats.size > 1) activeCats.delete(cat);
+  } else {
+    activeCats.add(cat);
+  }
+  startDeck();
+}
+
+function render() {
+  const app = document.getElementById("app");
+
+  if (deck.length === 0) {
+    app.innerHTML = `<div class="done-screen animate-in"><h2>No cards</h2><p>Select at least one category</p></div>`;
+    return;
+  }
+
+  if (currentIndex >= deck.length) {
+    const pct = Math.round((correct / deck.length) * 100);
+    if (wrongCards.length > 0) {
+      app.innerHTML = `
+        <div class="done-screen animate-in">
+          <h2>Round done!</h2>
+          <p>You finished ${deck.length} cards</p>
+          <div class="stats" style="margin-bottom:20px; font-size:1rem;">
+            <span><span class="dot green"></span> ${correct} correct</span>
+            <span><span class="dot red"></span> ${wrong} wrong</span>
+          </div>
+          <p style="font-size:0.95rem;">${wrongCards.length} card${wrongCards.length === 1 ? '' : 's'} to review</p>
+          <button class="btn btn-wrong" onclick="reviewWrongCards()" style="margin:20px auto 0;">Review Wrong Cards</button>
+        </div>`;
+    } else {
+      app.innerHTML = `
+        <div class="done-screen animate-in">
+          <h2>Parabéns! 🎉</h2>
+          <p>You got all ${deck.length} cards right!</p>
+          <div class="stats" style="margin-bottom:20px; font-size:1rem;">
+            <span><span class="dot green"></span> ${correct} correct</span>
+          </div>
+          <p style="font-size:0.95rem;">100% accuracy</p>
+          <button class="btn btn-right" onclick="startDeck()" style="margin:20px auto 0;">Study Again</button>
+        </div>`;
+    }
+    return;
+  }
+
+  const card = deck[currentIndex];
+  const front = mode === "pt-to-en" ? card.pt : card.en;
+  const back = mode === "pt-to-en" ? card.en : card.pt;
+  const frontLabel = mode === "pt-to-en" ? "Português" : "English";
+  const backLabel = mode === "pt-to-en" ? "English" : "Português";
+  const pct = (currentIndex / deck.length) * 100;
+  const cc = catConfig[card.cat];
+  const cs = getCardStats(card);
+  const cardStatsHTML = (cs.right || cs.wrong) ? `<div style="font-size:0.7rem;color:var(--text-dim);margin-top:8px">${cs.right}&#10003; ${cs.wrong}&#10007;</div>` : '';
+
+  let filterHTML = Object.entries(catConfig).map(([key, val]) => {
+    const count = allCards.filter(c => c.cat === key).length;
+    return `<button class="filter-btn ${activeCats.has(key) ? 'active' : ''}" onclick="toggleCat('${key}')">${val.label} (${count})</button>`;
+  }).join('');
+
+  app.innerHTML = `
+    <div class="header">
+      <h1>🇧🇷 Português Flashcards</h1>
+      <div class="filter-row">${filterHTML}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="stats">
+        <span><span class="dot green"></span> ${correct}</span>
+        <span><span class="dot red"></span> ${wrong}</span>
+        <span><span class="dot gray"></span> ${deck.length - currentIndex} left</span>
+      </div>
+    </div>
+
+    <div class="card-container" onclick="flipCard()">
+      <div class="card ${isFlipped ? 'flipped' : ''}" id="theCard">
+        <div class="card-face card-front">
+          <span class="category-tag ${cc.cls}">${cc.label}</span>
+          <div class="card-label">${frontLabel}</div>
+          <div class="card-word">${front}</div>
+          ${cardStatsHTML}
+          <div class="card-hint">tap to flip</div>
+        </div>
+        <div class="card-face card-back">
+          <span class="category-tag ${cc.cls}">${cc.label}</span>
+          <div class="card-label">${backLabel}</div>
+          <div class="card-word">${back}</div>
+          ${cardStatsHTML}
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="btn btn-wrong" onclick="mark(false)">✗ Again</button>
+      <button class="btn btn-right" onclick="mark(true)">✓ Got it</button>
+    </div>
+
+    <div class="controls">
+      <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
+      <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
+      <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
+    </div>
+    <div class="keyboard-hint">Space = flip · → = got it · ← = again</div>`;
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  const el = document.getElementById("theCard");
+  if (el) el.classList.toggle("flipped", isFlipped);
+}
+
+async function mark(gotIt) {
+  if (gotIt) correct++; else { wrong++; wrongCards.push(deck[currentIndex]); }
+  const card = deck[currentIndex];
+  const id = getCardId(card);
+  const updated = await fetch(`/api/stats/${encodeURIComponent(id)}/mark`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ correct: gotIt })
+  }).then(r => r.json());
+  statsCache[id] = updated;
+  currentIndex++;
+  isFlipped = false;
+  saveSession();
+  render();
+}
+
+function toggleMode() {
+  mode = mode === "pt-to-en" ? "en-to-pt" : "pt-to-en";
+  isFlipped = false;
+  saveSession();
+  render();
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") { e.preventDefault(); flipCard(); }
+  else if (e.code === "ArrowRight") mark(true);
+  else if (e.code === "ArrowLeft") mark(false);
+});
+
+fetchAllStats().then(() => loadSession()).then(restored => {
+  if (restored) render(); else startDeck();
+});
+</script>
+</body>
+</html>
