@@ -199,6 +199,8 @@
   .cat-weather { background: rgba(155,89,182,0.15); color: #bb6bd9; }
   .cat-daily { background: rgba(230,126,34,0.15); color: #e67e22; }
   .cat-time { background: rgba(26,188,156,0.15); color: #1abc9c; }
+  .cat-ir-phrases { background: rgba(0,188,212,0.15); color: #00bcd4; }
+  .cat-ir-conj { background: rgba(255,152,0,0.15); color: #ff9800; }
 
   .buttons {
     display: flex;
@@ -385,9 +387,9 @@ const allCards = [
   { pt: "Amanhã", en: "Tomorrow", cat: "time" },
   { pt: "Sextar / Sextou", en: "To celebrate Friday / It's Friday!", cat: "daily" },
   { pt: "Empresa", en: "Company", cat: "vocab" },
-  { pt: "Ir (eu vou)", en: "To go — I go", cat: "verbs" },
-  { pt: "Ir (você vai)", en: "To go — You go", cat: "verbs" },
-  { pt: "Ir (ele/ela vai)", en: "To go — He/She goes", cat: "verbs" },
+  { pt: "Ir (eu vou)", en: "To go — I go", cat: "ir-conj" },
+  { pt: "Ir (você vai)", en: "To go — You go", cat: "ir-conj" },
+  { pt: "Ir (ele/ela vai)", en: "To go — He/She goes", cat: "ir-conj" },
   { pt: "Fazer (eu fiz)", en: "To do/make — I did (past)", cat: "verbs" },
   { pt: "Fazer (eu estou fazendo)", en: "To do/make — I'm doing (present)", cat: "verbs" },
   { pt: "Fazer (eu vou fazer)", en: "To do/make — I will do (future)", cat: "verbs" },
@@ -517,37 +519,37 @@ const allCards = [
   { pt: "Ainda", en: "Still / Yet", cat: "vocab" },
   { pt: "Cardio", en: "Cardio", cat: "fitness" },
   // IR — Pretérito Imperfeito
-  { pt: "Ir (eu ia)", en: "To go — I used to go (Imperfeito)", cat: "verbs" },
-  { pt: "Ir (você ia)", en: "To go — You used to go (Imperfeito)", cat: "verbs" },
-  { pt: "Ir (ele/ela ia)", en: "To go — He/She used to go (Imperfeito)", cat: "verbs" },
-  { pt: "Ir (nós íamos)", en: "To go — We used to go (Imperfeito)", cat: "verbs" },
-  { pt: "Ir (vocês iam)", en: "To go — You (pl.) used to go (Imperfeito)", cat: "verbs" },
-  { pt: "Ir (eles/elas iam)", en: "To go — They used to go (Imperfeito)", cat: "verbs" },
+  { pt: "Ir (eu ia)", en: "To go — I used to go (Imperfeito)", cat: "ir-conj" },
+  { pt: "Ir (você ia)", en: "To go — You used to go (Imperfeito)", cat: "ir-conj" },
+  { pt: "Ir (ele/ela ia)", en: "To go — He/She used to go (Imperfeito)", cat: "ir-conj" },
+  { pt: "Ir (nós íamos)", en: "To go — We used to go (Imperfeito)", cat: "ir-conj" },
+  { pt: "Ir (vocês iam)", en: "To go — You (pl.) used to go (Imperfeito)", cat: "ir-conj" },
+  { pt: "Ir (eles/elas iam)", en: "To go — They used to go (Imperfeito)", cat: "ir-conj" },
   // IR — Pretérito Perfeito
-  { pt: "Ir (eu fui)", en: "To go — I went (Perfeito)", cat: "verbs" },
-  { pt: "Ir (você foi)", en: "To go — You went (Perfeito)", cat: "verbs" },
-  { pt: "Ir (ele/ela foi)", en: "To go — He/She went (Perfeito)", cat: "verbs" },
-  { pt: "Ir (nós fomos)", en: "To go — We went (Perfeito)", cat: "verbs" },
-  { pt: "Ir (vocês foram)", en: "To go — You (pl.) went (Perfeito)", cat: "verbs" },
-  { pt: "Ir (eles/elas foram)", en: "To go — They went (Perfeito)", cat: "verbs" },
+  { pt: "Ir (eu fui)", en: "To go — I went (Perfeito)", cat: "ir-conj" },
+  { pt: "Ir (você foi)", en: "To go — You went (Perfeito)", cat: "ir-conj" },
+  { pt: "Ir (ele/ela foi)", en: "To go — He/She went (Perfeito)", cat: "ir-conj" },
+  { pt: "Ir (nós fomos)", en: "To go — We went (Perfeito)", cat: "ir-conj" },
+  { pt: "Ir (vocês foram)", en: "To go — You (pl.) went (Perfeito)", cat: "ir-conj" },
+  { pt: "Ir (eles/elas foram)", en: "To go — They went (Perfeito)", cat: "ir-conj" },
   // IR — Presente
-  { pt: "Ir (nós vamos)", en: "To go — We go (Presente)", cat: "verbs" },
-  { pt: "Ir (vocês vão)", en: "To go — You (pl.) go (Presente)", cat: "verbs" },
-  { pt: "Ir (eles/elas vão)", en: "To go — They go (Presente)", cat: "verbs" },
+  { pt: "Ir (nós vamos)", en: "To go — We go (Presente)", cat: "ir-conj" },
+  { pt: "Ir (vocês vão)", en: "To go — You (pl.) go (Presente)", cat: "ir-conj" },
+  { pt: "Ir (eles/elas vão)", en: "To go — They go (Presente)", cat: "ir-conj" },
   // IR — Futuro do Presente
-  { pt: "Ir (eu irei)", en: "To go — I will go (Futuro)", cat: "verbs" },
-  { pt: "Ir (você irá)", en: "To go — You will go (Futuro)", cat: "verbs" },
-  { pt: "Ir (ele/ela irá)", en: "To go — He/She will go (Futuro)", cat: "verbs" },
-  { pt: "Ir (nós iremos)", en: "To go — We will go (Futuro)", cat: "verbs" },
-  { pt: "Ir (vocês irão)", en: "To go — You (pl.) will go (Futuro)", cat: "verbs" },
-  { pt: "Ir (eles/elas irão)", en: "To go — They will go (Futuro)", cat: "verbs" },
+  { pt: "Ir (eu irei)", en: "To go — I will go (Futuro)", cat: "ir-conj" },
+  { pt: "Ir (você irá)", en: "To go — You will go (Futuro)", cat: "ir-conj" },
+  { pt: "Ir (ele/ela irá)", en: "To go — He/She will go (Futuro)", cat: "ir-conj" },
+  { pt: "Ir (nós iremos)", en: "To go — We will go (Futuro)", cat: "ir-conj" },
+  { pt: "Ir (vocês irão)", en: "To go — You (pl.) will go (Futuro)", cat: "ir-conj" },
+  { pt: "Ir (eles/elas irão)", en: "To go — They will go (Futuro)", cat: "ir-conj" },
   // IR — Futuro do Pretérito (Conditional)
-  { pt: "Ir (eu iria)", en: "To go — I would go (Conditional)", cat: "verbs" },
-  { pt: "Ir (você iria)", en: "To go — You would go (Conditional)", cat: "verbs" },
-  { pt: "Ir (ele/ela iria)", en: "To go — He/She would go (Conditional)", cat: "verbs" },
-  { pt: "Ir (nós iríamos)", en: "To go — We would go (Conditional)", cat: "verbs" },
-  { pt: "Ir (vocês iriam)", en: "To go — You (pl.) would go (Conditional)", cat: "verbs" },
-  { pt: "Ir (eles/elas iriam)", en: "To go — They would go (Conditional)", cat: "verbs" },
+  { pt: "Ir (eu iria)", en: "To go — I would go (Conditional)", cat: "ir-conj" },
+  { pt: "Ir (você iria)", en: "To go — You would go (Conditional)", cat: "ir-conj" },
+  { pt: "Ir (ele/ela iria)", en: "To go — He/She would go (Conditional)", cat: "ir-conj" },
+  { pt: "Ir (nós iríamos)", en: "To go — We would go (Conditional)", cat: "ir-conj" },
+  { pt: "Ir (vocês iriam)", en: "To go — You (pl.) would go (Conditional)", cat: "ir-conj" },
+  { pt: "Ir (eles/elas iriam)", en: "To go — They would go (Conditional)", cat: "ir-conj" },
   // ESTAR — Pretérito Imperfeito
   { pt: "Estar (eu estava)", en: "To be — I was (Imperfeito)", cat: "verbs" },
   { pt: "Estar (você estava)", en: "To be — You were (Imperfeito)", cat: "verbs" },
@@ -634,6 +636,56 @@ const allCards = [
   { pt: "Dor de cabeça", en: "Headache", cat: "vocab" },
   { pt: "Enjoo", en: "Nausea", cat: "vocab" },
   { pt: "O braço quebrado", en: "The broken arm", cat: "vocab" },
+
+  // IR Phrases — Passado Imperfeito
+  { pt: "Eu ia ao trabalho de ônibus.", en: "I used to go to work by bus.", cat: "ir-phrases" },
+  { pt: "Você ia à escola a pé?", en: "Did you used to go to school on foot?", cat: "ir-phrases" },
+  { pt: "Ele ia ao mercado todo dia.", en: "He used to go to the market every day.", cat: "ir-phrases" },
+  { pt: "Ela ia à praia sempre.", en: "She always used to go to the beach.", cat: "ir-phrases" },
+  { pt: "Nós íamos estudar juntos.", en: "We used to study together.", cat: "ir-phrases" },
+  { pt: "Vocês iam ao curso à noite?", en: "Did you (pl.) used to go to the course at night?", cat: "ir-phrases" },
+  { pt: "Eles iam ao cinema com frequência.", en: "They used to go to the movies often.", cat: "ir-phrases" },
+  { pt: "Elas iam à academia antes.", en: "They (f.) used to go to the gym before.", cat: "ir-phrases" },
+
+  // IR Phrases — Passado Perfeito
+  { pt: "Eu fui ao Brasil no ano passado.", en: "I went to Brazil last year.", cat: "ir-phrases" },
+  { pt: "Você foi ao evento ontem?", en: "Did you go to the event yesterday?", cat: "ir-phrases" },
+  { pt: "Ele foi ao trabalho cedo.", en: "He went to work early.", cat: "ir-phrases" },
+  { pt: "Ela foi ao médico ontem.", en: "She went to the doctor yesterday.", cat: "ir-phrases" },
+  { pt: "Nós fomos à praia ontem.", en: "We went to the beach yesterday.", cat: "ir-phrases" },
+  { pt: "Vocês foram ao show?", en: "Did you (pl.) go to the show?", cat: "ir-phrases" },
+  { pt: "Eles foram ao hotel.", en: "They went to the hotel.", cat: "ir-phrases" },
+  { pt: "Elas foram ao aeroporto.", en: "They (f.) went to the airport.", cat: "ir-phrases" },
+
+  // IR Phrases — Presente
+  { pt: "Eu vou ao trabalho todos os dias.", en: "I go to work every day.", cat: "ir-phrases" },
+  { pt: "Você vai à aula agora?", en: "Are you going to class now?", cat: "ir-phrases" },
+  { pt: "Ele vai ao mercado.", en: "He goes to the market.", cat: "ir-phrases" },
+  { pt: "Ela vai à praia hoje.", en: "She's going to the beach today.", cat: "ir-phrases" },
+  { pt: "Nós vamos viajar amanhã.", en: "We're going to travel tomorrow.", cat: "ir-phrases" },
+  { pt: "Vocês vão ao restaurante?", en: "Are you (pl.) going to the restaurant?", cat: "ir-phrases" },
+  { pt: "Eles vão ao cinema.", en: "They're going to the movies.", cat: "ir-phrases" },
+  { pt: "Elas vão à academia.", en: "They (f.) are going to the gym.", cat: "ir-phrases" },
+
+  // IR Phrases — Futuro do Presente
+  { pt: "Eu irei ao Brasil em julho.", en: "I will go to Brazil in July.", cat: "ir-phrases" },
+  { pt: "Você irá à aula amanhã?", en: "Will you go to class tomorrow?", cat: "ir-phrases" },
+  { pt: "Ele irá ao trabalho mais tarde.", en: "He will go to work later.", cat: "ir-phrases" },
+  { pt: "Ela irá ao mercado depois.", en: "She will go to the market later.", cat: "ir-phrases" },
+  { pt: "Nós iremos viajar nas férias.", en: "We will travel on vacation.", cat: "ir-phrases" },
+  { pt: "Vocês irão ao evento?", en: "Will you (pl.) go to the event?", cat: "ir-phrases" },
+  { pt: "Eles irão ao restaurante.", en: "They will go to the restaurant.", cat: "ir-phrases" },
+  { pt: "Elas irão ao show.", en: "They (f.) will go to the show.", cat: "ir-phrases" },
+
+  // IR Phrases — Futuro do Pretérito (Conditional)
+  { pt: "Eu iria ao Brasil se tivesse tempo.", en: "I would go to Brazil if I had time.", cat: "ir-phrases" },
+  { pt: "Você iria comigo?", en: "Would you go with me?", cat: "ir-phrases" },
+  { pt: "Ele iria ao evento, mas trabalhou.", en: "He would go to the event, but he worked.", cat: "ir-phrases" },
+  { pt: "Ela iria à festa, porém ficou doente.", en: "She would go to the party, but she got sick.", cat: "ir-phrases" },
+  { pt: "Nós iríamos viajar este ano.", en: "We would travel this year.", cat: "ir-phrases" },
+  { pt: "Vocês iriam ao curso se fosse online?", en: "Would you (pl.) go to the course if it were online?", cat: "ir-phrases" },
+  { pt: "Eles iriam ao cinema ontem.", en: "They would go to the movies yesterday.", cat: "ir-phrases" },
+  { pt: "Elas iriam à praia, mas choveu.", en: "They (f.) would go to the beach, but it rained.", cat: "ir-phrases" },
 ];
 
 const catConfig = {
@@ -644,6 +696,8 @@ const catConfig = {
   weather: { cls: "cat-weather", label: "Weather" },
   daily: { cls: "cat-daily", label: "Daily Life" },
   time: { cls: "cat-time", label: "Time & Days" },
+  "ir-phrases": { cls: "cat-ir-phrases", label: "IR Phrases" },
+  "ir-conj": { cls: "cat-ir-conj", label: "IR Conjugations" },
 };
 
 let activeCats = new Set(Object.keys(catConfig));
