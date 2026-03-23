@@ -101,7 +101,7 @@ app.delete("/api/stats", async (req, res) => {
 });
 
 init().then(() => {
-  app.listen(3000, () => console.log("Server running on http://localhost:3000"));
+  app.listen(3005, () => console.log("Server running on http://localhost:3000"));
 }).catch(err => {
   console.error("Failed to initialize database:", err.message);
   process.exit(1);

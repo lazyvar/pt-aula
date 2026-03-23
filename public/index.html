@@ -201,6 +201,7 @@
   .cat-time { background: rgba(26,188,156,0.15); color: #1abc9c; }
   .cat-ir-phrases { background: rgba(0,188,212,0.15); color: #00bcd4; }
   .cat-ir-conj { background: rgba(255,152,0,0.15); color: #ff9800; }
+  .cat-bday { background: rgba(255,64,129,0.15); color: #ff4081; }
 
   .buttons {
     display: flex;
@@ -686,6 +687,19 @@ const allCards = [
   { pt: "Vocês iriam ao curso se fosse online?", en: "Would you (pl.) go to the course if it were online?", cat: "ir-phrases" },
   { pt: "Eles iriam ao cinema ontem.", en: "They would go to the movies yesterday.", cat: "ir-phrases" },
   { pt: "Elas iriam à praia, mas choveu.", en: "They (f.) would go to the beach, but it rained.", cat: "ir-phrases" },
+
+  // Birthday Song — Parabéns pra Você
+  { pt: "Parabéns pra você", en: "Congrats to you", cat: "bday" },
+  { pt: "Nesta data querida", en: "On this dear date", cat: "bday" },
+  { pt: "Muitas felicidades", en: "Much happiness", cat: "bday" },
+  { pt: "Muitos anos de vida", en: "Many years of life", cat: "bday" },
+  { pt: "Hoje é dia de festa", en: "Today is day of party", cat: "bday" },
+  { pt: "Não é dia de tristeza", en: "It's not a day for sadness", cat: "bday" },
+  { pt: "Vai buscar teu noivo", en: "Go get your fiancé", cat: "bday" },
+  { pt: "Pra casar com certeza", en: "To get married for sure", cat: "bday" },
+  { pt: "É pique, é pique", en: "It's peak, it's peak", cat: "bday" },
+  { pt: "É hora, é hora", en: "It's time, it's time", cat: "bday" },
+  { pt: "Rá-tim-bum", en: "Hip hip hooray!", cat: "bday" },
 ];
 
 const catConfig = {
@@ -698,6 +712,7 @@ const catConfig = {
   time: { cls: "cat-time", label: "Time & Days" },
   "ir-phrases": { cls: "cat-ir-phrases", label: "IR Phrases" },
   "ir-conj": { cls: "cat-ir-conj", label: "IR Conjugations" },
+  bday: { cls: "cat-bday", label: "Birthday" },
 };
 
 let activeCats = new Set(Object.keys(catConfig));
