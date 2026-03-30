@@ -208,6 +208,7 @@
   .cat-esquecer-conj { background: rgba(233,30,99,0.15); color: #e91e63; }
   .cat-lembrar-conj { background: rgba(76,175,80,0.15); color: #4caf50; }
   .cat-dizer-conj { background: rgba(255,87,34,0.15); color: #ff5722; }
+  .cat-aula-mar30 { background: rgba(63,81,181,0.15); color: #3f51b5; }
 
   .buttons {
     display: flex;
@@ -899,6 +900,42 @@ const allCards = [
   { pt: "Dizer (nós diríamos)", en: "To say — We would say (Conditional)", cat: "dizer-conj" },
   { pt: "Dizer (vocês diriam)", en: "To say — You (pl.) would say (Conditional)", cat: "dizer-conj" },
   { pt: "Dizer (eles/elas diriam)", en: "To say — They would say (Conditional)", cat: "dizer-conj" },
+  // — Aula Mar 30 —
+  { pt: "Opa", en: "Hey / What's up", cat: "aula-mar30" },
+  { pt: "Tudo bom", en: "All good / How's it going", cat: "aula-mar30" },
+  { pt: "Oi", en: "Hi", cat: "aula-mar30" },
+  { pt: "Do sábado pro domingo", en: "From Saturday to Sunday", cat: "aula-mar30" },
+  { pt: "Eu fui irritado", en: "I was irritated (went there irritated)", cat: "aula-mar30" },
+  { pt: "Eu estava irritado", en: "I was irritated (ongoing state)", cat: "aula-mar30" },
+  { pt: "Pouco", en: "A little / Few", cat: "aula-mar30" },
+  { pt: "Você viu o site que eu tive que mudar?", en: "Did you see the site that I had to change?", cat: "aula-mar30" },
+  { pt: "Enviar", en: "To send (letters / emails)", cat: "aula-mar30" },
+  { pt: "Mandar", en: "To send / To order", cat: "aula-mar30" },
+  { pt: "Mudar", en: "To change / To move", cat: "aula-mar30" },
+  { pt: "Me testa", en: "Test me", cat: "aula-mar30" },
+  { pt: "Provar", en: "To prove / To taste / To try on", cat: "aula-mar30" },
+  { pt: "Tentar", en: "To try", cat: "aula-mar30" },
+  { pt: "Eu gosto", en: "I like", cat: "aula-mar30" },
+  { pt: "Eu vou conseguir uma pra você", en: "I'm going to get one for you", cat: "aula-mar30" },
+  { pt: "Eu vou te dar uma", en: "I'm going to give you one", cat: "aula-mar30" },
+  { pt: "Te", en: "You (object pronoun)", cat: "aula-mar30" },
+  { pt: "Dar", en: "To give", cat: "aula-mar30" },
+  { pt: "Tudo", en: "Everything", cat: "aula-mar30" },
+  { pt: "Todo", en: "Full / Every / All", cat: "aula-mar30" },
+  { pt: "Tudo em todo lugar ao mesmo tempo", en: "Everything everywhere all at once", cat: "aula-mar30" },
+  { pt: "Chorar", en: "To cry", cat: "aula-mar30" },
+  { pt: "Ver", en: "To see", cat: "aula-mar30" },
+  { pt: "Vir", en: "To come", cat: "aula-mar30" },
+  { pt: "Eu sempre choro quando eu voo e eu vejo um filme", en: "I always cry when I fly and I watch a movie", cat: "aula-mar30" },
+  { pt: "Você me dá dever de casa, eu te dou dever de casa", en: "You give me homework, I give you homework", cat: "aula-mar30" },
+  { pt: "Relaxar", en: "To relax", cat: "aula-mar30" },
+  { pt: "Relaxando", en: "Relaxing", cat: "aula-mar30" },
+  { pt: "Assistir", en: "To watch (shows / TV)", cat: "aula-mar30" },
+  { pt: "Dever de casa", en: "Homework", cat: "aula-mar30" },
+  { pt: "Capitão Fantástico", en: "Captain Fantastic", cat: "aula-mar30" },
+  { pt: "Tocar", en: "To play (instrument) / To touch", cat: "aula-mar30" },
+  { pt: "Treinar", en: "To train", cat: "aula-mar30" },
+  { pt: "Treinador", en: "Trainer / Coach", cat: "aula-mar30" },
 ];
 
 const catConfig = {
@@ -918,6 +955,7 @@ const catConfig = {
   "esquecer-conj": { cls: "cat-esquecer-conj", label: "Esquecer Conjugations" },
   "lembrar-conj": { cls: "cat-lembrar-conj", label: "Lembrar Conjugations" },
   "dizer-conj": { cls: "cat-dizer-conj", label: "Dizer Conjugations" },
+  "aula-mar30": { cls: "cat-aula-mar30", label: "Aula Mar 30" },
 };
 
 let activeCats = new Set(Object.keys(catConfig));
