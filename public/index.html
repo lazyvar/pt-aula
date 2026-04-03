@@ -24,11 +24,6 @@
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding-top: 20px;
     position: relative;
   }
 
@@ -48,7 +43,117 @@
     100% { transform: translate(3%,-3%); }
   }
 
-  .app { position: relative; z-index: 1; width: 100%; max-width: 520px; padding: 20px; }
+  .layout {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 260px;
+    min-width: 260px;
+    padding: 20px 16px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    overflow-y: auto;
+    max-height: 100vh;
+    position: sticky;
+    top: 0;
+  }
+
+  .main-content {
+    flex: 1;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .mobile-cat-toggle {
+    display: none;
+    width: 100%;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-align: left;
+    margin-bottom: 12px;
+  }
+  .mobile-cat-toggle:hover { background: rgba(255,255,255,0.07); }
+
+  .cat-group { margin-bottom: 14px; }
+
+  .cat-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    user-select: none;
+  }
+  .cat-group-header:hover { background: rgba(255,255,255,0.04); }
+
+  .cat-group-header .chevron {
+    transition: transform 0.2s;
+    font-size: 0.6rem;
+  }
+  .cat-group-header.collapsed .chevron {
+    transform: rotate(-90deg);
+  }
+
+  .cat-group-items {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 4px 0 0 0;
+  }
+  .cat-group-items.hidden { display: none; }
+
+  .sidebar .filter-btn {
+    width: 100%;
+    text-align: left;
+    padding: 6px 10px;
+    font-size: 0.72rem;
+  }
+
+  .sidebar-controls {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .sidebar-controls .ctrl-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .mobile-cats {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .mobile-cats.open { display: flex; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .mobile-cat-toggle { display: block; }
+    .layout { flex-direction: column; }
+    .main-content { padding: 12px; max-width: 100%; }
+  }
 
   .header { text-align: center; margin-bottom: 24px; }
 
@@ -60,14 +165,6 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 6px;
-  }
-
-  .filter-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: center;
-    margin: 12px 0;
   }
 
   .filter-btn {
@@ -296,7 +393,7 @@
 </head>
 <body>
 
-<div class="app" id="app"></div>
+<div id="app"></div>
 
 <script>
 let allCards = [];
@@ -323,6 +420,40 @@ async function fetchAllStats() {
 
 function getCardStats(card) {
   return statsCache[getCardId(card)] || { right: 0, wrong: 0 };
+}
+
+function renderCatGroups(isMobile) {
+  const groups = {};
+  for (const [key, val] of Object.entries(catConfig)) {
+    const group = val.group || 'Topics';
+    if (!groups[group]) groups[group] = [];
+    const count = allCards.filter(c => c.cat === key).length;
+    groups[group].push({ key, label: val.label, count });
+  }
+
+  return Object.entries(groups).map(([groupName, cats]) => {
+    const defaultCollapsed = isMobile;
+    const items = cats.map(c =>
+      `<button class="filter-btn ${activeCats.has(c.key) ? 'active' : ''}" onclick="toggleCat('${c.key}')">${c.label} (${c.count})</button>`
+    ).join('');
+    return `
+      <div class="cat-group">
+        <div class="cat-group-header ${defaultCollapsed ? 'collapsed' : ''}" onclick="toggleGroup(this)">
+          <span>${groupName}</span>
+          <span class="chevron">&#9660;</span>
+        </div>
+        <div class="cat-group-items ${defaultCollapsed ? 'hidden' : ''}">${items}</div>
+      </div>`;
+  }).join('');
+}
+
+function toggleGroup(header) {
+  header.classList.toggle('collapsed');
+  header.nextElementSibling.classList.toggle('hidden');
+}
+
+function toggleMobileCats() {
+  document.getElementById('mobileCats').classList.toggle('open');
 }
 
 async function resetStats() {
@@ -401,14 +532,37 @@ function render() {
   const app = document.getElementById("app");
 
   if (deck.length === 0) {
-    app.innerHTML = `<div class="done-screen animate-in"><h2>No cards</h2><p>Select at least one category</p></div>`;
+    app.innerHTML = `<div class="layout"><div class="sidebar">
+      <div class="header"><h1>🇧🇷 Português Flashcards</h1></div>
+      ${renderCatGroups(false)}
+    </div><div class="main-content">
+      <button class="mobile-cat-toggle" onclick="toggleMobileCats()">Categories (${activeCats.size} selected) ▾</button>
+      <div class="mobile-cats" id="mobileCats">${renderCatGroups(true)}</div>
+      <div class="done-screen animate-in"><h2>No cards</h2><p>Select at least one category</p></div>
+    </div></div>`;
     return;
   }
 
   if (currentIndex >= deck.length) {
     const pct = Math.round((correct / deck.length) * 100);
     if (wrongCards.length > 0) {
-      app.innerHTML = `
+      app.innerHTML = `<div class="layout"><div class="sidebar">
+        <div class="header"><h1>🇧🇷 Português Flashcards</h1></div>
+        ${renderCatGroups(false)}
+        <div class="sidebar-controls">
+          <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
+          <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
+          <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
+        </div>
+      </div><div class="main-content">
+        <button class="mobile-cat-toggle" onclick="toggleMobileCats()">Categories (${activeCats.size} selected) ▾</button>
+        <div class="mobile-cats" id="mobileCats">${renderCatGroups(true)}
+          <div class="controls" style="margin-top:8px;">
+            <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
+            <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
+            <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
+          </div>
+        </div>
         <div class="done-screen animate-in">
           <h2>Round done!</h2>
           <p>You finished ${deck.length} cards</p>
@@ -418,9 +572,26 @@ function render() {
           </div>
           <p style="font-size:0.95rem;">${wrongCards.length} card${wrongCards.length === 1 ? '' : 's'} to review</p>
           <button class="btn btn-wrong" onclick="reviewWrongCards()" style="margin:20px auto 0;">Review Wrong Cards</button>
-        </div>`;
+        </div>
+      </div></div>`;
     } else {
-      app.innerHTML = `
+      app.innerHTML = `<div class="layout"><div class="sidebar">
+        <div class="header"><h1>🇧🇷 Português Flashcards</h1></div>
+        ${renderCatGroups(false)}
+        <div class="sidebar-controls">
+          <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
+          <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
+          <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
+        </div>
+      </div><div class="main-content">
+        <button class="mobile-cat-toggle" onclick="toggleMobileCats()">Categories (${activeCats.size} selected) ▾</button>
+        <div class="mobile-cats" id="mobileCats">${renderCatGroups(true)}
+          <div class="controls" style="margin-top:8px;">
+            <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
+            <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
+            <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
+          </div>
+        </div>
         <div class="done-screen animate-in">
           <h2>Parabéns! 🎉</h2>
           <p>You got all ${deck.length} cards right!</p>
@@ -429,7 +600,8 @@ function render() {
           </div>
           <p style="font-size:0.95rem;">100% accuracy</p>
           <button class="btn btn-right" onclick="startDeck()" style="margin:20px auto 0;">Study Again</button>
-        </div>`;
+        </div>
+      </div></div>`;
     }
     return;
   }
@@ -443,53 +615,67 @@ function render() {
   const cc = catConfig[card.cat];
   const cs = getCardStats(card);
   const cardStatsHTML = (cs.right || cs.wrong) ? `<div style="font-size:0.7rem;color:var(--text-dim);margin-top:8px">${cs.right}&#10003; ${cs.wrong}&#10007;</div>` : '';
-
-  let filterHTML = Object.entries(catConfig).map(([key, val]) => {
-    const count = allCards.filter(c => c.cat === key).length;
-    return `<button class="filter-btn ${activeCats.has(key) ? 'active' : ''}" onclick="toggleCat('${key}')">${val.label} (${count})</button>`;
-  }).join('');
+  const selectedCount = activeCats.size;
 
   app.innerHTML = `
-    <div class="header">
-      <h1>🇧🇷 Português Flashcards</h1>
-      <div class="filter-row">${filterHTML}</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-      <div class="stats">
-        <span><span class="dot green"></span> ${correct}</span>
-        <span><span class="dot red"></span> ${wrong}</span>
-        <span><span class="dot gray"></span> ${deck.length - currentIndex} left</span>
-      </div>
-    </div>
-
-    <div class="card-container" onclick="flipCard()">
-      <div class="card ${isFlipped ? 'flipped' : ''}" id="theCard">
-        <div class="card-face card-front">
-          <span class="category-tag ${cc.cls}">${cc.label}</span>
-          <div class="card-label">${frontLabel}</div>
-          <div class="card-word">${front}</div>
-          ${cardStatsHTML}
-          <div class="card-hint">tap to flip</div>
+    <div class="layout">
+      <div class="sidebar">
+        <div class="header">
+          <h1>🇧🇷 Português Flashcards</h1>
         </div>
-        <div class="card-face card-back">
-          <span class="category-tag ${cc.cls}">${cc.label}</span>
-          <div class="card-label">${backLabel}</div>
-          <div class="card-word">${back}</div>
-          ${cardStatsHTML}
+        ${renderCatGroups(false)}
+        <div class="sidebar-controls">
+          <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
+          <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
+          <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
         </div>
       </div>
-    </div>
 
-    <div class="buttons">
-      <button class="btn btn-wrong" onclick="mark(false)">✗ Again</button>
-      <button class="btn btn-right" onclick="mark(true)">✓ Got it</button>
-    </div>
+      <div class="main-content">
+        <button class="mobile-cat-toggle" onclick="toggleMobileCats()">
+          Categories (${selectedCount} selected) ▾
+        </button>
+        <div class="mobile-cats" id="mobileCats">
+          ${renderCatGroups(true)}
+          <div class="controls" style="margin-top:8px;">
+            <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
+            <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
+            <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
+          </div>
+        </div>
 
-    <div class="controls">
-      <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
-      <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
-      <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
-    </div>
-    <div class="keyboard-hint">Space = flip · → = got it · ← = again</div>`;
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="stats">
+          <span><span class="dot green"></span> ${correct}</span>
+          <span><span class="dot red"></span> ${wrong}</span>
+          <span><span class="dot gray"></span> ${deck.length - currentIndex} left</span>
+        </div>
+
+        <div class="card-container" onclick="flipCard()">
+          <div class="card ${isFlipped ? 'flipped' : ''}" id="theCard">
+            <div class="card-face card-front">
+              <span class="category-tag ${cc.cls}">${cc.label}</span>
+              <div class="card-label">${frontLabel}</div>
+              <div class="card-word">${front}</div>
+              ${cardStatsHTML}
+              <div class="card-hint">tap to flip</div>
+            </div>
+            <div class="card-face card-back">
+              <span class="category-tag ${cc.cls}">${cc.label}</span>
+              <div class="card-label">${backLabel}</div>
+              <div class="card-word">${back}</div>
+              ${cardStatsHTML}
+            </div>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button class="btn btn-wrong" onclick="mark(false)">✗ Again</button>
+          <button class="btn btn-right" onclick="mark(true)">✓ Got it</button>
+        </div>
+        <div class="keyboard-hint">Space = flip · → = got it · ← = again</div>
+      </div>
+    </div>`;
 }
 
 function flipCard() {
