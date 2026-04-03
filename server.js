@@ -39,6 +39,7 @@ async function init() {
       css_class TEXT NOT NULL
     )
   `);
+  await pool.query(`ALTER TABLE categories ADD COLUMN IF NOT EXISTS group_name TEXT NOT NULL DEFAULT 'Topics'`);
   await pool.query(`
     CREATE TABLE IF NOT EXISTS cards (
       id SERIAL PRIMARY KEY,
@@ -53,8 +54,8 @@ async function init() {
   if (parseInt(catRows[0].count) === 0) {
     for (const cat of categories) {
       await pool.query(
-        "INSERT INTO categories (id, label, css_class) VALUES ($1, $2, $3)",
-        [cat.id, cat.label, cat.css_class]
+        "INSERT INTO categories (id, label, css_class, group_name) VALUES ($1, $2, $3, $4)",
+        [cat.id, cat.label, cat.css_class, cat.group_name]
       );
     }
     for (const card of cards) {
@@ -138,10 +139,10 @@ app.delete("/api/stats", async (req, res) => {
 
 // GET /api/cards — return all cards and categories
 app.get("/api/cards", async (req, res) => {
-  const { rows: catRows } = await pool.query("SELECT id, label, css_class FROM categories");
+  const { rows: catRows } = await pool.query("SELECT id, label, css_class, group_name FROM categories");
   const categories = {};
   for (const row of catRows) {
-    categories[row.id] = { cls: row.css_class, label: row.label };
+    categories[row.id] = { cls: row.css_class, label: row.label, group: row.group_name };
   }
   const { rows: cardRows } = await pool.query("SELECT pt, en, category_id FROM cards ORDER BY id");
   const cards = cardRows.map(r => ({ pt: r.pt, en: r.en, cat: r.category_id }));
