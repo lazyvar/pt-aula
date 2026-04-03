@@ -216,14 +216,20 @@
 
   @media (max-width: 768px) {
     .sidebar { display: none; }
-    .layout { flex-direction: column; }
+    .layout {
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      min-height: 0;
+      overflow: hidden;
+    }
     .main-content {
       padding: 0;
       padding-bottom: 56px;
       max-width: 100% !important;
       margin: 0 !important;
-      height: 100vh;
-      height: 100dvh;
+      flex: 1;
+      height: 0;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
