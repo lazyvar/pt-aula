@@ -933,6 +933,13 @@ const cards = [
   { pt: "Nós teríamos", en: "We would have", category_id: "ter-conj" },
   { pt: "Vocês teriam", en: "You all would have", category_id: "ter-conj" },
   { pt: "Eles/Elas teriam", en: "They would have", category_id: "ter-conj" },
+  // Ter — Futuro
+  { pt: "Eu terei", en: "I will have", category_id: "ter-conj" },
+  { pt: "Você terá", en: "You will have", category_id: "ter-conj" },
+  { pt: "Ele/Ela terá", en: "He/She will have", category_id: "ter-conj" },
+  { pt: "Nós teremos", en: "We will have", category_id: "ter-conj" },
+  { pt: "Vocês terão", en: "You all will have", category_id: "ter-conj" },
+  { pt: "Eles/Elas terão", en: "They will have", category_id: "ter-conj" },
 
   // Poder — Presente
   { pt: "Eu posso", en: "I can", category_id: "poder-conj" },
@@ -962,6 +969,13 @@ const cards = [
   { pt: "Nós poderíamos", en: "We could", category_id: "poder-conj" },
   { pt: "Vocês poderiam", en: "You all could", category_id: "poder-conj" },
   { pt: "Eles/Elas poderiam", en: "They could", category_id: "poder-conj" },
+  // Poder — Futuro
+  { pt: "Eu poderei", en: "I will be able to", category_id: "poder-conj" },
+  { pt: "Você poderá", en: "You will be able to", category_id: "poder-conj" },
+  { pt: "Ele/Ela poderá", en: "He/She will be able to", category_id: "poder-conj" },
+  { pt: "Nós poderemos", en: "We will be able to", category_id: "poder-conj" },
+  { pt: "Vocês poderão", en: "You all will be able to", category_id: "poder-conj" },
+  { pt: "Eles/Elas poderão", en: "They will be able to", category_id: "poder-conj" },
 
   // Querer — Presente
   { pt: "Eu quero", en: "I want", category_id: "querer-conj" },
@@ -991,6 +1005,13 @@ const cards = [
   { pt: "Nós quereríamos", en: "We would want", category_id: "querer-conj" },
   { pt: "Vocês quereriam", en: "You all would want", category_id: "querer-conj" },
   { pt: "Eles/Elas quereriam", en: "They would want", category_id: "querer-conj" },
+  // Querer — Futuro
+  { pt: "Eu quererei", en: "I will want", category_id: "querer-conj" },
+  { pt: "Você quererá", en: "You will want", category_id: "querer-conj" },
+  { pt: "Ele/Ela quererá", en: "He/She will want", category_id: "querer-conj" },
+  { pt: "Nós quereremos", en: "We will want", category_id: "querer-conj" },
+  { pt: "Vocês quererão", en: "You all will want", category_id: "querer-conj" },
+  { pt: "Eles/Elas quererão", en: "They will want", category_id: "querer-conj" },
 
   // Saber — Presente
   { pt: "Eu sei", en: "I know", category_id: "saber-conj" },
@@ -1020,6 +1041,13 @@ const cards = [
   { pt: "Nós saberíamos", en: "We would know", category_id: "saber-conj" },
   { pt: "Vocês saberiam", en: "You all would know", category_id: "saber-conj" },
   { pt: "Eles/Elas saberiam", en: "They would know", category_id: "saber-conj" },
+  // Saber — Futuro
+  { pt: "Eu saberei", en: "I will know", category_id: "saber-conj" },
+  { pt: "Você saberá", en: "You will know", category_id: "saber-conj" },
+  { pt: "Ele/Ela saberá", en: "He/She will know", category_id: "saber-conj" },
+  { pt: "Nós saberemos", en: "We will know", category_id: "saber-conj" },
+  { pt: "Vocês saberão", en: "You all will know", category_id: "saber-conj" },
+  { pt: "Eles/Elas saberão", en: "They will know", category_id: "saber-conj" },
 
   // Dar — Presente
   { pt: "Eu dou", en: "I give", category_id: "dar-conj" },
@@ -1049,6 +1077,13 @@ const cards = [
   { pt: "Nós daríamos", en: "We would give", category_id: "dar-conj" },
   { pt: "Vocês dariam", en: "You all would give", category_id: "dar-conj" },
   { pt: "Eles/Elas dariam", en: "They would give", category_id: "dar-conj" },
+  // Dar — Futuro
+  { pt: "Eu darei", en: "I will give", category_id: "dar-conj" },
+  { pt: "Você dará", en: "You will give", category_id: "dar-conj" },
+  { pt: "Ele/Ela dará", en: "He/She will give", category_id: "dar-conj" },
+  { pt: "Nós daremos", en: "We will give", category_id: "dar-conj" },
+  { pt: "Vocês darão", en: "You all will give", category_id: "dar-conj" },
+  { pt: "Eles/Elas darão", en: "They will give", category_id: "dar-conj" },
 
   // Ver — Presente
   { pt: "Eu vejo", en: "I see", category_id: "ver-conj" },
@@ -1068,7 +1103,7 @@ const cards = [
   { pt: "Eu vi", en: "I saw", category_id: "ver-conj" },
   { pt: "Você viu", en: "You saw", category_id: "ver-conj" },
   { pt: "Ele/Ela viu", en: "He/She saw", category_id: "ver-conj" },
-  { pt: "Nós vimos", en: "We saw", category_id: "ver-conj" },
+  { pt: "Nós vimos (ver)", en: "We saw", category_id: "ver-conj" },
   { pt: "Vocês viram", en: "You all saw", category_id: "ver-conj" },
   { pt: "Eles/Elas viram", en: "They saw", category_id: "ver-conj" },
   // Ver — Conditional
@@ -1078,12 +1113,19 @@ const cards = [
   { pt: "Nós veríamos", en: "We would see", category_id: "ver-conj" },
   { pt: "Vocês veriam", en: "You all would see", category_id: "ver-conj" },
   { pt: "Eles/Elas veriam", en: "They would see", category_id: "ver-conj" },
+  // Ver — Futuro
+  { pt: "Eu verei", en: "I will see", category_id: "ver-conj" },
+  { pt: "Você verá", en: "You will see", category_id: "ver-conj" },
+  { pt: "Ele/Ela verá", en: "He/She will see", category_id: "ver-conj" },
+  { pt: "Nós veremos", en: "We will see", category_id: "ver-conj" },
+  { pt: "Vocês verão", en: "You all will see", category_id: "ver-conj" },
+  { pt: "Eles/Elas verão", en: "They will see", category_id: "ver-conj" },
 
   // Vir — Presente
   { pt: "Eu venho", en: "I come", category_id: "vir-conj" },
   { pt: "Você vem", en: "You come", category_id: "vir-conj" },
   { pt: "Ele/Ela vem", en: "He/She comes", category_id: "vir-conj" },
-  { pt: "Nós vimos", en: "We come", category_id: "vir-conj" },
+  { pt: "Nós vimos (vir)", en: "We come", category_id: "vir-conj" },
   { pt: "Vocês vêm", en: "You all come", category_id: "vir-conj" },
   { pt: "Eles/Elas vêm", en: "They come", category_id: "vir-conj" },
   // Vir — Imperfeito
@@ -1106,7 +1148,14 @@ const cards = [
   { pt: "Ele/Ela viria", en: "He/She would come", category_id: "vir-conj" },
   { pt: "Nós viríamos", en: "We would come", category_id: "vir-conj" },
   { pt: "Vocês viriam", en: "You all would come", category_id: "vir-conj" },
-  { pt: "Eles/Elas viriam", en: "They would come", category_id: "vir-conj" }
+  { pt: "Eles/Elas viriam", en: "They would come", category_id: "vir-conj" },
+  // Vir — Futuro
+  { pt: "Eu virei", en: "I will come", category_id: "vir-conj" },
+  { pt: "Você virá", en: "You will come", category_id: "vir-conj" },
+  { pt: "Ele/Ela virá", en: "He/She will come", category_id: "vir-conj" },
+  { pt: "Nós viremos", en: "We will come", category_id: "vir-conj" },
+  { pt: "Vocês virão", en: "You all will come", category_id: "vir-conj" },
+  { pt: "Eles/Elas virão", en: "They will come", category_id: "vir-conj" }
 ];
 
 module.exports = { categories, cards };
