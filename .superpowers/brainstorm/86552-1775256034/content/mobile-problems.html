@@ -1,0 +1,64 @@
+<h2>Current Mobile Problems</h2>
+<p class="subtitle">What I see wrong with the current layout</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">Current Layout Issues</div>
+    <div class="mockup-body" style="background:#0a0a0a; color:#f0f0f0; padding:0; font-family:system-ui;">
+      <!-- Current mobile mockup -->
+      <div style="display:flex;flex-direction:column;height:700px;">
+        <!-- Header -->
+        <div style="text-align:center;padding:12px 0 4px;">
+          <div style="font-size:16px;font-weight:700;color:#e94560;">Portugues Aula</div>
+        </div>
+        <!-- Category toggle -->
+        <div style="padding:0 16px;margin-bottom:8px;">
+          <div style="padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:#888;font-size:12px;">Categories (1 selected) &#9662;</div>
+        </div>
+        <!-- Stats -->
+        <div style="text-align:center;padding:4px 0;font-size:12px;color:#888;">
+          <span style="color:#2ecc71;">&#9679;</span> 0 &nbsp;
+          <span style="color:#e74c3c;">&#9679;</span> 0 &nbsp;
+          <span style="color:#888;">&#9679;</span> 35 left
+        </div>
+
+        <!-- PROBLEM: Huge empty gap -->
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;">
+          <div style="position:absolute;top:10%;left:16px;right:50%;border:2px dashed #e94560;border-radius:8px;bottom:60%;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#e94560;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Wasted space</span>
+          </div>
+
+          <!-- Card -->
+          <div style="width:280px;height:220px;background:linear-gradient(145deg,#1a1a2e,#12122a);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;border:1px solid rgba(255,255,255,0.05);">
+            <div style="font-size:10px;padding:3px 10px;border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#888;margin-bottom:6px;">AULA MAR 30</div>
+            <div style="font-size:11px;color:#e94560;font-weight:600;letter-spacing:2px;margin-bottom:4px;">ENGLISH</div>
+            <div style="font-size:24px;font-weight:900;">Everything</div>
+            <div style="font-size:11px;color:#888;margin-top:6px;">1&#10003; 0&#10007;</div>
+            <div style="font-size:11px;color:#555;margin-top:12px;">tap to flip</div>
+          </div>
+
+          <div style="position:absolute;bottom:10%;right:16px;left:50%;border:2px dashed #e94560;border-radius:8px;top:60%;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#e94560;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Wasted space</span>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div style="display:flex;">
+          <div style="flex:1;padding:16px;text-align:center;background:rgba(231,76,60,0.15);color:#e74c3c;font-weight:700;font-size:14px;">&#10007; Again</div>
+          <div style="flex:1;padding:16px;text-align:center;background:rgba(46,204,113,0.15);color:#2ecc71;font-weight:700;font-size:14px;">&#10003; Got it</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+  <h3>Key Problems</h3>
+  <ul style="line-height:1.8;">
+    <li><strong>Card is vertically centered</strong> in a huge empty area — wastes ~60% of the screen</li>
+    <li><strong>Card is too small</strong> — a fixed 260px height box on a 800+ px tall screen</li>
+    <li><strong>Too much visual hierarchy</strong> — header, toggle, progress bar, stats all stacked before the card</li>
+    <li><strong>"tap to flip" hint</strong> takes up card space unnecessarily</li>
+    <li><strong>No swipe gestures</strong> — mobile users expect to swipe, not just tap buttons</li>
+  </ul>
+</div>

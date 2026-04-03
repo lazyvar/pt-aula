@@ -1,0 +1,6 @@
+{"type":"server-started","port":56670,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:56670","screen_dir":"/Users/mack/Developer/pt-aula/.superpowers/brainstorm/86552-1775256034/content","state_dir":"/Users/mack/Developer/pt-aula/.superpowers/brainstorm/86552-1775256034/state"}
+{"type":"screen-added","file":"/Users/mack/Developer/pt-aula/.superpowers/brainstorm/86552-1775256034/content/mobile-problems.html"}
+{"type":"screen-added","file":"/Users/mack/Developer/pt-aula/.superpowers/brainstorm/86552-1775256034/content/layout-approaches.html"}
+{"type":"screen-added","file":"/Users/mack/Developer/pt-aula/.superpowers/brainstorm/86552-1775256034/content/full-design.html"}
+{"type":"screen-added","file":"/Users/mack/Developer/pt-aula/.superpowers/brainstorm/86552-1775256034/content/waiting.html"}
+{"type":"server-stopped","reason":"idle timeout"}
