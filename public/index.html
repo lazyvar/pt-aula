@@ -312,18 +312,18 @@
       left: 0;
       right: 0;
       display: flex;
-      gap: 0;
+      gap: 8px;
       margin: 0;
-      padding: 0;
+      padding: 8px 16px;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
       z-index: 100;
     }
     .btn {
       flex: 1;
       justify-content: center;
-      padding: 18px 0;
-      border-radius: 0;
+      padding: 16px 0;
+      border-radius: 12px;
       font-size: 1.05rem;
-      border: none;
     }
     .btn-wrong {
       background: rgba(231,76,60,0.15);
