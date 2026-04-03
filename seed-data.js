@@ -31,7 +31,10 @@ const categories = [
   { id: "aula-mar27", label: "Aula Mar 27", css_class: "cat-aula-mar27", group_name: "Aulas" },
   { id: "aula-mar30", label: "Aula Mar 30", css_class: "cat-aula-mar30", group_name: "Aulas" },
   { id: "april-fools", label: "April Fools", css_class: "cat-april-fools", group_name: "Aulas" },
-  { id: "april2", label: "April 2", css_class: "cat-april2", group_name: "Aulas" }
+  { id: "april2", label: "April 2", css_class: "cat-april2", group_name: "Aulas" },
+  { id: "end-ar", label: "-AR Endings", css_class: "cat-end-ar", group_name: "Verb Endings" },
+  { id: "end-er", label: "-ER Endings", css_class: "cat-end-er", group_name: "Verb Endings" },
+  { id: "end-ir", label: "-IR Endings", css_class: "cat-end-ir", group_name: "Verb Endings" }
 ];
 
 const cards = [
@@ -1155,7 +1158,118 @@ const cards = [
   { pt: "Ele/Ela virá", en: "He/She will come", category_id: "vir-conj" },
   { pt: "Nós viremos", en: "We will come", category_id: "vir-conj" },
   { pt: "Vocês virão", en: "You all will come", category_id: "vir-conj" },
-  { pt: "Eles/Elas virão", en: "They will come", category_id: "vir-conj" }
+  { pt: "Eles/Elas virão", en: "They will come", category_id: "vir-conj" },
+
+  // ===== -AR VERB ENDINGS =====
+  // -AR — Presente
+  { pt: "-o (eu)", en: "Presente: eu (-AR)", category_id: "end-ar" },
+  { pt: "-a (você)", en: "Presente: você (-AR)", category_id: "end-ar" },
+  { pt: "-a (ele/ela)", en: "Presente: ele/ela (-AR)", category_id: "end-ar" },
+  { pt: "-amos (nós)", en: "Presente: nós (-AR)", category_id: "end-ar" },
+  { pt: "-am (vocês)", en: "Presente: vocês (-AR)", category_id: "end-ar" },
+  { pt: "-am (eles/elas)", en: "Presente: eles/elas (-AR)", category_id: "end-ar" },
+  // -AR — Imperfeito
+  { pt: "-ava (eu)", en: "Imperfeito: eu (-AR)", category_id: "end-ar" },
+  { pt: "-ava (você)", en: "Imperfeito: você (-AR)", category_id: "end-ar" },
+  { pt: "-ava (ele/ela)", en: "Imperfeito: ele/ela (-AR)", category_id: "end-ar" },
+  { pt: "-ávamos (nós)", en: "Imperfeito: nós (-AR)", category_id: "end-ar" },
+  { pt: "-avam (vocês)", en: "Imperfeito: vocês (-AR)", category_id: "end-ar" },
+  { pt: "-avam (eles/elas)", en: "Imperfeito: eles/elas (-AR)", category_id: "end-ar" },
+  // -AR — Perfeito
+  { pt: "-ei (eu)", en: "Perfeito: eu (-AR)", category_id: "end-ar" },
+  { pt: "-ou (você)", en: "Perfeito: você (-AR)", category_id: "end-ar" },
+  { pt: "-ou (ele/ela)", en: "Perfeito: ele/ela (-AR)", category_id: "end-ar" },
+  { pt: "-amos (nós)", en: "Perfeito: nós (-AR)", category_id: "end-ar" },
+  { pt: "-aram (vocês)", en: "Perfeito: vocês (-AR)", category_id: "end-ar" },
+  { pt: "-aram (eles/elas)", en: "Perfeito: eles/elas (-AR)", category_id: "end-ar" },
+  // -AR — Futuro
+  { pt: "-arei (eu)", en: "Futuro: eu (-AR)", category_id: "end-ar" },
+  { pt: "-ará (você)", en: "Futuro: você (-AR)", category_id: "end-ar" },
+  { pt: "-ará (ele/ela)", en: "Futuro: ele/ela (-AR)", category_id: "end-ar" },
+  { pt: "-aremos (nós)", en: "Futuro: nós (-AR)", category_id: "end-ar" },
+  { pt: "-arão (vocês)", en: "Futuro: vocês (-AR)", category_id: "end-ar" },
+  { pt: "-arão (eles/elas)", en: "Futuro: eles/elas (-AR)", category_id: "end-ar" },
+  // -AR — Condicional
+  { pt: "-aria (eu)", en: "Condicional: eu (-AR)", category_id: "end-ar" },
+  { pt: "-aria (você)", en: "Condicional: você (-AR)", category_id: "end-ar" },
+  { pt: "-aria (ele/ela)", en: "Condicional: ele/ela (-AR)", category_id: "end-ar" },
+  { pt: "-aríamos (nós)", en: "Condicional: nós (-AR)", category_id: "end-ar" },
+  { pt: "-ariam (vocês)", en: "Condicional: vocês (-AR)", category_id: "end-ar" },
+  { pt: "-ariam (eles/elas)", en: "Condicional: eles/elas (-AR)", category_id: "end-ar" },
+
+  // ===== -ER VERB ENDINGS =====
+  // -ER — Presente
+  { pt: "-o (eu)", en: "Presente: eu (-ER)", category_id: "end-er" },
+  { pt: "-e (você)", en: "Presente: você (-ER)", category_id: "end-er" },
+  { pt: "-e (ele/ela)", en: "Presente: ele/ela (-ER)", category_id: "end-er" },
+  { pt: "-emos (nós)", en: "Presente: nós (-ER)", category_id: "end-er" },
+  { pt: "-em (vocês)", en: "Presente: vocês (-ER)", category_id: "end-er" },
+  { pt: "-em (eles/elas)", en: "Presente: eles/elas (-ER)", category_id: "end-er" },
+  // -ER — Imperfeito
+  { pt: "-ia (eu)", en: "Imperfeito: eu (-ER)", category_id: "end-er" },
+  { pt: "-ia (você)", en: "Imperfeito: você (-ER)", category_id: "end-er" },
+  { pt: "-ia (ele/ela)", en: "Imperfeito: ele/ela (-ER)", category_id: "end-er" },
+  { pt: "-íamos (nós)", en: "Imperfeito: nós (-ER)", category_id: "end-er" },
+  { pt: "-iam (vocês)", en: "Imperfeito: vocês (-ER)", category_id: "end-er" },
+  { pt: "-iam (eles/elas)", en: "Imperfeito: eles/elas (-ER)", category_id: "end-er" },
+  // -ER — Perfeito
+  { pt: "-i (eu)", en: "Perfeito: eu (-ER)", category_id: "end-er" },
+  { pt: "-eu (você)", en: "Perfeito: você (-ER)", category_id: "end-er" },
+  { pt: "-eu (ele/ela)", en: "Perfeito: ele/ela (-ER)", category_id: "end-er" },
+  { pt: "-emos (nós)", en: "Perfeito: nós (-ER)", category_id: "end-er" },
+  { pt: "-eram (vocês)", en: "Perfeito: vocês (-ER)", category_id: "end-er" },
+  { pt: "-eram (eles/elas)", en: "Perfeito: eles/elas (-ER)", category_id: "end-er" },
+  // -ER — Futuro
+  { pt: "-erei (eu)", en: "Futuro: eu (-ER)", category_id: "end-er" },
+  { pt: "-erá (você)", en: "Futuro: você (-ER)", category_id: "end-er" },
+  { pt: "-erá (ele/ela)", en: "Futuro: ele/ela (-ER)", category_id: "end-er" },
+  { pt: "-eremos (nós)", en: "Futuro: nós (-ER)", category_id: "end-er" },
+  { pt: "-erão (vocês)", en: "Futuro: vocês (-ER)", category_id: "end-er" },
+  { pt: "-erão (eles/elas)", en: "Futuro: eles/elas (-ER)", category_id: "end-er" },
+  // -ER — Condicional
+  { pt: "-eria (eu)", en: "Condicional: eu (-ER)", category_id: "end-er" },
+  { pt: "-eria (você)", en: "Condicional: você (-ER)", category_id: "end-er" },
+  { pt: "-eria (ele/ela)", en: "Condicional: ele/ela (-ER)", category_id: "end-er" },
+  { pt: "-eríamos (nós)", en: "Condicional: nós (-ER)", category_id: "end-er" },
+  { pt: "-eriam (vocês)", en: "Condicional: vocês (-ER)", category_id: "end-er" },
+  { pt: "-eriam (eles/elas)", en: "Condicional: eles/elas (-ER)", category_id: "end-er" },
+
+  // ===== -IR VERB ENDINGS =====
+  // -IR — Presente
+  { pt: "-o (eu)", en: "Presente: eu (-IR)", category_id: "end-ir" },
+  { pt: "-e (você)", en: "Presente: você (-IR)", category_id: "end-ir" },
+  { pt: "-e (ele/ela)", en: "Presente: ele/ela (-IR)", category_id: "end-ir" },
+  { pt: "-imos (nós)", en: "Presente: nós (-IR)", category_id: "end-ir" },
+  { pt: "-em (vocês)", en: "Presente: vocês (-IR)", category_id: "end-ir" },
+  { pt: "-em (eles/elas)", en: "Presente: eles/elas (-IR)", category_id: "end-ir" },
+  // -IR — Imperfeito
+  { pt: "-ia (eu)", en: "Imperfeito: eu (-IR)", category_id: "end-ir" },
+  { pt: "-ia (você)", en: "Imperfeito: você (-IR)", category_id: "end-ir" },
+  { pt: "-ia (ele/ela)", en: "Imperfeito: ele/ela (-IR)", category_id: "end-ir" },
+  { pt: "-íamos (nós)", en: "Imperfeito: nós (-IR)", category_id: "end-ir" },
+  { pt: "-iam (vocês)", en: "Imperfeito: vocês (-IR)", category_id: "end-ir" },
+  { pt: "-iam (eles/elas)", en: "Imperfeito: eles/elas (-IR)", category_id: "end-ir" },
+  // -IR — Perfeito
+  { pt: "-i (eu)", en: "Perfeito: eu (-IR)", category_id: "end-ir" },
+  { pt: "-iu (você)", en: "Perfeito: você (-IR)", category_id: "end-ir" },
+  { pt: "-iu (ele/ela)", en: "Perfeito: ele/ela (-IR)", category_id: "end-ir" },
+  { pt: "-imos (nós)", en: "Perfeito: nós (-IR)", category_id: "end-ir" },
+  { pt: "-iram (vocês)", en: "Perfeito: vocês (-IR)", category_id: "end-ir" },
+  { pt: "-iram (eles/elas)", en: "Perfeito: eles/elas (-IR)", category_id: "end-ir" },
+  // -IR — Futuro
+  { pt: "-irei (eu)", en: "Futuro: eu (-IR)", category_id: "end-ir" },
+  { pt: "-irá (você)", en: "Futuro: você (-IR)", category_id: "end-ir" },
+  { pt: "-irá (ele/ela)", en: "Futuro: ele/ela (-IR)", category_id: "end-ir" },
+  { pt: "-iremos (nós)", en: "Futuro: nós (-IR)", category_id: "end-ir" },
+  { pt: "-irão (vocês)", en: "Futuro: vocês (-IR)", category_id: "end-ir" },
+  { pt: "-irão (eles/elas)", en: "Futuro: eles/elas (-IR)", category_id: "end-ir" },
+  // -IR — Condicional
+  { pt: "-iria (eu)", en: "Condicional: eu (-IR)", category_id: "end-ir" },
+  { pt: "-iria (você)", en: "Condicional: você (-IR)", category_id: "end-ir" },
+  { pt: "-iria (ele/ela)", en: "Condicional: ele/ela (-IR)", category_id: "end-ir" },
+  { pt: "-iríamos (nós)", en: "Condicional: nós (-IR)", category_id: "end-ir" },
+  { pt: "-iriam (vocês)", en: "Condicional: vocês (-IR)", category_id: "end-ir" },
+  { pt: "-iriam (eles/elas)", en: "Condicional: eles/elas (-IR)", category_id: "end-ir" }
 ];
 
 module.exports = { categories, cards };
