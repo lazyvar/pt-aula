@@ -211,26 +211,82 @@
 
   @media (max-width: 768px) {
     .sidebar { display: none; }
-    .mobile-cat-toggle { display: block; margin: 0 16px 8px; }
-    .mobile-header { display: block; margin-bottom: 6px; }
-    .mobile-header h1 { font-size: 1.2rem; }
-    .mobile-cats { padding: 0 16px; }
     .layout { flex-direction: column; }
     .main-content {
-      padding: 10px 0;
-      padding-bottom: 64px;
+      padding: 0;
+      padding-bottom: 56px;
       max-width: 100% !important;
       margin: 0 !important;
       height: 100vh;
       height: 100dvh;
       box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
     }
-    .progress-area { margin-bottom: 6px; padding: 0 16px; }
-    .stats { gap: 16px; margin-top: 3px; padding-bottom: 2px; font-size: 0.78rem; }
-    .card-area { justify-content: center; }
-    .card-container { height: 260px; margin: 0 16px 16px; width: auto; }
-    .card-face { padding: 20px 16px; border-radius: 16px; }
-    .card-word { font-size: 1.25rem; }
+    .mobile-header { display: none; }
+    .mobile-cat-toggle { display: none; }
+    .mobile-cats { display: none !important; }
+
+    /* Compact top bar */
+    .mobile-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 8px;
+      flex-shrink: 0;
+    }
+    .mobile-top-bar .stats {
+      display: flex;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      font-size: 0.78rem;
+      justify-content: flex-start;
+    }
+    .mobile-cat-dropdown {
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-dim);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .mobile-cat-dropdown:hover { background: rgba(255,255,255,0.07); }
+
+    /* Thin progress bar */
+    .progress-area {
+      padding: 0 16px;
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+    .progress-area .progress-bar { height: 2px; }
+    .progress-area .stats { display: none; }
+
+    /* Card fills remaining space */
+    .card-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: stretch;
+      padding: 12px 16px;
+      min-height: 0;
+    }
+    .card-container {
+      flex: 1;
+      height: auto;
+      width: 100%;
+      margin: 0 0 12px 0;
+    }
+    .card-face { padding: 20px 16px; border-radius: 20px; }
+    .card-word { font-size: 1.4rem; }
+    .card-hint { display: none; }
+
+    /* Fixed bottom buttons */
     .buttons {
       position: fixed;
       bottom: 0;
