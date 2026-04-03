@@ -199,6 +199,11 @@
   }
   .mobile-cats.open { display: flex; }
 
+  .mobile-top-bar { display: none; }
+  .mobile-cat-dropdown { display: none; }
+  .bottom-sheet-backdrop { display: none; }
+  .bottom-sheet { display: none; }
+
   .mobile-header { display: none; text-align: center; margin-bottom: 16px; }
   .mobile-header h1 {
     font-family: 'Dela Gothic One', cursive;
@@ -314,6 +319,12 @@
       background: rgba(46,204,113,0.15);
     }
     .keyboard-hint { display: none; }
+  }
+
+  @media (max-width: 768px) {
+    .bottom-sheet-backdrop { display: none; }
+    .bottom-sheet-backdrop.open { display: block; }
+    .bottom-sheet { display: flex; }
   }
 
   .header { text-align: center; margin-bottom: 24px; }
