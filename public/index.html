@@ -741,8 +741,120 @@ function toggleGroup(header, stateKey) {
   groupCollapseState[stateKey] = header.classList.contains('collapsed');
 }
 
-function toggleMobileCats() {
-  document.getElementById('mobileCats').classList.toggle('open');
+function openBottomSheet() {
+  const backdrop = document.getElementById('sheetBackdrop');
+  const sheet = document.getElementById('bottomSheet');
+  if (!backdrop || !sheet) return;
+  backdrop.classList.add('open');
+  requestAnimationFrame(() => {
+    sheet.classList.add('open');
+  });
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBottomSheet() {
+  const backdrop = document.getElementById('sheetBackdrop');
+  const sheet = document.getElementById('bottomSheet');
+  if (!backdrop || !sheet) return;
+  sheet.classList.remove('open');
+  setTimeout(() => {
+    backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }, 300);
+}
+
+function setupSheetDrag() {
+  const handle = document.getElementById('sheetHandle');
+  const sheet = document.getElementById('bottomSheet');
+  if (!handle || !sheet) return;
+
+  let startY = 0;
+  let currentY = 0;
+
+  handle.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+    sheet.style.transition = 'none';
+  }, { passive: true });
+
+  handle.addEventListener('touchmove', (e) => {
+    currentY = e.touches[0].clientY;
+    const diff = currentY - startY;
+    if (diff > 0) {
+      sheet.style.transform = `translateY(${diff}px)`;
+    }
+  }, { passive: true });
+
+  handle.addEventListener('touchend', () => {
+    sheet.style.transition = '';
+    const diff = currentY - startY;
+    if (diff > 80) {
+      closeBottomSheet();
+    } else {
+      sheet.style.transform = '';
+    }
+    startY = 0;
+    currentY = 0;
+  });
+}
+
+function setupSwipeGestures() {
+  const container = document.getElementById('cardContainer');
+  if (!container) return;
+
+  let startX = 0;
+  let startY = 0;
+  let swiping = false;
+
+  container.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    swiping = false;
+  }, { passive: true });
+
+  container.addEventListener('touchmove', (e) => {
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 20) {
+      swiping = true;
+      const card = document.getElementById('theCard');
+      if (card) {
+        const rotation = dx * 0.05;
+        const translateX = dx * 0.3;
+        card.style.transition = 'none';
+        card.style.transform = `translateX(${translateX}px) rotate(${rotation}deg)${isFlipped ? ' rotateY(180deg)' : ''}`;
+      }
+    }
+  }, { passive: true });
+
+  container.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - startX;
+    const card = document.getElementById('theCard');
+
+    if (swiping && Math.abs(dx) > 80) {
+      if (card) {
+        card.style.transition = 'transform 0.3s ease';
+        card.style.transform = `translateX(${dx > 0 ? 300 : -300}px) rotate(${dx > 0 ? 15 : -15}deg)`;
+      }
+      setTimeout(() => {
+        if (dx > 0) mark(true);
+        else mark(false);
+      }, 200);
+    } else {
+      if (card) {
+        card.style.transition = 'transform 0.55s cubic-bezier(0.4, 0.0, 0.2, 1)';
+        card.style.transform = isFlipped ? 'rotateY(180deg)' : '';
+      }
+    }
+    swiping = false;
+  });
+
+  container.addEventListener('click', (e) => {
+    if (swiping) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }, true);
 }
 
 async function resetStats() {
@@ -823,6 +935,40 @@ function toggleCat(cat) {
   render();
 }
 
+function mobileDropdownLabel() {
+  if (activeCats.size === 0 || activeCats.size === Object.keys(catConfig).length) return 'All Categories';
+  if (activeCats.size === 1) {
+    const key = [...activeCats][0];
+    return catConfig[key]?.label || 'Categories';
+  }
+  return activeCats.size + ' selected';
+}
+
+function mobileTopBarHTML(correct, wrong, remaining) {
+  return `<div class="mobile-top-bar">
+    <div class="stats">
+      <span><span class="dot green"></span> ${correct}</span>
+      <span><span class="dot red"></span> ${wrong}</span>
+      <span><span class="dot gray"></span> ${remaining} left</span>
+    </div>
+    <button class="mobile-cat-dropdown" onclick="openBottomSheet()">${mobileDropdownLabel()} ▾</button>
+  </div>`;
+}
+
+function bottomSheetHTML() {
+  return `<div class="bottom-sheet-backdrop" id="sheetBackdrop" onclick="closeBottomSheet()"></div>
+  <div class="bottom-sheet" id="bottomSheet">
+    <div class="bottom-sheet-handle" id="sheetHandle"></div>
+    <div class="bottom-sheet-title">Categories</div>
+    <div class="bottom-sheet-body" id="sheetBody">${renderCatGroups(true)}</div>
+    <div class="bottom-sheet-controls">
+      <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
+      <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
+      <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
+    </div>
+  </div>`;
+}
+
 function render() {
   const app = document.getElementById("app");
 
@@ -831,15 +977,14 @@ function render() {
       <div class="sidebar-scroll"><div class="header"><h1>🇧🇷 Português Aula</h1></div>
       ${renderCatGroups(false)}</div>
     </div><div class="main-content">
-      <div class="mobile-header"><h1>🇧🇷 Português Aula</h1></div>
-      <button class="mobile-cat-toggle" onclick="toggleMobileCats()">Categories (${activeCats.size} selected) ▾</button>
-      <div class="mobile-cats" id="mobileCats">${renderCatGroups(true)}</div>
+      ${mobileTopBarHTML(0, 0, 0)}
       <div class="card-area"><div class="done-screen animate-in">
         <div style="font-size:3rem;margin-bottom:16px">🦜</div>
         <h2>Cadê as cartas?</h2>
         <p style="margin-top:8px">Pick some topics from the sidebar<br>and let's get studying!</p>
       </div></div>
-    </div></div>`;
+    </div></div>${bottomSheetHTML()}`;
+    setupSheetDrag();
     return;
   }
 
@@ -855,15 +1000,7 @@ function render() {
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
         </div>
       </div><div class="main-content">
-        <div class="mobile-header"><h1>🇧🇷 Português Aula</h1></div>
-        <button class="mobile-cat-toggle" onclick="toggleMobileCats()">Categories (${activeCats.size} selected) ▾</button>
-        <div class="mobile-cats" id="mobileCats">${renderCatGroups(true)}
-          <div class="controls" style="margin-top:8px;">
-            <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
-            <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
-            <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
-          </div>
-        </div>
+        ${mobileTopBarHTML(correct, wrong, 0)}
         <div class="done-screen animate-in">
           <h2>Round done!</h2>
           <p>You finished ${deck.length} cards</p>
@@ -874,7 +1011,7 @@ function render() {
           <p style="font-size:0.95rem;">${wrongCards.length} card${wrongCards.length === 1 ? '' : 's'} to review</p>
           <button class="btn btn-wrong" onclick="reviewWrongCards()" style="margin:20px auto 0;">Review Wrong Cards</button>
         </div>
-      </div></div>`;
+      </div></div>${bottomSheetHTML()}`;
     } else {
       app.innerHTML = `<div class="layout"><div class="sidebar">
         <div class="sidebar-scroll"><div class="header"><h1>🇧🇷 Português Aula</h1></div>
@@ -885,15 +1022,7 @@ function render() {
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
         </div>
       </div><div class="main-content">
-        <div class="mobile-header"><h1>🇧🇷 Português Aula</h1></div>
-        <button class="mobile-cat-toggle" onclick="toggleMobileCats()">Categories (${activeCats.size} selected) ▾</button>
-        <div class="mobile-cats" id="mobileCats">${renderCatGroups(true)}
-          <div class="controls" style="margin-top:8px;">
-            <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
-            <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
-            <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
-          </div>
-        </div>
+        ${mobileTopBarHTML(correct, 0, 0)}
         <div class="done-screen animate-in">
           <h2>Parabéns! 🎉</h2>
           <p>You got all ${deck.length} cards right!</p>
@@ -903,8 +1032,9 @@ function render() {
           <p style="font-size:0.95rem;">100% accuracy</p>
           <button class="btn btn-right" onclick="startDeck()" style="margin:20px auto 0;">Study Again</button>
         </div>
-      </div></div>`;
+      </div></div>${bottomSheetHTML()}`;
     }
+    setupSheetDrag();
     return;
   }
 
@@ -917,7 +1047,6 @@ function render() {
   const cc = catConfig[card.cat];
   const cs = getCardStats(card);
   const cardStatsHTML = (cs.right || cs.wrong) ? `<div style="font-size:0.7rem;color:var(--text-dim);margin-top:8px">${cs.right}&#10003; ${cs.wrong}&#10007;</div>` : '';
-  const selectedCount = activeCats.size;
 
   app.innerHTML = `
     <div class="layout">
@@ -936,18 +1065,7 @@ function render() {
       </div>
 
       <div class="main-content">
-        <div class="mobile-header"><h1>🇧🇷 Português Aula</h1></div>
-        <button class="mobile-cat-toggle" onclick="toggleMobileCats()">
-          Categories (${selectedCount} selected) ▾
-        </button>
-        <div class="mobile-cats" id="mobileCats">
-          ${renderCatGroups(true)}
-          <div class="controls" style="margin-top:8px;">
-            <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
-            <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
-            <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
-          </div>
-        </div>
+        ${mobileTopBarHTML(correct, wrong, deck.length - currentIndex)}
 
         <div class="progress-area">
           <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
@@ -959,14 +1077,13 @@ function render() {
         </div>
 
         <div class="card-area">
-          <div class="card-container" onclick="flipCard()">
+          <div class="card-container" id="cardContainer" onclick="flipCard()">
             <div class="card ${isFlipped ? 'flipped' : ''}" id="theCard">
               <div class="card-face card-front">
                 <span class="category-tag ${cc.cls}">${cc.label}</span>
                 <div class="card-label">${frontLabel}</div>
                 <div class="card-word">${front}</div>
                 ${cardStatsHTML}
-                <div class="card-hint">tap to flip</div>
               </div>
               <div class="card-face card-back">
                 <span class="category-tag ${cc.cls}">${cc.label}</span>
@@ -984,7 +1101,10 @@ function render() {
           <div class="keyboard-hint">Space/←/→ = flip · Enter = got it · Delete = again</div>
         </div>
       </div>
-    </div>`;
+    </div>${bottomSheetHTML()}`;
+
+  setupSwipeGestures();
+  setupSheetDrag();
 }
 
 function flipCard() {
