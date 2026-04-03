@@ -1,9 +1,12 @@
 const express = require("express");
 const { Pool } = require("pg");
 const path = require("path");
+const { categories, cards } = require("./seed-data");
 
 const app = express();
-const pool = new Pool({ connectionString: "postgres://localhost/pt_aula" });
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL || "postgres://localhost/pt_aula",
+});
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -29,6 +32,39 @@ async function init() {
     )
   `);
   await pool.query(`ALTER TABLE session ADD COLUMN IF NOT EXISTS wrong_cards JSONB NOT NULL DEFAULT '[]'`);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS categories (
+      id TEXT PRIMARY KEY,
+      label TEXT NOT NULL,
+      css_class TEXT NOT NULL
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cards (
+      id SERIAL PRIMARY KEY,
+      pt TEXT NOT NULL,
+      en TEXT NOT NULL,
+      category_id TEXT NOT NULL REFERENCES categories(id)
+    )
+  `);
+
+  // Seed if empty
+  const { rows: catRows } = await pool.query("SELECT COUNT(*) FROM categories");
+  if (parseInt(catRows[0].count) === 0) {
+    for (const cat of categories) {
+      await pool.query(
+        "INSERT INTO categories (id, label, css_class) VALUES ($1, $2, $3)",
+        [cat.id, cat.label, cat.css_class]
+      );
+    }
+    for (const card of cards) {
+      await pool.query(
+        "INSERT INTO cards (pt, en, category_id) VALUES ($1, $2, $3)",
+        [card.pt, card.en, card.category_id]
+      );
+    }
+    console.log(`Seeded ${categories.length} categories and ${cards.length} cards`);
+  }
 }
 
 // GET /api/stats — return all card stats as { [card_id]: { right, wrong } }
@@ -100,8 +136,21 @@ app.delete("/api/stats", async (req, res) => {
   res.json({ ok: true });
 });
 
+// GET /api/cards — return all cards and categories
+app.get("/api/cards", async (req, res) => {
+  const { rows: catRows } = await pool.query("SELECT id, label, css_class FROM categories");
+  const categories = {};
+  for (const row of catRows) {
+    categories[row.id] = { cls: row.css_class, label: row.label };
+  }
+  const { rows: cardRows } = await pool.query("SELECT pt, en, category_id FROM cards ORDER BY id");
+  const cards = cardRows.map(r => ({ pt: r.pt, en: r.en, cat: r.category_id }));
+  res.json({ cards, categories });
+});
+
 init().then(() => {
-  app.listen(3005, () => console.log("Server running on http://localhost:3005"));
+  const port = process.env.PORT || 3005;
+  app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
 }).catch(err => {
   console.error("Failed to initialize database:", err.message);
   process.exit(1);
