@@ -23,7 +23,8 @@
     font-family: 'DM Sans', sans-serif;
     background: var(--bg);
     color: var(--text);
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     position: relative;
   }
 
@@ -54,12 +55,18 @@
   .sidebar {
     width: 260px;
     min-width: 260px;
-    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
     border-right: 1px solid rgba(255,255,255,0.06);
-    overflow-y: auto;
     max-height: 100vh;
     position: sticky;
     top: 0;
+  }
+
+  .sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 16px 10px;
   }
 
   .main-content {
@@ -67,6 +74,16 @@
     max-width: 520px;
     margin: 0 auto;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  .card-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .mobile-cat-toggle {
@@ -84,6 +101,39 @@
     margin-bottom: 12px;
   }
   .mobile-cat-toggle:hover { background: rgba(255,255,255,0.07); }
+
+  .selected-section { margin-bottom: 14px; }
+  .selected-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    padding: 0 8px 6px;
+  }
+  .selected-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 0 4px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(233,69,96,0.3);
+    background: rgba(233,69,96,0.15);
+    color: var(--accent);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .chip:hover { background: rgba(233,69,96,0.25); }
+  .chip .chip-x { font-size: 0.6rem; opacity: 0.6; }
 
   .cat-group { margin-bottom: 14px; }
 
@@ -127,12 +177,12 @@
   }
 
   .sidebar-controls {
-    margin-top: 16px;
-    padding-top: 14px;
+    padding: 12px 16px;
     border-top: 1px solid rgba(255,255,255,0.06);
     display: flex;
     flex-direction: column;
     gap: 6px;
+    flex-shrink: 0;
   }
 
   .sidebar-controls .ctrl-btn {
@@ -192,12 +242,17 @@
   .filter-btn:hover { background: rgba(255,255,255,0.07); }
   .filter-btn.active { background: rgba(233,69,96,0.2); color: var(--accent); border-color: rgba(233,69,96,0.3); }
 
+  .progress-area {
+    width: 100%;
+    flex-shrink: 0;
+    margin-bottom: 10px;
+  }
+
   .progress-bar {
     width: 100%;
     height: 4px;
     background: rgba(255,255,255,0.06);
     border-radius: 2px;
-    margin-top: 10px;
     overflow: hidden;
   }
 
@@ -212,7 +267,8 @@
     display: flex;
     justify-content: center;
     gap: 24px;
-    margin-top: 8px;
+    margin-top: 6px;
+    padding-bottom: 8px;
     font-size: 0.8rem;
     color: var(--text-dim);
   }
@@ -433,29 +489,45 @@ function getCardStats(card) {
   return statsCache[getCardId(card)] || { right: 0, wrong: 0 };
 }
 
+function renderSelectedChips() {
+  if (activeCats.size === 0) return '';
+  const chips = [...activeCats].map(key => {
+    const cc = catConfig[key];
+    if (!cc) return '';
+    return `<button class="chip" onclick="toggleCat('${key}')">${cc.label} <span class="chip-x">✕</span></button>`;
+  }).join('');
+  return `<div class="selected-section">
+    <div class="selected-label">Selected</div>
+    <div class="selected-chips">${chips}</div>
+  </div>`;
+}
+
 function renderCatGroups(isMobile) {
   const groups = {};
   for (const [key, val] of Object.entries(catConfig)) {
+    if (activeCats.has(key)) continue;
     const group = val.group || 'Topics';
     if (!groups[group]) groups[group] = [];
     const count = allCards.filter(c => c.cat === key).length;
     groups[group].push({ key, label: val.label, count });
   }
 
-  return Object.entries(groups).map(([groupName, cats]) => {
-    const defaultCollapsed = isMobile;
+  const selectedHTML = renderSelectedChips();
+  const groupsHTML = Object.entries(groups).map(([groupName, cats]) => {
     const items = cats.map(c =>
-      `<button class="filter-btn ${activeCats.has(c.key) ? 'active' : ''}" onclick="toggleCat('${c.key}')">${c.label} (${c.count})</button>`
+      `<button class="filter-btn" onclick="toggleCat('${c.key}')">${c.label} (${c.count})</button>`
     ).join('');
     return `
       <div class="cat-group">
-        <div class="cat-group-header ${defaultCollapsed ? 'collapsed' : ''}" onclick="toggleGroup(this)">
+        <div class="cat-group-header collapsed" onclick="toggleGroup(this)">
           <span>${groupName}</span>
           <span class="chevron">&#9660;</span>
         </div>
-        <div class="cat-group-items ${defaultCollapsed ? 'hidden' : ''}">${items}</div>
+        <div class="cat-group-items hidden">${items}</div>
       </div>`;
   }).join('');
+
+  return selectedHTML + groupsHTML;
 }
 
 function toggleGroup(header) {
@@ -544,8 +616,8 @@ function render() {
 
   if (deck.length === 0) {
     app.innerHTML = `<div class="layout"><div class="sidebar">
-      <div class="header"><h1>🇧🇷 Português Flashcards</h1></div>
-      ${renderCatGroups(false)}
+      <div class="sidebar-scroll"><div class="header"><h1>🇧🇷 Português Flashcards</h1></div>
+      ${renderCatGroups(false)}</div>
     </div><div class="main-content">
       <div class="mobile-header"><h1>🇧🇷 Português Flashcards</h1></div>
       <button class="mobile-cat-toggle" onclick="toggleMobileCats()">Categories (${activeCats.size} selected) ▾</button>
@@ -559,8 +631,8 @@ function render() {
     const pct = Math.round((correct / deck.length) * 100);
     if (wrongCards.length > 0) {
       app.innerHTML = `<div class="layout"><div class="sidebar">
-        <div class="header"><h1>🇧🇷 Português Flashcards</h1></div>
-        ${renderCatGroups(false)}
+        <div class="sidebar-scroll"><div class="header"><h1>🇧🇷 Português Flashcards</h1></div>
+        ${renderCatGroups(false)}</div>
         <div class="sidebar-controls">
           <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
           <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
@@ -589,8 +661,8 @@ function render() {
       </div></div>`;
     } else {
       app.innerHTML = `<div class="layout"><div class="sidebar">
-        <div class="header"><h1>🇧🇷 Português Flashcards</h1></div>
-        ${renderCatGroups(false)}
+        <div class="sidebar-scroll"><div class="header"><h1>🇧🇷 Português Flashcards</h1></div>
+        ${renderCatGroups(false)}</div>
         <div class="sidebar-controls">
           <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
           <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
@@ -634,10 +706,12 @@ function render() {
   app.innerHTML = `
     <div class="layout">
       <div class="sidebar">
-        <div class="header">
-          <h1>🇧🇷 Português Flashcards</h1>
+        <div class="sidebar-scroll">
+          <div class="header">
+            <h1>🇧🇷 Português Flashcards</h1>
+          </div>
+          ${renderCatGroups(false)}
         </div>
-        ${renderCatGroups(false)}
         <div class="sidebar-controls">
           <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
           <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
@@ -659,36 +733,40 @@ function render() {
           </div>
         </div>
 
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-        <div class="stats">
-          <span><span class="dot green"></span> ${correct}</span>
-          <span><span class="dot red"></span> ${wrong}</span>
-          <span><span class="dot gray"></span> ${deck.length - currentIndex} left</span>
-        </div>
-
-        <div class="card-container" onclick="flipCard()">
-          <div class="card ${isFlipped ? 'flipped' : ''}" id="theCard">
-            <div class="card-face card-front">
-              <span class="category-tag ${cc.cls}">${cc.label}</span>
-              <div class="card-label">${frontLabel}</div>
-              <div class="card-word">${front}</div>
-              ${cardStatsHTML}
-              <div class="card-hint">tap to flip</div>
-            </div>
-            <div class="card-face card-back">
-              <span class="category-tag ${cc.cls}">${cc.label}</span>
-              <div class="card-label">${backLabel}</div>
-              <div class="card-word">${back}</div>
-              ${cardStatsHTML}
-            </div>
+        <div class="progress-area">
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <div class="stats">
+            <span><span class="dot green"></span> ${correct}</span>
+            <span><span class="dot red"></span> ${wrong}</span>
+            <span><span class="dot gray"></span> ${deck.length - currentIndex} left</span>
           </div>
         </div>
 
-        <div class="buttons">
-          <button class="btn btn-wrong" onclick="mark(false)">✗ Again</button>
-          <button class="btn btn-right" onclick="mark(true)">✓ Got it</button>
+        <div class="card-area">
+          <div class="card-container" onclick="flipCard()">
+            <div class="card ${isFlipped ? 'flipped' : ''}" id="theCard">
+              <div class="card-face card-front">
+                <span class="category-tag ${cc.cls}">${cc.label}</span>
+                <div class="card-label">${frontLabel}</div>
+                <div class="card-word">${front}</div>
+                ${cardStatsHTML}
+                <div class="card-hint">tap to flip</div>
+              </div>
+              <div class="card-face card-back">
+                <span class="category-tag ${cc.cls}">${cc.label}</span>
+                <div class="card-label">${backLabel}</div>
+                <div class="card-word">${back}</div>
+                ${cardStatsHTML}
+              </div>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button class="btn btn-wrong" onclick="mark(false)">✗ Again</button>
+            <button class="btn btn-right" onclick="mark(true)">✓ Got it</button>
+          </div>
+          <div class="keyboard-hint">Space/←/→ = flip · Enter = got it · Delete = again</div>
         </div>
-        <div class="keyboard-hint">Space = flip · → = got it · ← = again</div>
       </div>
     </div>`;
 }
@@ -724,8 +802,9 @@ function toggleMode() {
 
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space") { e.preventDefault(); flipCard(); }
-  else if (e.code === "ArrowRight") mark(true);
-  else if (e.code === "ArrowLeft") mark(false);
+  else if (e.code === "ArrowRight" || e.code === "ArrowLeft") { e.preventDefault(); flipCard(); }
+  else if (e.code === "Enter") mark(true);
+  else if (e.code === "Backspace" || e.code === "Delete") { e.preventDefault(); mark(false); }
 });
 
 async function boot() {
