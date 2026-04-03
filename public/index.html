@@ -210,10 +210,53 @@
 
   @media (max-width: 768px) {
     .sidebar { display: none; }
-    .mobile-cat-toggle { display: block; }
-    .mobile-header { display: block; }
+    .mobile-cat-toggle { display: block; margin: 0 16px 8px; }
+    .mobile-header { display: block; margin-bottom: 6px; }
+    .mobile-header h1 { font-size: 1.2rem; }
+    .mobile-cats { padding: 0 16px; }
     .layout { flex-direction: column; }
-    .main-content { padding: 12px; max-width: 100%; }
+    .main-content {
+      padding: 10px 0;
+      padding-bottom: 64px;
+      max-width: 100% !important;
+      margin: 0 !important;
+      height: 100vh;
+      height: 100dvh;
+      box-sizing: border-box;
+    }
+    .progress-area { margin-bottom: 6px; padding: 0 16px; }
+    .stats { gap: 16px; margin-top: 3px; padding-bottom: 2px; font-size: 0.78rem; }
+    .card-area { justify-content: center; }
+    .card-container { height: 260px; margin: 0 16px 16px; width: auto; }
+    .card-face { padding: 20px 16px; border-radius: 16px; }
+    .card-word { font-size: 1.25rem; }
+    .buttons {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      z-index: 100;
+    }
+    .btn {
+      flex: 1;
+      justify-content: center;
+      padding: 18px 0;
+      border-radius: 0;
+      font-size: 1.05rem;
+      border: none;
+    }
+    .btn-wrong {
+      background: rgba(231,76,60,0.15);
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+    .btn-right {
+      background: rgba(46,204,113,0.15);
+    }
+    .keyboard-hint { display: none; }
   }
 
   .header { text-align: center; margin-bottom: 24px; }
@@ -375,6 +418,13 @@
   .cat-aula-mar30 { background: rgba(63,81,181,0.15); color: #3f51b5; }
   .cat-april-fools { background: rgba(255,111,0,0.15); color: #ff6f00; }
   .cat-april2 { background: rgba(0,121,107,0.15); color: #00796b; }
+  .cat-ser-conj { background: rgba(183,28,28,0.15); color: #ef5350; }
+  .cat-estar-conj { background: rgba(156,39,176,0.15); color: #ce93d8; }
+  .cat-esperar-conj { background: rgba(0,150,136,0.15); color: #80cbc4; }
+  .cat-buscar-conj { background: rgba(121,85,72,0.15); color: #bcaaa4; }
+  .cat-tomar-conj { background: rgba(255,193,7,0.15); color: #ffd54f; }
+  .cat-fazer-conj { background: rgba(244,67,54,0.15); color: #ef9a9a; }
+  .cat-trabalhar-conj { background: rgba(33,150,243,0.15); color: #90caf9; }
 
   .buttons {
     display: flex;
@@ -476,6 +526,7 @@ let mode = "pt-to-en";
 let wrongCards = [];
 
 let statsCache = {};
+let groupCollapseState = {};
 
 function getCardId(card) {
   return card.pt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -505,34 +556,37 @@ function renderSelectedChips() {
 function renderCatGroups(isMobile) {
   const groups = {};
   for (const [key, val] of Object.entries(catConfig)) {
-    if (activeCats.has(key)) continue;
     const group = val.group || 'Topics';
     if (!groups[group]) groups[group] = [];
     const count = allCards.filter(c => c.cat === key).length;
-    groups[group].push({ key, label: val.label, count });
+    groups[group].push({ key, label: val.label, count, active: activeCats.has(key) });
   }
 
   const selectedHTML = renderSelectedChips();
+  const prefix = isMobile ? 'mob-' : 'side-';
   const groupsHTML = Object.entries(groups).map(([groupName, cats]) => {
+    const stateKey = prefix + groupName;
+    const collapsed = groupCollapseState[stateKey] !== false;
     const items = cats.map(c =>
-      `<button class="filter-btn" onclick="toggleCat('${c.key}')">${c.label} (${c.count})</button>`
+      `<button class="filter-btn ${c.active ? 'active' : ''}" onclick="toggleCat('${c.key}')">${c.label} (${c.count})</button>`
     ).join('');
     return `
       <div class="cat-group">
-        <div class="cat-group-header collapsed" onclick="toggleGroup(this)">
+        <div class="cat-group-header ${collapsed ? 'collapsed' : ''}" onclick="toggleGroup(this, '${stateKey}')">
           <span>${groupName}</span>
           <span class="chevron">&#9660;</span>
         </div>
-        <div class="cat-group-items hidden">${items}</div>
+        <div class="cat-group-items ${collapsed ? 'hidden' : ''}">${items}</div>
       </div>`;
   }).join('');
 
   return selectedHTML + groupsHTML;
 }
 
-function toggleGroup(header) {
+function toggleGroup(header, stateKey) {
   header.classList.toggle('collapsed');
   header.nextElementSibling.classList.toggle('hidden');
+  groupCollapseState[stateKey] = header.classList.contains('collapsed');
 }
 
 function toggleMobileCats() {
@@ -605,10 +659,16 @@ function reviewWrongCards() {
 function toggleCat(cat) {
   if (activeCats.has(cat)) {
     activeCats.delete(cat);
+    deck = deck.filter(c => c.cat !== cat);
+    wrongCards = wrongCards.filter(c => c.cat !== cat);
+    if (currentIndex > deck.length) currentIndex = deck.length;
   } else {
     activeCats.add(cat);
+    const newCards = shuffle(allCards.filter(c => c.cat === cat));
+    deck = [...deck.slice(0, currentIndex), ...deck.slice(currentIndex), ...newCards];
   }
-  startDeck();
+  saveSession();
+  render();
 }
 
 function render() {
