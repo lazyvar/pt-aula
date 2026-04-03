@@ -148,9 +148,20 @@
   }
   .mobile-cats.open { display: flex; }
 
+  .mobile-header { display: none; text-align: center; margin-bottom: 16px; }
+  .mobile-header h1 {
+    font-family: 'Dela Gothic One', cursive;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--accent), #ff8a80);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
   @media (max-width: 768px) {
     .sidebar { display: none; }
     .mobile-cat-toggle { display: block; }
+    .mobile-header { display: block; }
     .layout { flex-direction: column; }
     .main-content { padding: 12px; max-width: 100%; }
   }
@@ -536,6 +547,7 @@ function render() {
       <div class="header"><h1>🇧🇷 Português Flashcards</h1></div>
       ${renderCatGroups(false)}
     </div><div class="main-content">
+      <div class="mobile-header"><h1>🇧🇷 Português Flashcards</h1></div>
       <button class="mobile-cat-toggle" onclick="toggleMobileCats()">Categories (${activeCats.size} selected) ▾</button>
       <div class="mobile-cats" id="mobileCats">${renderCatGroups(true)}</div>
       <div class="done-screen animate-in"><h2>No cards</h2><p>Select at least one category</p></div>
@@ -555,6 +567,7 @@ function render() {
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
         </div>
       </div><div class="main-content">
+        <div class="mobile-header"><h1>🇧🇷 Português Flashcards</h1></div>
         <button class="mobile-cat-toggle" onclick="toggleMobileCats()">Categories (${activeCats.size} selected) ▾</button>
         <div class="mobile-cats" id="mobileCats">${renderCatGroups(true)}
           <div class="controls" style="margin-top:8px;">
@@ -584,6 +597,7 @@ function render() {
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
         </div>
       </div><div class="main-content">
+        <div class="mobile-header"><h1>🇧🇷 Português Flashcards</h1></div>
         <button class="mobile-cat-toggle" onclick="toggleMobileCats()">Categories (${activeCats.size} selected) ▾</button>
         <div class="mobile-cats" id="mobileCats">${renderCatGroups(true)}
           <div class="controls" style="margin-top:8px;">
@@ -632,6 +646,7 @@ function render() {
       </div>
 
       <div class="main-content">
+        <div class="mobile-header"><h1>🇧🇷 Português Flashcards</h1></div>
         <button class="mobile-cat-toggle" onclick="toggleMobileCats()">
           Categories (${selectedCount} selected) ▾
         </button>
