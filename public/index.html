@@ -1065,6 +1065,7 @@ function bottomSheetHTML() {
       <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
       <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
+          <button class="ctrl-btn gen-btn" onclick="generateSentences()">✨ Generate</button>
       <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
     </div>
   </div>`;
@@ -1100,6 +1101,7 @@ function render() {
           <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
+          <button class="ctrl-btn gen-btn" onclick="generateSentences()">✨ Generate</button>
         </div>
       </div><div class="main-content">
         ${mobileTopBarHTML(correct, wrong, 0)}
@@ -1123,6 +1125,7 @@ function render() {
           <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
+          <button class="ctrl-btn gen-btn" onclick="generateSentences()">✨ Generate</button>
         </div>
       </div><div class="main-content">
         ${mobileTopBarHTML(correct, 0, 0)}
@@ -1165,6 +1168,7 @@ function render() {
           <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
+          <button class="ctrl-btn gen-btn" onclick="generateSentences()">✨ Generate</button>
         </div>
       </div>
 
@@ -1238,6 +1242,14 @@ function toggleMode() {
   isFlipped = false;
   saveSession();
   renderKeepSheet();
+}
+
+async function generateSentences() {
+  alert("generateSentences not yet implemented");
+}
+
+async function exitGeneratedMode() {
+  alert("exitGeneratedMode not yet implemented");
 }
 
 document.addEventListener("keydown", (e) => {
