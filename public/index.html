@@ -959,10 +959,17 @@ function toggleCat(cat) {
     const newCards = shuffle(allCards.filter(c => c.cat === cat));
     deck = [...deck.slice(0, currentIndex), ...deck.slice(currentIndex), ...newCards];
   }
-  const sheetWasOpen = document.getElementById('bottomSheet')?.classList.contains('open');
   saveSession();
-  render();
-  if (sheetWasOpen) openBottomSheet();
+  const sheet = document.getElementById('bottomSheet');
+  if (sheet && sheet.classList.contains('open')) {
+    // Update sheet and top bar in-place without full re-render
+    const sheetBody = document.getElementById('sheetBody');
+    if (sheetBody) sheetBody.innerHTML = renderCatGroups(true);
+    const dropdown = document.querySelector('.mobile-cat-dropdown');
+    if (dropdown) dropdown.textContent = mobileDropdownLabel() + ' ▾';
+  } else {
+    render();
+  }
 }
 
 function mobileDropdownLabel() {
