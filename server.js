@@ -143,10 +143,32 @@ app.delete("/api/stats", async (req, res) => {
 
 // POST /api/reseed — truncate cards/categories/stats/session and re-seed from seed files
 app.post("/api/reseed", async (req, res) => {
-  await pool.query("TRUNCATE cards, categories, card_stats RESTART IDENTITY CASCADE");
-  await pool.query("DELETE FROM session");
-  await seedCardsAndCategories();
-  res.json({ ok: true });
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("TRUNCATE cards, categories, card_stats RESTART IDENTITY CASCADE");
+    await client.query("DELETE FROM session");
+    for (const cat of categories) {
+      await client.query(
+        "INSERT INTO categories (id, label, css_class, group_name) VALUES ($1, $2, $3, $4)",
+        [cat.id, cat.label, cat.css_class, cat.group_name]
+      );
+    }
+    for (const card of cards) {
+      await client.query(
+        "INSERT INTO cards (pt, en, category_id) VALUES ($1, $2, $3)",
+        [card.pt, card.en, card.category_id]
+      );
+    }
+    await client.query("COMMIT");
+    res.json({ ok: true });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Reseed failed:", err.message);
+    res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
 });
 
 // GET /api/cards — return all cards and categories
