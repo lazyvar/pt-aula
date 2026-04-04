@@ -870,8 +870,8 @@ function setupSwipeGestures() {
       }, 200);
     } else {
       if (card) {
-        card.style.transition = 'transform 0.55s cubic-bezier(0.4, 0.0, 0.2, 1)';
-        card.style.transform = isFlipped ? 'rotateY(180deg)' : '';
+        card.style.transition = '';
+        card.style.transform = '';
       }
     }
     setTimeout(() => { swiping = false; }, 0);
