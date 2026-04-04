@@ -1023,6 +1023,7 @@ function reviewWrongCards() {
 }
 
 function toggleCat(cat) {
+  if (generatedMode) return;
   if (activeCats.has(cat)) {
     activeCats.delete(cat);
     deck = deck.filter(c => c.cat !== cat);
@@ -1067,7 +1068,7 @@ function bottomSheetHTML() {
       <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
       <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
-          <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
+          <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating || generatedMode ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
       <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
     </div>
   </div>`;
@@ -1111,7 +1112,7 @@ function render() {
           <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
-          <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
+          <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating || generatedMode ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
         </div>
       </div><div class="main-content">
         ${mobileTopBarHTML(correct, wrong, 0)}
@@ -1135,7 +1136,7 @@ function render() {
           <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
-          <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
+          <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating || generatedMode ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
         </div>
       </div><div class="main-content">
         ${mobileTopBarHTML(correct, 0, 0)}
@@ -1178,7 +1179,7 @@ function render() {
           <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
-          <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
+          <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating || generatedMode ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
         </div>
       </div>
 
@@ -1296,6 +1297,7 @@ async function generateSentences() {
     wrongCards = [];
     isFlipped = false;
     generatedMode = true;
+    document.body.classList.add("gen-mode");
   } catch (err) {
     alert("Generation failed: " + err.message);
   } finally {
@@ -1312,6 +1314,7 @@ function exitGeneratedMode() {
   wrong = savedDeckSnapshot.wrong;
   wrongCards = savedDeckSnapshot.wrongCards;
   generatedMode = false;
+  document.body.classList.remove("gen-mode");
   generatedCards = [];
   savedDeckSnapshot = null;
   isFlipped = false;
