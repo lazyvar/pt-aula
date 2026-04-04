@@ -695,6 +695,19 @@
   font-size: 14px;
   font-weight: 500;
   gap: 12px;
+  height: 37px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.gen-banner span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+body.gen-mode .layout {
+  height: calc(100dvh - 37px);
+  min-height: calc(100dvh - 37px);
 }
 .gen-banner button {
   background: rgba(255,255,255,0.2);
