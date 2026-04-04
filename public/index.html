@@ -685,6 +685,31 @@
   border-radius: 12px;
   font-size: 0.78rem;
 }
+.gen-banner {
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 500;
+  gap: 12px;
+}
+.gen-banner button {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.4);
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+}
+.gen-banner button:hover { background: rgba(255,255,255,0.3); }
+body.gen-mode .cat-group-items,
+body.gen-mode .selected-section { opacity: 0.5; pointer-events: none; }
+.ctrl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -703,6 +728,11 @@ let correct = 0;
 let wrong = 0;
 let mode = "pt-to-en";
 let wrongCards = [];
+
+let generatedMode = false;
+let generatedCards = [];
+let savedDeckSnapshot = null;
+let isGenerating = false;
 
 let statsCache = {};
 let groupCollapseState = {};
@@ -969,6 +999,16 @@ function startDeck() {
   renderKeepSheet();
 }
 
+function shuffleRemaining() {
+  const remaining = deck.slice(currentIndex);
+  if (remaining.length === 0) { startDeck(); return; }
+  const shuffled = shuffle(remaining);
+  deck = [...deck.slice(0, currentIndex), ...shuffled];
+  isFlipped = false;
+  saveSession();
+  renderKeepSheet();
+}
+
 function reviewWrongCards() {
   deck = shuffle(wrongCards);
   currentIndex = 0;
@@ -1022,7 +1062,7 @@ function bottomSheetHTML() {
     <div class="bottom-sheet-title">Categories</div>
     <div class="bottom-sheet-body" id="sheetBody">${renderCatGroups(true)}</div>
     <div class="bottom-sheet-controls">
-      <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
+      <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
       <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
       <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
@@ -1057,7 +1097,7 @@ function render() {
         ${renderCatGroups(false)}</div>
         <div class="sidebar-controls">
           <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
-          <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
+          <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
         </div>
@@ -1080,7 +1120,7 @@ function render() {
         ${renderCatGroups(false)}</div>
         <div class="sidebar-controls">
           <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
-          <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
+          <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
         </div>
@@ -1122,7 +1162,7 @@ function render() {
         </div>
         <div class="sidebar-controls">
           <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
-          <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
+          <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
         </div>
