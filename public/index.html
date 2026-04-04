@@ -255,6 +255,7 @@
       justify-content: flex-start;
     }
     .mobile-cat-dropdown {
+      display: inline-block;
       padding: 5px 12px;
       border-radius: 20px;
       background: rgba(255,255,255,0.04);
@@ -268,6 +269,9 @@
       white-space: nowrap;
     }
     .mobile-cat-dropdown:hover { background: rgba(255,255,255,0.07); }
+
+    /* Bottom sheet visible on mobile (offscreen via transform until .open) */
+    .bottom-sheet { display: flex; }
 
     /* Thin progress bar */
     .progress-area {
@@ -955,8 +959,10 @@ function toggleCat(cat) {
     const newCards = shuffle(allCards.filter(c => c.cat === cat));
     deck = [...deck.slice(0, currentIndex), ...deck.slice(currentIndex), ...newCards];
   }
+  const sheetWasOpen = document.getElementById('bottomSheet')?.classList.contains('open');
   saveSession();
   render();
+  if (sheetWasOpen) openBottomSheet();
 }
 
 function mobileDropdownLabel() {
