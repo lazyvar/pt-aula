@@ -1,0 +1,41 @@
+const category = { id: "aula-mar30", label: "Aula Mar 30", css_class: "cat-aula-mar30", group_name: "Aulas" };
+
+const cards = [
+  { pt: "Opa", en: "Hey / What's up", category_id: "aula-mar30" },
+  { pt: "Tudo bom", en: "All good / How's it going", category_id: "aula-mar30" },
+  { pt: "Oi", en: "Hi", category_id: "aula-mar30" },
+  { pt: "Do sábado pro domingo", en: "From Saturday to Sunday", category_id: "aula-mar30" },
+  { pt: "Eu fui irritado", en: "I was irritated (went there irritated)", category_id: "aula-mar30" },
+  { pt: "Eu estava irritado", en: "I was irritated (ongoing state)", category_id: "aula-mar30" },
+  { pt: "Pouco", en: "A little / Few", category_id: "aula-mar30" },
+  { pt: "Você viu o site que eu tive que mudar?", en: "Did you see the site that I had to change?", category_id: "aula-mar30" },
+  { pt: "Enviar", en: "To send (letters / emails)", category_id: "aula-mar30" },
+  { pt: "Mandar", en: "To send / To order", category_id: "aula-mar30" },
+  { pt: "Mudar", en: "To change / To move", category_id: "aula-mar30" },
+  { pt: "Me testa", en: "Test me", category_id: "aula-mar30" },
+  { pt: "Provar", en: "To prove / To taste / To try on", category_id: "aula-mar30" },
+  { pt: "Tentar", en: "To try", category_id: "aula-mar30" },
+  { pt: "Eu gosto", en: "I like", category_id: "aula-mar30" },
+  { pt: "Eu vou conseguir uma pra você", en: "I'm going to get one for you", category_id: "aula-mar30" },
+  { pt: "Eu vou te dar uma", en: "I'm going to give you one", category_id: "aula-mar30" },
+  { pt: "Te", en: "You (object pronoun)", category_id: "aula-mar30" },
+  { pt: "Dar", en: "To give", category_id: "aula-mar30" },
+  { pt: "Tudo", en: "Everything", category_id: "aula-mar30" },
+  { pt: "Todo", en: "Full / Every / All", category_id: "aula-mar30" },
+  { pt: "Tudo em todo lugar ao mesmo tempo", en: "Everything everywhere all at once", category_id: "aula-mar30" },
+  { pt: "Chorar", en: "To cry", category_id: "aula-mar30" },
+  { pt: "Ver", en: "To see", category_id: "aula-mar30" },
+  { pt: "Vir", en: "To come", category_id: "aula-mar30" },
+  { pt: "Eu sempre choro quando eu voo e eu vejo um filme", en: "I always cry when I fly and I watch a movie", category_id: "aula-mar30" },
+  { pt: "Você me dá dever de casa, eu te dou dever de casa", en: "You give me homework, I give you homework", category_id: "aula-mar30" },
+  { pt: "Relaxar", en: "To relax", category_id: "aula-mar30" },
+  { pt: "Relaxando", en: "Relaxing", category_id: "aula-mar30" },
+  { pt: "Assistir", en: "To watch (shows / TV)", category_id: "aula-mar30" },
+  { pt: "Dever de casa", en: "Homework", category_id: "aula-mar30" },
+  { pt: "Capitão Fantástico", en: "Captain Fantastic", category_id: "aula-mar30" },
+  { pt: "Tocar", en: "To play (instrument) / To touch", category_id: "aula-mar30" },
+  { pt: "Treinar", en: "To train", category_id: "aula-mar30" },
+  { pt: "Treinador", en: "Trainer / Coach", category_id: "aula-mar30" }
+];
+
+module.exports = { categories: [category], cards };

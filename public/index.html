@@ -892,6 +892,16 @@ async function resetStats() {
   startDeck();
 }
 
+async function reseed() {
+  await fetch("/api/reseed", { method: "POST" });
+  statsCache = {};
+  const data = await fetch("/api/cards").then(r => r.json());
+  allCards = data.cards;
+  catConfig = data.categories;
+  activeCats = new Set();
+  startDeck();
+}
+
 function saveSession() {
   const deckOrder = deck.map(c => c.pt);
   const wc = wrongCards.map(c => c.pt);
@@ -1012,6 +1022,7 @@ function bottomSheetHTML() {
     <div class="bottom-sheet-controls">
       <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
       <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
+          <button class="ctrl-btn" onclick="reseed()">Reseed</button>
       <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
     </div>
   </div>`;
@@ -1046,6 +1057,7 @@ function render() {
           <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
           <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
+          <button class="ctrl-btn" onclick="reseed()">Reseed</button>
         </div>
       </div><div class="main-content">
         ${mobileTopBarHTML(correct, wrong, 0)}
@@ -1068,6 +1080,7 @@ function render() {
           <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
           <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
+          <button class="ctrl-btn" onclick="reseed()">Reseed</button>
         </div>
       </div><div class="main-content">
         ${mobileTopBarHTML(correct, 0, 0)}
@@ -1109,6 +1122,7 @@ function render() {
           <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
           <button class="ctrl-btn" onclick="startDeck()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
+          <button class="ctrl-btn" onclick="reseed()">Reseed</button>
         </div>
       </div>
 
@@ -1195,7 +1209,7 @@ async function boot() {
   const data = await fetch("/api/cards").then(r => r.json());
   allCards = data.cards;
   catConfig = data.categories;
-  activeCats = new Set(Object.keys(catConfig));
+  activeCats = new Set(Object.keys(catConfig).filter(id => catConfig[id].group !== "Topics"));
   await fetchAllStats();
   const restored = await loadSession();
   if (restored) render(); else startDeck();

@@ -1,7 +1,7 @@
 const express = require("express");
 const { Pool } = require("pg");
 const path = require("path");
-const { categories, cards } = require("./seed-data");
+const { categories, cards } = require("./seeds");
 
 const app = express();
 const pool = new Pool({
@@ -52,20 +52,24 @@ async function init() {
   // Seed if empty
   const { rows: catRows } = await pool.query("SELECT COUNT(*) FROM categories");
   if (parseInt(catRows[0].count) === 0) {
-    for (const cat of categories) {
-      await pool.query(
-        "INSERT INTO categories (id, label, css_class, group_name) VALUES ($1, $2, $3, $4)",
-        [cat.id, cat.label, cat.css_class, cat.group_name]
-      );
-    }
-    for (const card of cards) {
-      await pool.query(
-        "INSERT INTO cards (pt, en, category_id) VALUES ($1, $2, $3)",
-        [card.pt, card.en, card.category_id]
-      );
-    }
-    console.log(`Seeded ${categories.length} categories and ${cards.length} cards`);
+    await seedCardsAndCategories();
   }
+}
+
+async function seedCardsAndCategories() {
+  for (const cat of categories) {
+    await pool.query(
+      "INSERT INTO categories (id, label, css_class, group_name) VALUES ($1, $2, $3, $4)",
+      [cat.id, cat.label, cat.css_class, cat.group_name]
+    );
+  }
+  for (const card of cards) {
+    await pool.query(
+      "INSERT INTO cards (pt, en, category_id) VALUES ($1, $2, $3)",
+      [card.pt, card.en, card.category_id]
+    );
+  }
+  console.log(`Seeded ${categories.length} categories and ${cards.length} cards`);
 }
 
 // GET /api/stats — return all card stats as { [card_id]: { right, wrong } }
@@ -134,6 +138,14 @@ app.delete("/api/session", async (req, res) => {
 // DELETE /api/stats — reset all stats
 app.delete("/api/stats", async (req, res) => {
   await pool.query("DELETE FROM card_stats");
+  res.json({ ok: true });
+});
+
+// POST /api/reseed — truncate cards/categories/stats/session and re-seed from seed files
+app.post("/api/reseed", async (req, res) => {
+  await pool.query("TRUNCATE cards, categories, card_stats RESTART IDENTITY CASCADE");
+  await pool.query("DELETE FROM session");
+  await seedCardsAndCategories();
   res.json({ ok: true });
 });
 

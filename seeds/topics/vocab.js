@@ -1,0 +1,40 @@
+const category = { id: "vocab", label: "Vocabulary", css_class: "cat-vocab", group_name: "Topics" };
+
+const cards = [
+  { pt: "Meu barbeiro", en: "My barber", category_id: "vocab" },
+  { pt: "Prédio", en: "Building / Apartment building", category_id: "vocab" },
+  { pt: "Rua", en: "Street", category_id: "vocab" },
+  { pt: "Escada", en: "Stairs", category_id: "vocab" },
+  { pt: "Quilômetros", en: "Kilometers", category_id: "vocab" },
+  { pt: "Edifício", en: "Building / Edifice", category_id: "vocab" },
+  { pt: "Empresa", en: "Company", category_id: "vocab" },
+  { pt: "Desenvolvedor de software", en: "Software developer", category_id: "vocab" },
+  { pt: "Sócio", en: "Partner / Associate", category_id: "vocab" },
+  { pt: "Conselheiro / Assessor", en: "Advisor / Counselor", category_id: "vocab" },
+  { pt: "Escritório", en: "Office", category_id: "vocab" },
+  { pt: "Aluguel", en: "Rent", category_id: "vocab" },
+  { pt: "Elogio", en: "Compliment", category_id: "vocab" },
+  { pt: "Dançarina / Dançarino", en: "Dancer (fem / masc)", category_id: "vocab" },
+  { pt: "Bloco de carnaval", en: "Carnival street party / block", category_id: "vocab" },
+  { pt: "Desfile", en: "Parade", category_id: "vocab" },
+  { pt: "Algumas pessoas", en: "Some people", category_id: "vocab" },
+  { pt: "Águas de janeiro", en: "January waters (famous Brazilian song)", category_id: "vocab" },
+  { pt: "Imbécil", en: "Imbecile", category_id: "vocab" },
+  { pt: "Sala de aula", en: "Classroom", category_id: "vocab" },
+  { pt: "Casa", en: "House / Home", category_id: "vocab" },
+  { pt: "Supermercado", en: "Supermarket", category_id: "vocab" },
+  { pt: "Juiz de Fora", en: "Juiz de Fora (city in Minas Gerais)", category_id: "vocab" },
+  { pt: "Brasil", en: "Brazil", category_id: "vocab" },
+  { pt: "Minas Gerais", en: "Minas Gerais (state in Brazil)", category_id: "vocab" },
+  { pt: "Cinema", en: "Movie theater / Cinema", category_id: "vocab" },
+  { pt: "Salão de beleza", en: "Beauty salon", category_id: "vocab" },
+  { pt: "Fome", en: "Hunger / Hungry", category_id: "vocab" },
+  { pt: "Sede", en: "Thirst / Thirsty", category_id: "vocab" },
+  { pt: "Raiva", en: "Anger / Rage", category_id: "vocab" },
+  { pt: "Medo", en: "Fear", category_id: "vocab" },
+  { pt: "Dor de cabeça", en: "Headache", category_id: "vocab" },
+  { pt: "Enjoo", en: "Nausea", category_id: "vocab" },
+  { pt: "O braço quebrado", en: "The broken arm", category_id: "vocab" }
+];
+
+module.exports = { categories: [category], cards };
