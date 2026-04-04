@@ -936,6 +936,7 @@ async function reseed() {
 }
 
 function saveSession() {
+  if (generatedMode) return;
   const deckOrder = deck.map(c => c.pt);
   const wc = wrongCards.map(c => c.pt);
   fetch("/api/session", {
@@ -1232,14 +1233,16 @@ function flipCard() {
 
 async function mark(gotIt) {
   if (gotIt) correct++; else { wrong++; wrongCards.push(deck[currentIndex]); }
-  const card = deck[currentIndex];
-  const id = getCardId(card);
-  const updated = await fetch(`/api/stats/${encodeURIComponent(id)}/mark`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ correct: gotIt })
-  }).then(r => r.json());
-  statsCache[id] = updated;
+  if (!generatedMode) {
+    const card = deck[currentIndex];
+    const id = getCardId(card);
+    const updated = await fetch(`/api/stats/${encodeURIComponent(id)}/mark`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correct: gotIt })
+    }).then(r => r.json());
+    statsCache[id] = updated;
+  }
   currentIndex++;
   isFlipped = false;
   saveSession();
