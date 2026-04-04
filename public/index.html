@@ -707,6 +707,7 @@
   font-family: inherit;
 }
 .gen-banner button:hover { background: rgba(255,255,255,0.3); }
+.cat-generated { background: var(--accent); color: #fff; }
 body.gen-mode .cat-group-items,
 body.gen-mode .selected-section { opacity: 0.5; pointer-events: none; }
 .ctrl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -1065,9 +1066,17 @@ function bottomSheetHTML() {
       <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
       <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
-          <button class="ctrl-btn gen-btn" onclick="generateSentences()">✨ Generate</button>
+          <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
       <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
     </div>
+  </div>`;
+}
+
+function generatedBannerHTML() {
+  if (!generatedMode) return '';
+  return `<div class="gen-banner">
+    <span>✨ Generated Mode · ${generatedCards.length} sentences</span>
+    <button onclick="exitGeneratedMode()">Exit</button>
   </div>`;
 }
 
@@ -1075,7 +1084,7 @@ function render() {
   const app = document.getElementById("app");
 
   if (deck.length === 0) {
-    app.innerHTML = `<div class="layout"><div class="sidebar">
+    app.innerHTML = `${generatedBannerHTML()}<div class="layout"><div class="sidebar">
       <div class="sidebar-scroll"><div class="header"><h1>🇧🇷 Português Aula</h1></div>
       ${renderCatGroups(false)}</div>
     </div><div class="main-content">
@@ -1093,7 +1102,7 @@ function render() {
   if (currentIndex >= deck.length) {
     const pct = Math.round((correct / deck.length) * 100);
     if (wrongCards.length > 0) {
-      app.innerHTML = `<div class="layout"><div class="sidebar">
+      app.innerHTML = `${generatedBannerHTML()}<div class="layout"><div class="sidebar">
         <div class="sidebar-scroll"><div class="header"><h1>🇧🇷 Português Aula</h1></div>
         ${renderCatGroups(false)}</div>
         <div class="sidebar-controls">
@@ -1101,7 +1110,7 @@ function render() {
           <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
-          <button class="ctrl-btn gen-btn" onclick="generateSentences()">✨ Generate</button>
+          <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
         </div>
       </div><div class="main-content">
         ${mobileTopBarHTML(correct, wrong, 0)}
@@ -1117,7 +1126,7 @@ function render() {
         </div>
       </div></div>${bottomSheetHTML()}`;
     } else {
-      app.innerHTML = `<div class="layout"><div class="sidebar">
+      app.innerHTML = `${generatedBannerHTML()}<div class="layout"><div class="sidebar">
         <div class="sidebar-scroll"><div class="header"><h1>🇧🇷 Português Aula</h1></div>
         ${renderCatGroups(false)}</div>
         <div class="sidebar-controls">
@@ -1125,7 +1134,7 @@ function render() {
           <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
-          <button class="ctrl-btn gen-btn" onclick="generateSentences()">✨ Generate</button>
+          <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
         </div>
       </div><div class="main-content">
         ${mobileTopBarHTML(correct, 0, 0)}
@@ -1150,11 +1159,11 @@ function render() {
   const frontLabel = mode === "pt-to-en" ? "Português" : "English";
   const backLabel = mode === "pt-to-en" ? "English" : "Português";
   const pct = (currentIndex / deck.length) * 100;
-  const cc = catConfig[card.cat];
+  const cc = catConfig[card.cat] || { cls: 'cat-generated', label: '✨ Generated' };
   const cs = getCardStats(card);
   const cardStatsHTML = (cs.right || cs.wrong) ? `<div style="font-size:0.7rem;color:var(--text-dim);margin-top:8px">${cs.right}&#10003; ${cs.wrong}&#10007;</div>` : '';
 
-  app.innerHTML = `
+  app.innerHTML = `${generatedBannerHTML()}
     <div class="layout">
       <div class="sidebar">
         <div class="sidebar-scroll">
@@ -1168,7 +1177,7 @@ function render() {
           <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
-          <button class="ctrl-btn gen-btn" onclick="generateSentences()">✨ Generate</button>
+          <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
         </div>
       </div>
 
@@ -1245,11 +1254,65 @@ function toggleMode() {
 }
 
 async function generateSentences() {
-  alert("generateSentences not yet implemented");
+  if (isGenerating || generatedMode) return;
+  if (activeCats.size === 0) {
+    alert("Select at least one category first.");
+    return;
+  }
+  isGenerating = true;
+  render();
+  try {
+    const res = await fetch("/api/generate-sentences", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ activeCats: [...activeCats] })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.error || "Generation failed");
+      return;
+    }
+    if (!data.cards || data.cards.length === 0) {
+      alert("No sentences were generated. Try again.");
+      return;
+    }
+    // Snapshot real deck state
+    savedDeckSnapshot = {
+      deck: deck.slice(),
+      currentIndex,
+      correct,
+      wrong,
+      wrongCards: wrongCards.slice()
+    };
+    // Swap to generated deck. Use "__generated__" as cat sentinel.
+    generatedCards = data.cards.map(c => ({ pt: c.pt, en: c.en, cat: "__generated__" }));
+    deck = generatedCards.slice();
+    currentIndex = 0;
+    correct = 0;
+    wrong = 0;
+    wrongCards = [];
+    isFlipped = false;
+    generatedMode = true;
+  } catch (err) {
+    alert("Generation failed: " + err.message);
+  } finally {
+    isGenerating = false;
+    render();
+  }
 }
 
-async function exitGeneratedMode() {
-  alert("exitGeneratedMode not yet implemented");
+function exitGeneratedMode() {
+  if (!generatedMode || !savedDeckSnapshot) return;
+  deck = savedDeckSnapshot.deck;
+  currentIndex = savedDeckSnapshot.currentIndex;
+  correct = savedDeckSnapshot.correct;
+  wrong = savedDeckSnapshot.wrong;
+  wrongCards = savedDeckSnapshot.wrongCards;
+  generatedMode = false;
+  generatedCards = [];
+  savedDeckSnapshot = null;
+  isFlipped = false;
+  render();
 }
 
 document.addEventListener("keydown", (e) => {
