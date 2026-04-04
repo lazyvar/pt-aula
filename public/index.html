@@ -926,6 +926,26 @@ function shuffle(arr) {
   return a;
 }
 
+function renderKeepSheet() {
+  const sheetWasOpen = document.getElementById('bottomSheet')?.classList.contains('open');
+  render();
+  if (sheetWasOpen) {
+    const backdrop = document.getElementById('sheetBackdrop');
+    const sheet = document.getElementById('bottomSheet');
+    if (backdrop && sheet) {
+      backdrop.classList.add('open');
+      backdrop.style.transition = 'none';
+      sheet.classList.add('open');
+      sheet.style.transition = 'none';
+      document.body.style.overflow = 'hidden';
+      requestAnimationFrame(() => {
+        backdrop.style.transition = '';
+        sheet.style.transition = '';
+      });
+    }
+  }
+}
+
 function startDeck() {
   deck = shuffle(allCards.filter(c => activeCats.has(c.cat)));
   currentIndex = 0;
@@ -934,7 +954,7 @@ function startDeck() {
   wrong = 0;
   wrongCards = [];
   saveSession();
-  render();
+  renderKeepSheet();
 }
 
 function reviewWrongCards() {
@@ -960,24 +980,7 @@ function toggleCat(cat) {
     deck = [...deck.slice(0, currentIndex), ...deck.slice(currentIndex), ...newCards];
   }
   saveSession();
-  const sheetWasOpen = document.getElementById('bottomSheet')?.classList.contains('open');
-  render();
-  if (sheetWasOpen) {
-    // Re-open immediately before browser paints to avoid flash
-    const backdrop = document.getElementById('sheetBackdrop');
-    const sheet = document.getElementById('bottomSheet');
-    if (backdrop && sheet) {
-      backdrop.classList.add('open');
-      backdrop.style.transition = 'none';
-      sheet.classList.add('open');
-      sheet.style.transition = 'none';
-      document.body.style.overflow = 'hidden';
-      requestAnimationFrame(() => {
-        backdrop.style.transition = '';
-        sheet.style.transition = '';
-      });
-    }
-  }
+  renderKeepSheet();
 }
 
 function mobileDropdownLabel() {
@@ -1178,7 +1181,7 @@ function toggleMode() {
   mode = mode === "pt-to-en" ? "en-to-pt" : "pt-to-en";
   isFlipped = false;
   saveSession();
-  render();
+  renderKeepSheet();
 }
 
 document.addEventListener("keydown", (e) => {
