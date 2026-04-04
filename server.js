@@ -1,5 +1,6 @@
 const express = require("express");
 const { Pool } = require("pg");
+const Anthropic = require("@anthropic-ai/sdk");
 const path = require("path");
 const { categories, cards } = require("./seeds");
 
@@ -7,6 +8,8 @@ const app = express();
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || "postgres://localhost/pt_aula",
 });
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -168,6 +171,77 @@ app.post("/api/reseed", async (req, res) => {
     res.status(500).json({ error: err.message });
   } finally {
     client.release();
+  }
+});
+
+// POST /api/generate-sentences — body: { activeCats: [categoryId, ...] }
+// Returns { cards: [{ pt, en }, ...] }
+app.post("/api/generate-sentences", async (req, res) => {
+  const { activeCats } = req.body;
+  if (!Array.isArray(activeCats) || activeCats.length === 0) {
+    return res.status(400).json({ error: "activeCats must be a non-empty array" });
+  }
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return res.status(500).json({ error: "ANTHROPIC_API_KEY not configured on server" });
+  }
+
+  try {
+    const { rows } = await pool.query(
+      `SELECT c.pt, c.en, cat.group_name
+       FROM cards c JOIN categories cat ON c.category_id = cat.id
+       WHERE c.category_id = ANY($1)`,
+      [activeCats]
+    );
+    const verbs = rows.filter(r => r.group_name === "Verbs").map(r => r.pt);
+    const topics = rows.filter(r => r.group_name === "Topics").map(r => r.pt);
+
+    if (verbs.length === 0 && topics.length === 0) {
+      return res.status(400).json({ error: "Select at least one Verb or Topic category" });
+    }
+
+    const prompt = `Generate 20 Brazilian Portuguese sentences for a language learner to translate.
+
+Constraints:
+- Prefer using these verbs (conjugated naturally in the sentences): ${verbs.join(", ") || "(none specified)"}
+- Use vocabulary from these topics when it fits naturally: ${topics.join(", ") || "(none specified)"}
+- Vary difficulty: mix short sentences (5-8 words) and longer ones (10-15 words with clauses or multiple verbs).
+- Natural, conversational Brazilian Portuguese.
+- Provide an accurate English translation for each.
+
+Return STRICT JSON only, no prose, no markdown fence:
+{"sentences":[{"pt":"...","en":"..."}]}`;
+
+    const response = await anthropic.messages.create({
+      model: "claude-haiku-4-5",
+      max_tokens: 2000,
+      temperature: 0.8,
+      messages: [{ role: "user", content: prompt }]
+    });
+
+    let text = response.content[0].text.trim();
+    // Strip optional markdown fence
+    text = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch (e) {
+      console.error("Generate: failed to parse Claude response:", text);
+      return res.status(502).json({ error: "Claude returned malformed JSON" });
+    }
+
+    if (!parsed || !Array.isArray(parsed.sentences)) {
+      return res.status(502).json({ error: "Claude response missing sentences array" });
+    }
+
+    const cards = parsed.sentences
+      .filter(s => s && typeof s.pt === "string" && typeof s.en === "string")
+      .map(s => ({ pt: s.pt, en: s.en }));
+
+    res.json({ cards });
+  } catch (err) {
+    console.error("Generate failed:", err.message);
+    res.status(502).json({ error: err.message });
   }
 });
 
