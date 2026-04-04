@@ -960,15 +960,23 @@ function toggleCat(cat) {
     deck = [...deck.slice(0, currentIndex), ...deck.slice(currentIndex), ...newCards];
   }
   saveSession();
-  const sheet = document.getElementById('bottomSheet');
-  if (sheet && sheet.classList.contains('open')) {
-    // Update sheet and top bar in-place without full re-render
-    const sheetBody = document.getElementById('sheetBody');
-    if (sheetBody) sheetBody.innerHTML = renderCatGroups(true);
-    const dropdown = document.querySelector('.mobile-cat-dropdown');
-    if (dropdown) dropdown.textContent = mobileDropdownLabel() + ' ▾';
-  } else {
-    render();
+  const sheetWasOpen = document.getElementById('bottomSheet')?.classList.contains('open');
+  render();
+  if (sheetWasOpen) {
+    // Re-open immediately before browser paints to avoid flash
+    const backdrop = document.getElementById('sheetBackdrop');
+    const sheet = document.getElementById('bottomSheet');
+    if (backdrop && sheet) {
+      backdrop.classList.add('open');
+      backdrop.style.transition = 'none';
+      sheet.classList.add('open');
+      sheet.style.transition = 'none';
+      document.body.style.overflow = 'hidden';
+      requestAnimationFrame(() => {
+        backdrop.style.transition = '';
+        sheet.style.transition = '';
+      });
+    }
   }
 }
 
