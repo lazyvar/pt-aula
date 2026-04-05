@@ -20,12 +20,12 @@ module.exports = defineConfig({
   projects: [
     {
       name: 'chromium',
-      testIgnore: '**/mobile.spec.js',
+      testIgnore: ['**/mobile.spec.js', '**/mobile-swipe.spec.js'],
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'mobile',
-      testMatch: '**/mobile.spec.js',
+      testMatch: ['**/mobile.spec.js', '**/mobile-swipe.spec.js'],
       use: { ...devices['Pixel 7'] },
     },
   ],

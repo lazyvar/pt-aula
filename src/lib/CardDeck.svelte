@@ -19,16 +19,20 @@
   let lastCardPt: string | undefined;
   $: if (currentCard && currentCard.pt !== lastCardPt) {
     lastCardPt = currentCard.pt;
-    snapFlipToFront();
+    resetCardOnAdvance();
   }
 
-  async function snapFlipToFront() {
-    if (!isFlipped) return;
+  async function resetCardOnAdvance() {
     if (!cardEl) {
       isFlipped = false;
       return;
     }
+    // After a swipe-to-mark, the swipe animation leaves an inline translate+rotate
+    // transform on #theCard. In the old vanilla app, advancing re-rendered the card
+    // DOM so the transform was gone; in Svelte the element persists, so we must
+    // clear it explicitly or the next card appears offscreen.
     cardEl.style.transition = 'none';
+    cardEl.style.transform = '';
     isFlipped = false;
     await tick();
     // Force a reflow so the no-transition style is committed before we
