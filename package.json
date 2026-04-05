@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "docker compose -f docker-compose.test.yml up -d --wait && playwright test; EXIT=$?; docker compose -f docker-compose.test.yml down; exit $EXIT",
+    "test:ui": "docker compose -f docker-compose.test.yml up -d --wait && playwright test --ui",
+    "test:headed": "docker compose -f docker-compose.test.yml up -d --wait && playwright test --headed"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",
