@@ -690,6 +690,8 @@
   color: #fff;
   padding: 8px 16px;
   display: flex;
+  position: relative;
+  z-index: 2;
   align-items: center;
   justify-content: space-between;
   font-size: 14px;
@@ -1102,6 +1104,10 @@ function render() {
     app.innerHTML = `${generatedBannerHTML()}<div class="layout"><div class="sidebar">
       <div class="sidebar-scroll"><div class="header"><h1>🇧🇷 Português Aula</h1></div>
       ${renderCatGroups(false)}</div>
+      <div class="sidebar-controls">
+        <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
+        <button class="ctrl-btn gen-btn" onclick="generateSentences()" ${isGenerating || generatedMode ? 'disabled' : ''}>${isGenerating ? '⏳ Generating…' : '✨ Generate'}</button>
+      </div>
     </div><div class="main-content">
       ${mobileTopBarHTML(0, 0, 0)}
       <div class="card-area"><div class="done-screen animate-in">
