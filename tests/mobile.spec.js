@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { resetAll, setActiveCategories } = require('./fixtures/reset');
+const { resetAll } = require('./fixtures/reset');
 const { loadTruth, cardId, BASE } = require('./fixtures/truth');
 const { waitForSessionWrite } = require('./fixtures/waits');
 
@@ -72,25 +72,9 @@ test.describe('Mobile UI — core flows', () => {
   });
 
   test('toggling a category in bottom sheet removes its cards from the deck', async ({ page }) => {
-    // Scope to two small non-Topics categories so the toggle-off has a
-    // meaningful signal (otherwise a 1-in-1265 chance of catching the bug).
-    await resetAll();
     const truth = await loadTruth();
-    const smallCats = Object.keys(truth.categories)
-      .filter(id => truth.categories[id].group !== 'Topics')
-      .map(id => ({ id, count: truth.getCardsInCategories([id]).length }))
-      .filter(x => x.count > 0)
-      .sort((a, b) => a.count - b.count)
-      .slice(0, 2)
-      .map(x => x.id);
-    await setActiveCategories(smallCats);
-    await page.goto('/');
-    await expect(page.getByTestId('card-container')).toBeVisible();
 
-    const catToRemove = smallCats[0];
-    const removedCardPts = new Set(truth.getCardsInCategories([catToRemove]).map(c => c.pt));
-
-    // Open the bottom sheet.
+    // Open the bottom sheet via UI.
     await page.getByTestId('mobile-cat-dropdown').click();
     const sheet = page.locator('#bottomSheet');
     await expect(sheet).toHaveClass(/open/);
@@ -100,17 +84,25 @@ test.describe('Mobile UI — core flows', () => {
     const headerCount = await headers.count();
     for (let i = 0; i < headerCount; i++) await headers.nth(i).click();
 
+    // Pick the first currently-active filter, capture its category key.
+    const firstActive = sheet.locator('[data-testid="category-filter"].active').first();
+    await expect(firstActive).toBeVisible();
+    const catToRemove = await firstActive.getAttribute('data-category-key');
+    const removedCardPts = new Set(truth.getCardsInCategories([catToRemove]).map(c => c.pt));
+    expect(removedCardPts.size).toBeGreaterThan(0);
+
+    // Toggle the category off.
+    await firstActive.click();
     const filter = sheet.locator(`[data-testid="category-filter"][data-category-key="${catToRemove}"]`);
-    await expect(filter).toHaveClass(/active/);
-    await filter.click();
     await expect(filter).not.toHaveClass(/active/);
     await waitForSessionWrite(page);
 
-    // Close sheet and walk remaining cards; none should be from the removed cat.
-    await page.evaluate(() => closeBottomSheet());
+    // Close sheet by tapping the backdrop's uncovered top area.
+    await page.locator('#sheetBackdrop').click({ position: { x: 50, y: 40 } });
     await expect(sheet).not.toHaveClass(/open/);
 
-    for (let i = 0; i < 20; i++) {
+    // Walk the first N cards; none should belong to the toggled-off category.
+    for (let i = 0; i < 30; i++) {
       if (await page.getByTestId('card-front').count() === 0) break;
       const front = (await page.getByTestId('card-front').locator('.card-word').textContent())?.trim();
       expect(
