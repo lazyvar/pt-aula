@@ -18,7 +18,16 @@ module.exports = defineConfig({
     launchOptions: { slowMo: Number(process.env.SLOW_MO) || 0 },
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'chromium',
+      testIgnore: '**/mobile.spec.js',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'mobile',
+      testMatch: '**/mobile.spec.js',
+      use: { ...devices['Pixel 7'] },
+    },
   ],
   webServer: {
     command: `DATABASE_URL=${process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5433/pt_aula_test'} PORT=${PORT} node server.js`,
