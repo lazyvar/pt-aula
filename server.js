@@ -255,6 +255,95 @@ Return STRICT JSON only, no prose, no markdown fence. The "sentences" array must
   }
 });
 
+// POST /api/generate-conjugations — body: { activeCats: [categoryId, ...] }
+// Returns { cards: [{ pt, en }, ...] } where each card drills ONE verb
+// conjugation (infinitive + tense + person). Tenses practiced: presente,
+// imperfeito, pretérito perfeito, futuro do pretérito (condicional).
+// Future indicative (futuro do presente) is deliberately excluded.
+app.post("/api/generate-conjugations", async (req, res) => {
+  const { activeCats } = req.body;
+  if (!Array.isArray(activeCats) || activeCats.length === 0) {
+    return res.status(400).json({ error: "activeCats must be a non-empty array" });
+  }
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return res.status(500).json({ error: "ANTHROPIC_API_KEY not configured on server" });
+  }
+
+  try {
+    const { rows } = await pool.query(
+      `SELECT c.pt FROM cards c JOIN categories cat ON c.category_id = cat.id
+       WHERE c.category_id = ANY($1) AND cat.group_name = 'Verbs'`,
+      [activeCats]
+    );
+    if (rows.length === 0) {
+      return res.status(400).json({ error: "Select at least one Verbs category" });
+    }
+    const shuffle = (arr) => {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+    const verbs = shuffle(rows.map(r => r.pt)).slice(0, 20);
+
+    const prompt = `Generate exactly 20 Brazilian Portuguese verb conjugation practice cards.
+
+Verbs to use (pick from this list, use each at most once): ${verbs.join(", ")}
+
+For each card:
+- Pick ONE tense from exactly: presente do indicativo, pretérito imperfeito, pretérito perfeito, futuro do pretérito (condicional). DO NOT use futuro do presente.
+- Pick ONE person from: eu, você, ele/ela, nós, vocês, eles/elas.
+- Distribute tenses roughly evenly across the 20 cards, and vary persons too.
+- Conjugate the verb correctly in Brazilian Portuguese — be especially careful with irregulars (ser, estar, ter, ir, vir, fazer, dar, saber, querer, poder, dizer, ver, pôr, trazer, etc.).
+
+Each card is just a pronoun + conjugated verb (no object, no full sentence):
+- "pt": "<pronoun> <conjugated verb>"
+- "en": "<English subject + English conjugated verb>"
+
+Examples:
+  {"pt":"eu andei","en":"I walked"}
+  {"pt":"nós comeríamos","en":"we would eat"}
+  {"pt":"ele fazia","en":"he used to do"}
+  {"pt":"vocês foram","en":"you all went"}
+  {"pt":"elas têm","en":"they have"}
+
+Return STRICT JSON only, no prose, no markdown fence. The "cards" array must contain exactly 20 items:
+{"cards":[{"pt":"...","en":"..."}]}`;
+
+    const response = await anthropic.messages.create({
+      model: "claude-haiku-4-5",
+      max_tokens: 2000,
+      temperature: 0.7,
+      messages: [{ role: "user", content: prompt }]
+    });
+
+    let text = response.content[0].text.trim();
+    text = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch (e) {
+      console.error("Generate conjugations: failed to parse Claude response:", text);
+      return res.status(502).json({ error: "Claude returned malformed JSON" });
+    }
+    if (!parsed || !Array.isArray(parsed.cards)) {
+      return res.status(502).json({ error: "Claude response missing cards array" });
+    }
+
+    const cards = parsed.cards
+      .filter(s => s && typeof s.pt === "string" && typeof s.en === "string")
+      .map(s => ({ pt: s.pt, en: s.en }));
+
+    res.json({ cards });
+  } catch (err) {
+    console.error("Generate conjugations failed:", err.message);
+    res.status(502).json({ error: err.message });
+  }
+});
+
 // GET /api/cards — return all cards and categories
 app.get("/api/cards", async (req, res) => {
   const { rows: catRows } = await pool.query("SELECT id, label, css_class, group_name FROM categories");

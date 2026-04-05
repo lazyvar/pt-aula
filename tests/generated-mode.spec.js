@@ -13,7 +13,7 @@ test.describe('Generated Mode', () => {
   test.beforeEach(async ({ page }) => {
     await resetAll();
     // Intercept the generate endpoint with a fixed response.
-    await page.route('**/api/generate-sentences', async (route) => {
+    await page.route('**/api/generate-conjugations', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',

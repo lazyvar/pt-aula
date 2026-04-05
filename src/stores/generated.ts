@@ -13,7 +13,7 @@ export const generatedCards = writable<Card[]>([]);
 let savedSnapshot: DeckSnapshot | null = null;
 
 /**
- * Call POST /api/generate-sentences with the active categories, swap the
+ * Call POST /api/generate-conjugations with the active categories, swap the
  * deck to the generated cards on success.
  *
  * @param activeCats  array of category ids
@@ -33,7 +33,7 @@ export async function generate(
 
   isGenerating.set(true);
   try {
-    const res = await fetch('/api/generate-sentences', {
+    const res = await fetch('/api/generate-conjugations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ activeCats }),
