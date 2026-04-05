@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { session, deck, mark as sessionMark } from '../stores/session';
   import { catConfig } from '../stores/cards';
   import { statsCache, markCard, getCardStats } from '../stores/stats';
@@ -10,9 +10,32 @@
   let cardEl: HTMLDivElement;
   let containerEl: HTMLDivElement;
 
-  // Reset flip on card change
+  // Reset flip on card change. When advancing while flipped, we must suppress
+  // the flip-back transition — otherwise the .card element animates from
+  // rotateY(180deg) back to 0, and since the back face's content is reactively
+  // bound to the *new* current card, the user briefly sees the next card's
+  // answer as the old back rotates away.
   $: currentCard = $deck[$session.currentIndex];
-  $: if (currentCard) isFlipped = false;
+  let lastCardPt: string | undefined;
+  $: if (currentCard && currentCard.pt !== lastCardPt) {
+    lastCardPt = currentCard.pt;
+    snapFlipToFront();
+  }
+
+  async function snapFlipToFront() {
+    if (!isFlipped) return;
+    if (!cardEl) {
+      isFlipped = false;
+      return;
+    }
+    cardEl.style.transition = 'none';
+    isFlipped = false;
+    await tick();
+    // Force a reflow so the no-transition style is committed before we
+    // re-enable the transition for future user-initiated flips.
+    void cardEl.offsetHeight;
+    cardEl.style.transition = '';
+  }
 
   $: front = $session.mode === 'pt-to-en' ? currentCard?.pt : currentCard?.en;
   $: back = $session.mode === 'pt-to-en' ? currentCard?.en : currentCard?.pt;
