@@ -192,23 +192,33 @@ app.post("/api/generate-sentences", async (req, res) => {
        WHERE c.category_id = ANY($1)`,
       [activeCats]
     );
-    const verbs = rows.filter(r => r.group_name === "Verbs").map(r => r.pt);
-    const topics = rows.filter(r => r.group_name === "Topics").map(r => r.pt);
+    const shuffle = (arr) => {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+    const verbs = shuffle(rows.filter(r => r.group_name === "Verbs").map(r => r.pt)).slice(0, 30);
+    const topics = shuffle(rows.filter(r => r.group_name === "Topics").map(r => r.pt)).slice(0, 30);
 
     if (verbs.length === 0 && topics.length === 0) {
       return res.status(400).json({ error: "Select at least one Verb or Topic category" });
     }
 
-    const prompt = `Generate 20 Brazilian Portuguese sentences for a language learner to translate.
+    const prompt = `Generate exactly 20 Brazilian Portuguese sentences for an intermediate learner to translate.
 
-Constraints:
-- Prefer using these verbs (conjugated naturally in the sentences): ${verbs.join(", ") || "(none specified)"}
-- Use vocabulary from these topics when it fits naturally: ${topics.join(", ") || "(none specified)"}
-- Vary difficulty: mix short sentences (5-8 words) and longer ones (10-15 words with clauses or multiple verbs).
+Rules:
+- Each sentence must use at least one verb from this list, conjugated naturally. Use each verb at most once, picked randomly: ${verbs.join(", ") || "(none specified)"}
+- Weave in vocabulary from this topic list where it fits naturally. Use each at most once: ${topics.join(", ") || "(none specified)"}
+- Vary tenses across the set (present, preterite, imperfect, future, subjunctive where natural).
+- Vary subjects (eu, você, ele/ela, nós, eles/elas) — don't start every sentence the same way.
+- Vary structure and length: mix short (5-8 words) and longer (10-15 words, with clauses).
 - Natural, conversational Brazilian Portuguese.
-- Provide an accurate English translation for each.
+- English translations should be natural and idiomatic, not literal.
 
-Return STRICT JSON only, no prose, no markdown fence:
+Return STRICT JSON only, no prose, no markdown fence. The "sentences" array must contain exactly 20 items:
 {"sentences":[{"pt":"...","en":"..."}]}`;
 
     const response = await anthropic.messages.create({
