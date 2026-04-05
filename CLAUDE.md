@@ -8,7 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` — Vite builds Svelte app into `dist/`. Express serves `dist/` as static in production.
 - `npm start` — runs `server.js` (requires running Postgres; defaults to `postgres://localhost/pt_aula`). Port defaults to 3005.
 - `npm run check` — svelte-check typecheck.
-- `npm test` — **builds first**, spins up the test Postgres via `docker-compose.test.yml` (port 5433), runs Playwright, then tears down. Also available: `test:ui`, `test:headed`.
+- `npm test` — **builds first**, spins up the test Postgres via `docker-compose.test.yml` (port 5433), runs Playwright, then tears down.
+- `npm run test:ui` / `npm run test:headed` — interactive Playwright modes. These leave the Postgres container running; tear it down manually with `docker compose -f docker-compose.test.yml down`.
 - Run a single Playwright test: `npx playwright test tests/session.spec.js` (assumes the test DB is already up via `docker compose -f docker-compose.test.yml up -d --wait`). Playwright auto-starts the server on :3006 pointing at the test DB.
 - `SLOW_MO=250 npm run test:headed` — slows down headed runs for debugging.
 
@@ -23,7 +24,7 @@ Single-user Brazilian Portuguese flashcard trainer. Svelte 4 + TypeScript fronte
 - `POST /api/reseed` — truncates and reseeds from `seeds/`.
 - `POST /api/generate-sentences` — calls `claude-haiku-4-5` to produce 20 PT/EN pairs from the user's active Verb + Topic categories. Strips markdown fences; returns 502 on bad JSON.
 
-**Seeds (`seeds/index.js`)** — flattens multiple groups (`topics`, `phrases`, `verbs`, `aulas`, `ir`, `conjugations`, `verb-endings`) into a single `{ categories, cards }`. Each category has a `group_name` (e.g. "Verbs", "Topics") that the generator uses to partition vocabulary.
+**Seeds (`seeds/`)** — `seeds/index.js` aggregates groups → each group (`topics`, `phrases`, `verbs`, `aulas`, `ir`, `conjugations`, `verb-endings`) has its own `index.js` aggregating files that each export `{ categories, cards }`. Categories have `{ id, label, css_class, group_name }`; cards have `{ pt, en, category_id }`. `group_name` (e.g. "Verbs", "Topics") is what the generator uses to partition vocabulary. To add content, create a new `.js` file in the appropriate group, require it from that group's `index.js`, then hit `POST /api/reseed` (or restart against an empty DB).
 
 **Frontend (`src/`)** — entry `main.ts` mounts `App.svelte`. State lives in Svelte stores (`src/stores/`):
 - `cards.ts` — loads all cards + category config once; exposes `getDefaultActiveCats()`.
@@ -39,6 +40,11 @@ Single-user Brazilian Portuguese flashcard trainer. Svelte 4 + TypeScript fronte
 **Modes** — `pt-to-en` / `en-to-pt` flip which side of the card is the prompt. `__generated__` is the sentinel category id (`GENERATED_CAT` in `types.ts`) used while in Generated Mode.
 
 **Components (`src/lib/`)** — `CardDeck` (prompt/flip/mark + owns keyboard shortcuts, exposed via `bind:this` so `App.svelte` can forward keydown), `Sidebar` (desktop category picker + controls), `MobileTopBar` + `BottomSheet` (mobile equivalents), `CategoryPicker`, `ControlButtons`.
+
+## Conventions
+
+- Database migrations are done inline in `init()` via `ADD COLUMN IF NOT EXISTS`. When adding new session fields, add a column there **and** update both `GET /api/session` and `PUT /api/session` to read/write it.
+- The `session` table always has exactly one row (`id=1`), written via `INSERT ... ON CONFLICT DO UPDATE`.
 
 ## Testing
 
