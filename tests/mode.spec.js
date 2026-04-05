@@ -1,5 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { resetAll } = require('./fixtures/reset');
+const { loadTruth } = require('./fixtures/truth');
+const { waitForSessionWrite } = require('./fixtures/waits');
 
 test.describe('Mode toggle (pt↔en)', () => {
   test.beforeEach(async ({ page }) => {
@@ -8,36 +10,51 @@ test.describe('Mode toggle (pt↔en)', () => {
     await expect(page.getByTestId('card-container')).toBeVisible();
   });
 
-  test('default mode is pt-to-en (button shows PT → EN)', async ({ page }) => {
+  test('default mode is pt-to-en: front is a Portuguese word from truth', async ({ page }) => {
+    const truth = await loadTruth();
+    const front = (await page.getByTestId('card-front').locator('.card-word').textContent())?.trim();
+    expect(truth.getCardByPt(front)).toBeTruthy();
+
+    // And button label reflects pt-to-en
     const toggle = page.getByTestId('mode-toggle');
-    await expect(toggle).toContainText('PT');
-    await expect(toggle).toContainText('EN');
     const text = (await toggle.textContent())?.trim() ?? '';
     expect(text.indexOf('PT')).toBeLessThan(text.indexOf('EN'));
   });
 
-  test('toggling mode swaps front/back of the card', async ({ page }) => {
-    const frontBefore = await page.getByTestId('card-front').locator('.card-word').textContent();
+  test('in pt-to-en mode, flipping reveals the english translation of the front', async ({ page }) => {
+    const truth = await loadTruth();
+    const front = (await page.getByTestId('card-front').locator('.card-word').textContent())?.trim();
+    const pair = truth.getCardByPt(front);
+    expect(pair).toBeTruthy();
 
+    await page.getByTestId('card-container').click();
+    const back = (await page.getByTestId('card-back').locator('.card-word').textContent())?.trim();
+    expect(back).toBe(pair.en);
+  });
+
+  test('toggling to en-to-pt: front is an english word from truth, back is its portuguese', async ({ page }) => {
+    const truth = await loadTruth();
     await page.getByTestId('mode-toggle').click();
 
-    await expect(async () => {
-      const frontAfter = await page.getByTestId('card-front').locator('.card-word').textContent();
-      expect(frontAfter).not.toBe(frontBefore);
-    }).toPass({ timeout: 2000 });
+    // Wait for re-render (button label flips)
+    await expect(page.getByTestId('mode-toggle')).toContainText('EN → PT');
+
+    const front = (await page.getByTestId('card-front').locator('.card-word').textContent())?.trim();
+    const pair = truth.getCardByEn(front);
+    expect(pair, `front "${front}" in en-to-pt mode should be an en value in truth`).toBeTruthy();
+
+    await page.getByTestId('card-container').click();
+    const back = (await page.getByTestId('card-back').locator('.card-word').textContent())?.trim();
+    expect(back).toBe(pair.pt);
   });
 
   test('mode persists across reload', async ({ page }) => {
     await page.getByTestId('mode-toggle').click();
-    const textAfterToggle = (await page.getByTestId('mode-toggle').textContent())?.trim() ?? '';
-
-    // toggleMode() calls saveSession() without await; wait for the PUT to settle.
-    await page.waitForLoadState('networkidle');
+    await expect(page.getByTestId('mode-toggle')).toContainText('EN → PT');
+    await waitForSessionWrite(page);
 
     await page.reload();
     await expect(page.getByTestId('card-container')).toBeVisible();
-
-    const textAfterReload = (await page.getByTestId('mode-toggle').textContent())?.trim() ?? '';
-    expect(textAfterReload).toBe(textAfterToggle);
+    await expect(page.getByTestId('mode-toggle')).toContainText('EN → PT');
   });
 });
