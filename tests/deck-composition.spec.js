@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { resetAll, setActiveCategories } = require('./fixtures/reset');
+const { resetAll, setActiveCategories, BASE } = require('./fixtures/reset');
 const { loadTruth } = require('./fixtures/truth');
 const { waitForSessionWrite } = require('./fixtures/waits');
 
@@ -97,5 +97,63 @@ test.describe('Deck composition', () => {
         `card "${pt}" should not appear after its category was toggled off`
       ).toBe(false);
     }
+  });
+
+  test('toggling a category ON interleaves its cards with the remaining deck (not appended)', async ({ page }) => {
+    // Use two non-Topics cats with >= 6 cards each. With 6+6, the odds that a
+    // correct shuffle accidentally produces all-A-before-all-B (or vice versa)
+    // are 2 / C(12,6) ≈ 0.2% — low enough to not be flaky.
+    const bigger = Object.keys(truth.categories)
+      .filter((id) => truth.categories[id].group !== 'Topics')
+      .map((id) => ({ id, count: truth.getCardsInCategories([id]).length }))
+      .filter((x) => x.count >= 6)
+      .sort((a, b) => a.count - b.count)
+      .slice(0, 2)
+      .map((x) => x.id);
+    expect(bigger.length).toBe(2);
+    const [catA, catB] = bigger;
+    const aPts = new Set(truth.getCardsInCategories([catA]).map((c) => c.pt));
+    const bPts = new Set(truth.getCardsInCategories([catB]).map((c) => c.pt));
+    expect(aPts.size).toBeGreaterThanOrEqual(6);
+    expect(bPts.size).toBeGreaterThanOrEqual(6);
+
+    // Re-seed a session with ONLY catA active, then reload.
+    await setActiveCategories([catA]);
+    await page.reload();
+    await expect(page.getByTestId('card-container')).toBeVisible();
+
+    // Expand sidebar groups so catB's filter is visible/clickable.
+    const headers = page.locator('.sidebar .cat-group-header');
+    const headerCount = await headers.count();
+    for (let i = 0; i < headerCount; i++) await headers.nth(i).click();
+
+    // Toggle catB on via the sidebar.
+    const filterB = page.locator(
+      `.sidebar [data-testid="category-filter"][data-category-key="${catB}"]`
+    );
+    await expect(filterB).not.toHaveClass(/active/);
+    await filterB.click();
+    await expect(filterB).toHaveClass(/active/);
+    await waitForSessionWrite(page);
+
+    // Fetch the resulting session and inspect the remaining deck slice.
+    const sess = await fetch(`${BASE}/api/session`).then((r) => r.json());
+    const remaining = sess.deckOrder.slice(sess.currentIndex);
+    expect(remaining.length).toBe(aPts.size + bPts.size);
+
+    // Buggy behavior appends: remaining = [...all A cards, ...all B cards].
+    // Expected behavior: the combined remaining deck is reshuffled, so A and
+    // B cards are interleaved. Assert at least one B card appears before at
+    // least one A card (with aPts.size, bPts.size >= 2 this is near-certain
+    // under a real shuffle; impossible under append).
+    const firstAIdx = remaining.findIndex((pt) => aPts.has(pt));
+    const firstBIdx = remaining.findIndex((pt) => bPts.has(pt));
+    const lastAIdx = remaining.length - 1 - [...remaining].reverse().findIndex((pt) => aPts.has(pt));
+    // Not all A before all B:
+    expect(firstBIdx, 'at least one B card should appear before the last A card').toBeLessThan(lastAIdx);
+    // Not all B before all A:
+    expect(firstAIdx, 'A and B should be interleaved (first A should come before last B)').toBeLessThan(
+      remaining.length - 1 - [...remaining].reverse().findIndex((pt) => bPts.has(pt))
+    );
   });
 });

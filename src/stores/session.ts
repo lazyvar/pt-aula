@@ -174,12 +174,16 @@ export function toggleCat(cat: string, allCardsIn: Card[]): void {
   const currentDeck = get(deck);
   const currentWrong = get(wrongCardsList);
 
+  // When the active set changes we reshuffle the remaining (unseen) portion
+  // of the deck. Seen cards (before currentIndex) stay put so the user's
+  // progress doesn't jump around.
   if (active.has(cat)) {
     active.delete(cat);
-    const newDeck = currentDeck.filter((c) => c.cat !== cat);
+    const filtered = currentDeck.filter((c) => c.cat !== cat);
+    const newIndex = Math.min(s.currentIndex, filtered.length);
+    const newDeck = [...filtered.slice(0, newIndex), ...shuffle(filtered.slice(newIndex))];
     deck.set(newDeck);
     wrongCardsList.set(currentWrong.filter((c) => c.cat !== cat));
-    const newIndex = Math.min(s.currentIndex, newDeck.length);
     session.update((ss) => ({
       ...ss,
       activeCats: [...active],
@@ -189,15 +193,9 @@ export function toggleCat(cat: string, allCardsIn: Card[]): void {
     }));
   } else {
     active.add(cat);
-    const newCards = shuffle(allCardsIn.filter((c) => c.cat === cat));
-    // Insert after current position, matching current behavior:
-    // deck = [...deck.slice(0, currentIndex), ...deck.slice(currentIndex), ...newCards]
-    // (This appends new cards at the end of the remaining slice.)
-    const newDeck = [
-      ...currentDeck.slice(0, s.currentIndex),
-      ...currentDeck.slice(s.currentIndex),
-      ...newCards,
-    ];
+    const newCards = allCardsIn.filter((c) => c.cat === cat);
+    const combined = [...currentDeck.slice(s.currentIndex), ...newCards];
+    const newDeck = [...currentDeck.slice(0, s.currentIndex), ...shuffle(combined)];
     deck.set(newDeck);
     session.update((ss) => ({
       ...ss,
