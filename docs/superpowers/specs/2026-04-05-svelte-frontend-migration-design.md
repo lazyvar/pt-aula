@@ -10,9 +10,22 @@ Migrate the pt-aula frontend from a single 1356-line `public/index.html` (inline
 ### Goals
 
 - Produce a readable frontend codebase optimized for code review, not author ergonomics.
-- Preserve all current user-visible behavior.
-- Keep all 6 existing Playwright specs passing unchanged.
+- Preserve all current user-visible behavior (including Generated Mode, keyboard shortcuts, done screens, and default category selection).
+- Keep all 6 existing Playwright specs passing unchanged, plus new characterization specs written against the current frontend before the migration starts.
 - Keep Fly.io deploy simple — one Dockerfile, no new infrastructure.
+
+### Features in scope for parity
+
+- Flashcard flip (click, Space, ←, →)
+- Mark correct (Enter, ✓ button, swipe right) / wrong (Backspace/Delete, ✗ button, swipe left)
+- Category toggling (sidebar desktop, bottom sheet mobile) with group collapse
+- Shuffle remaining, reset stats, reseed, mode toggle (pt↔en)
+- Done screens: "Round done!" (with Review Wrong Cards), "Parabéns!" (perfect round), "Cadê as cartas?" (empty deck)
+- Generated Mode: "✨ Generate" button → POST `/api/generate-sentences` → 20 AI sentences → banner + exit button; snapshot/restore of real deck; no stats tracking, no session saving, category toggles disabled while active
+- Default `activeCats` on first boot: all non-Topics categories
+- Stats display per card (right/wrong counts on card face)
+- Mobile bottom sheet with drag-to-close
+- Touch swipe gestures on card
 
 ### Non-goals
 
@@ -46,20 +59,28 @@ Single-page Svelte 4 app, TypeScript, built with Vite, mounted into `<div id="ap
 ```
 src/
 ├── App.svelte                 top-level layout, responsive switch, global CSS,
-│                              keyboard shortcut handlers, beforeunload flush
+│                              keyboard shortcut handlers, beforeunload flush,
+│                              gen-banner, done screens, empty state
 ├── lib/
 │   ├── Sidebar.svelte         desktop category picker (scrollable column)
+│   │                          + sidebar-controls buttons
 │   ├── BottomSheet.svelte     mobile category picker (drag handle + body)
+│   │                          + bottom-sheet-controls buttons
 │   ├── CategoryPicker.svelte  shared picker body: groups, chips, collapse
 │   │                          state (used by both Sidebar and BottomSheet)
-│   ├── CardDeck.svelte        flip card + answer buttons + progress counter
-│   │                          + swipe gestures
+│   ├── ControlButtons.svelte  shared: shuffle/reset/reseed/generate/mode
+│   │                          buttons (used by Sidebar and BottomSheet)
+│   ├── CardDeck.svelte        active card: flip card + answer buttons +
+│   │                          progress counter + swipe gestures +
+│   │                          per-card stats display
 │   ├── MobileTopBar.svelte    stats pill + "Categories" dropdown trigger
 │   └── cardId.ts              getCardId() ported verbatim from current code
 ├── stores/
 │   ├── session.ts             session writable + debounced auto-PUT + flush
 │   ├── stats.ts               statsCache writable + per-card POST on mark
-│   └── cards.ts               cards + catConfig, hydrated once
+│   ├── cards.ts               cards + catConfig, hydrated once
+│   └── generated.ts           generatedMode/generatedCards/savedDeckSnapshot/
+│                              isGenerating + generate()/exit() actions
 ├── types.ts                   Card, Session, Stats, CatConfig types
 ├── main.ts                    mounts <App> to #app
 └── app.d.ts                   Svelte type declarations
@@ -139,19 +160,37 @@ Until all three hydrate promises resolve, `App.svelte` renders a loading state. 
 
 | Action | Store updates | Server writes |
 |---|---|---|
-| Mark correct/wrong (button or swipe) | `session` (counters, currentIndex, wrongCards), `stats` | debounced PUT `/api/session` + POST `/api/stats/:cardId/mark` |
-| Flip card | component-local state in `CardDeck` | — |
-| Toggle category | `session.activeCats`, `session.deckOrder`, `session.currentIndex` | debounced PUT `/api/session` |
-| Shuffle remaining | `session.deckOrder`, `session.currentIndex` | debounced PUT `/api/session` |
-| Toggle mode (pt↔en) | `session.mode` | debounced PUT `/api/session` |
+| Mark correct/wrong (button, swipe, Enter, Backspace/Delete) | `session` (counters, currentIndex, wrongCards), `stats` (if not in gen mode) | debounced PUT `/api/session` + POST `/api/stats/:cardId/mark` (stats only if not gen mode; session NOT written in gen mode) |
+| Flip card (click, Space, ←, →) | component-local state in `CardDeck` | — |
+| Toggle category (disabled in gen mode) | `session.activeCats`, `session.deckOrder`, `session.currentIndex` | debounced PUT `/api/session` |
+| Shuffle remaining | `session.deckOrder`, `session.currentIndex` | debounced PUT `/api/session` (not in gen mode) |
+| Toggle mode (pt↔en) | `session.mode` | debounced PUT `/api/session` (not in gen mode) |
 | Review wrong cards | `session.deckOrder`, reset counters, clear `wrongCards` | debounced PUT `/api/session` |
-| Reset stats | `stats` | DELETE `/api/stats` |
-| Reseed | backend reseed, then re-hydrate all three stores | POST `/api/reseed` |
+| Reset stats | `stats` + startDeck (reset session counters, reshuffle from activeCats) | DELETE `/api/stats` + DELETE `/api/session` + debounced PUT `/api/session` |
+| Reseed | backend reseed, then re-hydrate cards, reset stats, clear activeCats, startDeck | POST `/api/reseed` |
+| Generate sentences | snapshot real deck, swap to generated cards, set `generatedMode=true` | POST `/api/generate-sentences` |
+| Exit generated mode | restore snapshot | — |
 | Page unload | — | `sendBeacon` flushes pending session PUT if timer is active |
 
 **Card ID stability:** `getCardId()` in `lib/cardId.ts` is a verbatim port of the current client-side slugification (lowercase, diacritics stripped, non-alphanumerics collapsed to `-`, trimmed, keyed on `pt` text only). The `stats` store keys by this ID. If the slug algorithm drifts, existing `card_stats` rows orphan silently — so it's covered by a dedicated Playwright spec.
 
 **Flip-card state:** local to `CardDeck.svelte`, not in a store. Resets when `currentIndex` changes. No server persistence (matches current behavior).
+
+**Keyboard shortcuts** (registered in `App.svelte` via `window.addEventListener('keydown', ...)` in `onMount`, removed in `onDestroy`):
+- `Space`, `ArrowLeft`, `ArrowRight` → flip card (preventDefault)
+- `Enter` → mark correct
+- `Backspace`, `Delete` → mark wrong (preventDefault)
+
+**Stable selectors:** all existing `data-testid` attributes must be preserved verbatim in the Svelte components. These are contract with Playwright specs. Known testids: `category-filter`, `data-category-key`, `mobile-counter-correct`, `mobile-counter-wrong`, `mobile-counter-remaining`, `mobile-cat-dropdown`, `mode-toggle`, `card-container`, `card-front`, `card-back`, `counter-correct`, `counter-wrong`, `counter-remaining`, `btn-wrong`, `btn-right`. Audit tests during planning for any other selectors in use.
+
+**Default active categories:** on first boot (no saved session), `activeCats` = all category IDs whose `group_name !== 'Topics'` (i.e., all verbs/phrases/etc. are selected by default, topics are not). Current code: `new Set(Object.keys(catConfig).filter(id => catConfig[id].group !== "Topics"))`.
+
+**Generated Mode behavior:**
+- While `generatedMode === true`: `saveSession()` is a no-op, stats POSTs are skipped, category toggles are no-ops, `body.gen-mode` CSS class is applied (dims category UI).
+- `generate()` snapshots `{deck, currentIndex, correct, wrong, wrongCards}`, swaps deck for 20 generated cards (cat sentinel: `"__generated__"`), resets counters.
+- `exit()` restores snapshot, clears generated state.
+- The "✨ Generate" button alerts and aborts if `activeCats.size === 0`.
+- During `isGenerating`, Generate button shows "⏳ Generating…" and is disabled.
 
 ## Error Handling
 
@@ -226,6 +265,8 @@ CMD ["npm", "start"]
 
 High-level sequencing. The writing-plans skill will turn this into a detailed step-by-step plan.
 
+**Phase 0: Characterization tests.** Before touching the frontend, add Playwright specs against the current `index.html` to cover: Generated Mode flow (generate → banner → exit restores), keyboard shortcuts (Space/arrows/Enter/Backspace), default `activeCats` on first boot, done screens (round-done-with-wrong, parabéns, empty state). Verify each new spec passes against the current code — this proves the spec tests real behavior before the rewrite depends on it. These specs then guard the Svelte migration.
+
 **Phase 1: Scaffold.** Add `vite.config.ts`, `tsconfig.json`, `svelte.config.js`, dev deps (svelte, vite, @sveltejs/vite-plugin-svelte, typescript, @tsconfig/svelte). Create `index.html`, `src/main.ts`, `src/App.svelte` with "hello world". Verify `npm run dev` serves on :5173, proxy works, `npm run build` produces `dist/`.
 
 **Phase 2: Dockerfile + Express.** Update Dockerfile. Change `server.js` static dir to `dist/`. Move `favicon.png` to new Vite `public/`. Verify container builds and serves hello-world Svelte.
@@ -239,3 +280,5 @@ High-level sequencing. The writing-plans skill will turn this into a detailed st
 **Phase 6: Tests + cutover.** Add `npm run build` to `npm test` + CI. Add `card-id-slug.spec.js`. Run full suite. Fix fragile selector breakages. Delete old `public/index.html`. Run suite again. Merge.
 
 Each phase should land in 1–3 commits. Phase 4 is the biggest line-count move but mechanical. Phase 5 is the real work.
+
+**Note on Dockerfile timing:** During Phases 1–5, `server.js` continues to serve `public/index.html`. The Vite dev server runs separately on :5173 during dev. Dockerfile changes and the `express.static('dist')` cutover happen atomically in Phase 6.
