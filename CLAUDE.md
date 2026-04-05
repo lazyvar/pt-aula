@@ -9,8 +9,9 @@ Português Aula — a single-page Portuguese flashcard study app. Node/Express s
 ## Commands
 
 - `npm start` — runs `node server.js` on port 3005 (or `$PORT`). Requires `DATABASE_URL` (defaults to `postgres://localhost/pt_aula`).
+- `npm test` — runs the Playwright browser test suite. Brings up an ephemeral Postgres via `docker-compose.test.yml` (requires Docker), boots `server.js` on port 3006 against the test DB, runs all specs in `tests/`, tears down Postgres. CI runs the same specs via `.github/workflows/test.yml` (Actions service container instead of Docker Compose).
+- `npm run test:ui` / `npm run test:headed` — interactive Playwright modes. These leave the Postgres container running; tear it down manually with `docker compose -f docker-compose.test.yml down`.
 - `fly deploy` — deploys via the Dockerfile. No build step; static assets are served directly from `public/`.
-- No test, lint, or build tooling is configured.
 
 ## Architecture
 
