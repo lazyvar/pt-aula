@@ -1063,11 +1063,11 @@ function mobileDropdownLabel() {
 function mobileTopBarHTML(correct, wrong, remaining) {
   return `<div class="mobile-top-bar">
     <div class="stats">
-      <span><span class="dot green"></span> ${correct}</span>
-      <span><span class="dot red"></span> ${wrong}</span>
-      <span><span class="dot gray"></span> ${remaining} left</span>
+      <span data-testid="mobile-counter-correct"><span class="dot green"></span> ${correct}</span>
+      <span data-testid="mobile-counter-wrong"><span class="dot red"></span> ${wrong}</span>
+      <span data-testid="mobile-counter-remaining"><span class="dot gray"></span> ${remaining} left</span>
     </div>
-    <button class="mobile-cat-dropdown" onclick="openBottomSheet()">${mobileDropdownLabel()} ▾</button>
+    <button class="mobile-cat-dropdown" data-testid="mobile-cat-dropdown" onclick="openBottomSheet()">${mobileDropdownLabel()} ▾</button>
   </div>`;
 }
 
