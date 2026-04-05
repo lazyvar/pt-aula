@@ -293,10 +293,14 @@ app.post("/api/generate-conjugations", async (req, res) => {
 Verbs to use (pick from this list, use each at most once): ${verbs.join(", ")}
 
 For each card:
-- Pick ONE tense from exactly: presente do indicativo, pretérito imperfeito, pretérito perfeito, futuro do pretérito (condicional). DO NOT use futuro do presente.
+- Pick ONE tense from exactly: presente do indicativo, pretérito perfeito. DO NOT use futuro do presente, pretérito imperfeito, or futuro do pretérito (condicional).
 - Pick ONE person from: eu, você, ele/ela, nós, vocês, eles/elas.
 - Distribute tenses roughly evenly across the 20 cards, and vary persons too.
 - Conjugate the verb correctly in Brazilian Portuguese — be especially careful with irregulars (ser, estar, ter, ir, vir, fazer, dar, saber, querer, poder, dizer, ver, pôr, trazer, etc.).
+
+Translate each tense into English using these EXACT patterns (no variations):
+- presente do indicativo → simple present: "I walk", "you walk", "he walks", "we walk", "they walk"
+- pretérito perfeito → simple past: "I walked", "you walked", "he walked"
 
 Each card is just a pronoun + conjugated verb (no object, no full sentence):
 - "pt": "<pronoun> <conjugated verb>"
@@ -304,8 +308,7 @@ Each card is just a pronoun + conjugated verb (no object, no full sentence):
 
 Examples:
   {"pt":"eu andei","en":"I walked"}
-  {"pt":"nós comeríamos","en":"we would eat"}
-  {"pt":"ele fazia","en":"he used to do"}
+  {"pt":"nós comemos","en":"we ate"}
   {"pt":"vocês foram","en":"you all went"}
   {"pt":"elas têm","en":"they have"}
 
