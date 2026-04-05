@@ -37,12 +37,13 @@
         await hydrateCards();
         await hydrateStats();
         const restored = await hydrateSession(get(allCards));
-        if (!restored) {
-          // First boot (or empty session): set default activeCats then startDeck.
-          const active = get(session).activeCats;
-          if (active.length === 0) {
-            session.update((s) => ({ ...s, activeCats: getDefaultActiveCats() }));
-          }
+        if (restored === null) {
+          // No session row exists (first boot): apply default activeCats then startDeck.
+          session.update((s) => ({ ...s, activeCats: getDefaultActiveCats() }));
+          startDeck(get(allCards));
+        } else if (!restored) {
+          // Session exists but deck is empty (e.g. all categories toggled off).
+          // Rebuild the deck from the restored activeCats without overriding them.
           startDeck(get(allCards));
         }
         loaded = true;

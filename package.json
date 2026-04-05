@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "test": "docker compose -f docker-compose.test.yml up -d --wait && playwright test; EXIT=$?; docker compose -f docker-compose.test.yml down; exit $EXIT",
-    "test:ui": "docker compose -f docker-compose.test.yml up -d --wait && playwright test --ui",
-    "test:headed": "docker compose -f docker-compose.test.yml up -d --wait && playwright test --headed",
+    "test": "npm run build && docker compose -f docker-compose.test.yml up -d --wait && playwright test; EXIT=$?; docker compose -f docker-compose.test.yml down; exit $EXIT",
+    "test:ui": "npm run build && docker compose -f docker-compose.test.yml up -d --wait && playwright test --ui",
+    "test:headed": "npm run build && docker compose -f docker-compose.test.yml up -d --wait && playwright test --headed",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

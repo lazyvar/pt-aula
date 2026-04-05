@@ -41,25 +41,25 @@ session.subscribe((s) => {
 });
 
 /**
- * Fetch /api/session. If a session exists AND has a non-empty deckOrder
- * that contains at least one known card, return it. Otherwise return null.
+ * Fetch /api/session.
+ * - Returns true  if a session was found and deck has at least one known card.
+ * - Returns false if a session was found but the deck is empty (e.g. all cats
+ *   toggled off). Session stores are still populated so activeCats is preserved.
+ * - Returns null  if no session row exists (first boot). Caller should apply
+ *   defaults.
  *
- * Populates session, deck, and wrongCardsList stores on success.
  * Sets hydrated=true regardless (so subsequent writes trigger auto-PUT).
- *
- * NOTE: matches current public/index.html:loadSession() behavior — it returns
- * false when deck is empty after filtering, which causes startDeck() to run.
  */
-export async function hydrateSession(allCards: Card[]): Promise<boolean> {
+export async function hydrateSession(allCards: Card[]): Promise<boolean | null> {
   const res = await fetch('/api/session');
   if (!res.ok) {
     hydrated = true;
-    return false;
+    return null;
   }
   const s = await res.json() as Session | null;
   if (!s) {
     hydrated = true;
-    return false;
+    return null;
   }
 
   const cardMap = new Map(allCards.map((c) => [c.pt, c]));

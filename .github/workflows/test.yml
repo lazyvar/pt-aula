@@ -39,6 +39,9 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Build Svelte app
+        run: npm run build
+
       - name: Run Playwright tests
         env:
           CI: 'true'

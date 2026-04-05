@@ -7,8 +7,12 @@
   let sheetEl: HTMLDivElement;
   let backdropEl: HTMLDivElement;
 
+  // Non-reactive flag so that close() can suppress the store subscription
+  // callback during the close animation without triggering a reactive re-run.
+  let isClosing = false;
+
   function open() {
-    sheetOpen.set(true);
+    isClosing = false;
     backdropEl.classList.add('open');
     requestAnimationFrame(() => {
       sheetEl.classList.add('open');
@@ -17,9 +21,11 @@
   }
 
   function close() {
+    isClosing = true;
     sheetEl.classList.remove('open');
     backdropEl.style.opacity = '0';
     setTimeout(() => {
+      isClosing = false;
       backdropEl.classList.remove('open');
       backdropEl.style.opacity = '';
       document.body.style.overflow = '';
@@ -27,15 +33,21 @@
     }, 300);
   }
 
-  // Open/close imperatively in response to sheetOpen changes from outside
-  // (e.g., MobileTopBar clicks).
-  $: if (sheetEl && backdropEl) {
-    if ($sheetOpen && !sheetEl.classList.contains('open')) {
-      backdropEl.classList.add('open');
-      requestAnimationFrame(() => sheetEl.classList.add('open'));
-      document.body.style.overflow = 'hidden';
-    }
-  }
+  onMount(() => {
+    // Subscribe to sheetOpen in onMount so the callback runs in a plain
+    // closure — mutation of isClosing here does NOT trigger Svelte reactivity,
+    // preventing the "re-open during close animation" bug.
+    const unsub = sheetOpen.subscribe((open) => {
+      if (!sheetEl || !backdropEl) return;
+      if (open && !isClosing) {
+        // External open request (e.g. MobileTopBar button)
+        backdropEl.classList.add('open');
+        requestAnimationFrame(() => sheetEl.classList.add('open'));
+        document.body.style.overflow = 'hidden';
+      }
+    });
+    return unsub;
+  });
 
   // Drag-to-close gesture. Ported from public/index.html:839-871.
   let startY = 0;
@@ -90,6 +102,6 @@
     <CategoryPicker prefix="mob-" />
   </div>
   <div class="bottom-sheet-controls">
-    <ControlButtons />
+    <ControlButtons testIds={false} />
   </div>
 </div>

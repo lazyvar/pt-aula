@@ -6,6 +6,10 @@
   import { snapshotDeck, applyGeneratedDeck } from '../stores/session';
   import { get } from 'svelte/store';
 
+  // When true (default), the mode-toggle button carries data-testid="mode-toggle".
+  // Pass false in contexts where a second instance would create strict-mode violations.
+  export let testIds = true;
+
   async function onResetStats() {
     await resetStats();
     await deleteSession();
@@ -29,7 +33,7 @@
   }
 </script>
 
-<button class="ctrl-btn" data-testid="mode-toggle" on:click={toggleMode}>
+<button class="ctrl-btn" data-testid={testIds ? 'mode-toggle' : undefined} on:click={toggleMode}>
   {$session.mode === 'pt-to-en' ? 'PT → EN' : 'EN → PT'}
 </button>
 <button class="ctrl-btn" on:click={() => shuffleRemaining($allCards)}>Shuffle</button>
