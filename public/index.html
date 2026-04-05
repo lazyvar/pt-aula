@@ -791,7 +791,7 @@ function renderCatGroups(isMobile) {
     const stateKey = prefix + groupName;
     const collapsed = groupCollapseState[stateKey] !== false;
     const items = cats.map(c =>
-      `<button class="filter-btn ${c.active ? 'active' : ''}" onclick="toggleCat('${c.key}')">${c.label} (${c.count})</button>`
+      `<button class="filter-btn ${c.active ? 'active' : ''}" data-testid="category-filter" data-category-key="${c.key}" onclick="toggleCat('${c.key}')">${c.label} (${c.count})</button>`
     ).join('');
     return `
       <div class="cat-group">
@@ -1188,7 +1188,7 @@ function render() {
           ${renderCatGroups(false)}
         </div>
         <div class="sidebar-controls">
-          <button class="ctrl-btn" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
+          <button class="ctrl-btn" data-testid="mode-toggle" onclick="toggleMode()">${mode === "pt-to-en" ? "PT → EN" : "EN → PT"}</button>
           <button class="ctrl-btn" onclick="shuffleRemaining()">Shuffle</button>
           <button class="ctrl-btn" onclick="resetStats()">Reset Stats</button>
           <button class="ctrl-btn" onclick="reseed()">Reseed</button>
@@ -1202,22 +1202,22 @@ function render() {
         <div class="progress-area">
           <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
           <div class="stats">
-            <span><span class="dot green"></span> ${correct}</span>
-            <span><span class="dot red"></span> ${wrong}</span>
-            <span><span class="dot gray"></span> ${deck.length - currentIndex} left</span>
+            <span data-testid="counter-correct"><span class="dot green"></span> ${correct}</span>
+            <span data-testid="counter-wrong"><span class="dot red"></span> ${wrong}</span>
+            <span data-testid="counter-remaining"><span class="dot gray"></span> ${deck.length - currentIndex} left</span>
           </div>
         </div>
 
         <div class="card-area">
-          <div class="card-container" id="cardContainer" onclick="flipCard()">
+          <div class="card-container" id="cardContainer" data-testid="card-container" onclick="flipCard()">
             <div class="card ${isFlipped ? 'flipped' : ''}" id="theCard">
-              <div class="card-face card-front">
+              <div class="card-face card-front" data-testid="card-front">
                 <span class="category-tag ${cc.cls}">${cc.label}</span>
                 <div class="card-label">${frontLabel}</div>
                 <div class="card-word">${front}</div>
                 ${cardStatsHTML}
               </div>
-              <div class="card-face card-back">
+              <div class="card-face card-back" data-testid="card-back">
                 <span class="category-tag ${cc.cls}">${cc.label}</span>
                 <div class="card-label">${backLabel}</div>
                 <div class="card-word">${back}</div>
@@ -1227,8 +1227,8 @@ function render() {
           </div>
 
           <div class="buttons">
-            <button class="btn btn-wrong" onclick="mark(false)">✗ Again</button>
-            <button class="btn btn-right" onclick="mark(true)">✓ Got it</button>
+            <button class="btn btn-wrong" data-testid="btn-wrong" onclick="mark(false)">✗ Again</button>
+            <button class="btn btn-right" data-testid="btn-right" onclick="mark(true)">✓ Got it</button>
           </div>
           <div class="keyboard-hint">Space/←/→ = flip · Enter = got it · Delete = again</div>
         </div>
