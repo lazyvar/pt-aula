@@ -34,4 +34,4 @@ A single ~1200-line HTML file containing all CSS and JS inline (no bundler, no f
 
 - Database migrations are done inline in `init()` via `ADD COLUMN IF NOT EXISTS`. When adding new session fields, add a column there **and** update both `GET /api/session` and `PUT /api/session` to read/write it.
 - The `session` table always has exactly one row (`id=1`) using `INSERT ... ON CONFLICT DO UPDATE`.
-- Card IDs used by `card_stats.card_id` are constructed client-side from `pt` + `en` text — they are not the DB `cards.id` serial. Check the frontend for the exact format before touching stats code.
+- Card IDs used by `card_stats.card_id` are constructed client-side as a slug of the card's `pt` text only (lowercase, diacritics stripped, non-alphanumerics collapsed to `-`, trimmed). See `getCardId()` in `public/index.html`. They are not the DB `cards.id` serial.
