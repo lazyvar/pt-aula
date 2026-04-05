@@ -15,6 +15,7 @@ module.exports = defineConfig({
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
+    launchOptions: { slowMo: Number(process.env.SLOW_MO) || 0 },
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
