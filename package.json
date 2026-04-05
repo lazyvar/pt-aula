@@ -6,7 +6,11 @@
     "start": "node server.js",
     "test": "docker compose -f docker-compose.test.yml up -d --wait && playwright test; EXIT=$?; docker compose -f docker-compose.test.yml down; exit $EXIT",
     "test:ui": "docker compose -f docker-compose.test.yml up -d --wait && playwright test --ui",
-    "test:headed": "docker compose -f docker-compose.test.yml up -d --wait && playwright test --headed"
+    "test:headed": "docker compose -f docker-compose.test.yml up -d --wait && playwright test --headed",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",
@@ -15,6 +19,13 @@
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.7.10",
-    "@playwright/test": "^1.59.1"
+    "@playwright/test": "^1.59.1",
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@tsconfig/svelte": "^5.0.8",
+    "svelte": "^4.2.20",
+    "svelte-check": "^3.8.6",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.21"
   }
 }
