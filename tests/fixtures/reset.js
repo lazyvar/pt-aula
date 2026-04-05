@@ -20,4 +20,26 @@ async function resetAll() {
   if (!sessionRes.ok) throw new Error(`delete session failed: ${sessionRes.status}`);
 }
 
-module.exports = { resetAll, BASE };
+// Seed a session row with the given activeCats and an empty deckOrder.
+// When the frontend loads this session, loadSession() sets activeCats from
+// it but returns false (because deck.length === 0), which falls through to
+// startDeck() — which rebuilds the deck from the new activeCats. This lets
+// tests scope the deck to a small set of categories for fast walks.
+async function setActiveCategories(catIds) {
+  const res = await fetch(`${BASE}/api/session`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      deckOrder: [],
+      currentIndex: 0,
+      correct: 0,
+      wrong: 0,
+      mode: 'pt-to-en',
+      activeCats: catIds,
+      wrongCards: [],
+    }),
+  });
+  if (!res.ok) throw new Error(`setActiveCategories failed: ${res.status}`);
+}
+
+module.exports = { resetAll, setActiveCategories, BASE };
