@@ -8,24 +8,12 @@ const cards = [
   { pt: "-emos (nós)", en: "we eat", category_id: "end-er" },
   { pt: "-em (vocês)", en: "you all eat", category_id: "end-er" },
   { pt: "-em (eles/elas)", en: "they eat", category_id: "end-er" },
-  { pt: "-ia (eu)", en: "I used to eat", category_id: "end-er" },
-  { pt: "-ia (você)", en: "you used to eat", category_id: "end-er" },
-  { pt: "-ia (ele/ela)", en: "he/she used to eat", category_id: "end-er" },
-  { pt: "-íamos (nós)", en: "we used to eat", category_id: "end-er" },
-  { pt: "-iam (vocês)", en: "you all used to eat", category_id: "end-er" },
-  { pt: "-iam (eles/elas)", en: "they used to eat", category_id: "end-er" },
   { pt: "-i (eu)", en: "I ate", category_id: "end-er" },
   { pt: "-eu (você)", en: "you ate", category_id: "end-er" },
   { pt: "-eu (ele/ela)", en: "he/she ate", category_id: "end-er" },
   { pt: "-emos (nós)", en: "we ate", category_id: "end-er" },
   { pt: "-eram (vocês)", en: "you all ate", category_id: "end-er" },
-  { pt: "-eram (eles/elas)", en: "they ate", category_id: "end-er" },
-  { pt: "-eria (eu)", en: "I would eat", category_id: "end-er" },
-  { pt: "-eria (você)", en: "you would eat", category_id: "end-er" },
-  { pt: "-eria (ele/ela)", en: "he/she would eat", category_id: "end-er" },
-  { pt: "-eríamos (nós)", en: "we would eat", category_id: "end-er" },
-  { pt: "-eriam (vocês)", en: "you all would eat", category_id: "end-er" },
-  { pt: "-eriam (eles/elas)", en: "they would eat", category_id: "end-er" }
+  { pt: "-eram (eles/elas)", en: "they ate", category_id: "end-er" }
 ];
 
 module.exports = { categories: [category], cards };
