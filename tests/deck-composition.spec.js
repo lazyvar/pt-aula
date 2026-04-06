@@ -112,10 +112,12 @@ test.describe('Deck composition', () => {
       .map((x) => x.id);
     expect(bigger.length).toBe(2);
     const [catA, catB] = bigger;
-    const aPts = new Set(truth.getCardsInCategories([catA]).map((c) => c.pt));
-    const bPts = new Set(truth.getCardsInCategories([catB]).map((c) => c.pt));
-    expect(aPts.size).toBeGreaterThanOrEqual(6);
-    expect(bPts.size).toBeGreaterThanOrEqual(6);
+    const aCards = truth.getCardsInCategories([catA]);
+    const bCards = truth.getCardsInCategories([catB]);
+    const aPts = new Set(aCards.map((c) => c.pt));
+    const bPts = new Set(bCards.map((c) => c.pt));
+    expect(aCards.length).toBeGreaterThanOrEqual(6);
+    expect(bCards.length).toBeGreaterThanOrEqual(6);
 
     // Re-seed a session with ONLY catA active, then reload.
     await setActiveCategories([catA]);
@@ -139,7 +141,7 @@ test.describe('Deck composition', () => {
     // Fetch the resulting session and inspect the remaining deck slice.
     const sess = await fetch(`${BASE}/api/session`).then((r) => r.json());
     const remaining = sess.deckOrder.slice(sess.currentIndex);
-    expect(remaining.length).toBe(aPts.size + bPts.size);
+    expect(remaining.length).toBe(aCards.length + bCards.length);
 
     // Buggy behavior appends: remaining = [...all A cards, ...all B cards].
     // Expected behavior: the combined remaining deck is reshuffled, so A and

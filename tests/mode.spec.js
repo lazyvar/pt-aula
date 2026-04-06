@@ -48,6 +48,18 @@ test.describe('Mode toggle (pt↔en)', () => {
     expect(back).toBe(pair.pt);
   });
 
+  test('mode does not revert after marking a card', async ({ page }) => {
+    // Toggle to en-to-pt
+    await page.getByTestId('mode-toggle').click();
+    await expect(page.getByTestId('mode-toggle')).toContainText('EN → PT');
+
+    // Mark the current card correct (Enter)
+    await page.keyboard.press('Enter');
+
+    // Mode should still be en-to-pt
+    await expect(page.getByTestId('mode-toggle')).toContainText('EN → PT');
+  });
+
   test('mode persists across reload', async ({ page }) => {
     await page.getByTestId('mode-toggle').click();
     await expect(page.getByTestId('mode-toggle')).toContainText('EN → PT');

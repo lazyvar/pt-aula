@@ -147,6 +147,7 @@
       e.preventDefault();
       flipCard();
     } else if (e.code === 'Enter') {
+      e.preventDefault();
       mark(true);
     } else if (e.code === 'Backspace' || e.code === 'Delete') {
       e.preventDefault();
