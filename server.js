@@ -212,6 +212,7 @@ app.post("/api/generate-sentences", async (req, res) => {
 Rules:
 - Each sentence must use at least one verb from this list, conjugated naturally. Use each verb at most once, picked randomly: ${verbs.join(", ") || "(none specified)"}
 - Weave in vocabulary from this topic list where it fits naturally. Use each at most once: ${topics.join(", ") || "(none specified)"}
+- Only use REGULAR verb conjugations. Do not use any irregular conjugation forms — stick to standard -ar, -er, -ir conjugation patterns.
 - Vary tenses across the set (present, preterite, imperfect, future, subjunctive where natural).
 - Vary subjects (eu, você, ele/ela, nós, eles/elas) — don't start every sentence the same way.
 - Vary structure and length: mix short (5-8 words) and longer (10-15 words, with clauses).
