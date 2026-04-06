@@ -213,6 +213,7 @@ Rules:
 - Each sentence must use at least one verb from this list, conjugated naturally. Use each verb at most once, picked randomly: ${verbs.join(", ") || "(none specified)"}
 - Weave in vocabulary from this topic list where it fits naturally. Use each at most once: ${topics.join(", ") || "(none specified)"}
 - Only use REGULAR verb conjugations. Do not use any irregular conjugation forms — stick to standard -ar, -er, -ir conjugation patterns.
+- For verbs with multiple meanings, clarify the specific sense in the English translation with a brief parenthetical, e.g. "to know (a place/person)" for conhecer vs "to know (a fact)" for saber, "to play (music)" for tocar vs "to play (a game)" for jogar, "to take (carry)" for levar vs "to take (grab)" for pegar, etc.
 - Vary tenses across the set (present, preterite, imperfect, future, subjunctive where natural).
 - Vary subjects (eu, você, ele/ela, nós, eles/elas) — don't start every sentence the same way.
 - Vary structure and length: mix short (5-8 words) and longer (10-15 words, with clauses).
@@ -258,9 +259,8 @@ Return STRICT JSON only, no prose, no markdown fence. The "sentences" array must
 
 // POST /api/generate-conjugations — body: { activeCats: [categoryId, ...] }
 // Returns { cards: [{ pt, en }, ...] } where each card drills ONE verb
-// conjugation (infinitive + tense + person). Tenses practiced: presente,
-// imperfeito, pretérito perfeito, futuro do pretérito (condicional).
-// Future indicative (futuro do presente) is deliberately excluded.
+// conjugation. We pre-build the 20 combos (verb + pronoun + tense) server-side
+// and ask the AI only to conjugate/translate them.
 app.post("/api/generate-conjugations", async (req, res) => {
   const { activeCats } = req.body;
   if (!Array.isArray(activeCats) || activeCats.length === 0) {
@@ -272,7 +272,7 @@ app.post("/api/generate-conjugations", async (req, res) => {
 
   try {
     const { rows } = await pool.query(
-      `SELECT c.pt FROM cards c JOIN categories cat ON c.category_id = cat.id
+      `SELECT c.pt, c.en FROM cards c JOIN categories cat ON c.category_id = cat.id
        WHERE c.category_id = ANY($1) AND cat.group_name = 'Verbs'`,
       [activeCats]
     );
@@ -287,33 +287,69 @@ app.post("/api/generate-conjugations", async (req, res) => {
       }
       return a;
     };
-    const verbs = shuffle(rows.map(r => r.pt)).slice(0, 20);
 
-    const prompt = `Generate exactly 20 Brazilian Portuguese verb conjugation practice cards.
+    // Filter out irregular verbs — only keep regular -ar/-er/-ir patterns.
+    const IRREGULAR = new Set([
+      'Ser', 'Estar', 'Ter', 'Ir', 'Vir', 'Ver', 'Dar', 'Fazer', 'Dizer', 'Saber',
+      'Poder', 'Querer', 'Pôr', 'Trazer', 'Ler', 'Rir', 'Ouvir', 'Haver', 'Caber',
+      'Sentir', 'Mentir', 'Vestir', 'Servir', 'Seguir', 'Conseguir', 'Competir',
+      'Medir', 'Pedir', 'Investir', 'Preferir', 'Sugerir', 'Repetir', 'Perseguir',
+      'Despedir', 'Ferir', 'Divertir', 'Advertir', 'Aderir',
+      'Dormir', 'Cobrir', 'Descobrir', 'Tossir', 'Engolir', 'Subir',
+      'Fugir', 'Acudir', 'Sacudir', 'Sumir', 'Cuspir',
+      'Construir', 'Destruir', 'Contribuir', 'Diminuir', 'Incluir', 'Substituir',
+      'Traduzir', 'Produzir', 'Conduzir', 'Reduzir',
+      'Cair', 'Sair', 'Sorrir', 'Abrir', 'Imprimir', 'Perder', 'Valer',
+      'Manter', 'Deter', 'Morrer', 'Ferver', 'Render',
+      'Jogar fora', 'Levantar peso', 'Sextar / Sextou',
+    ]);
+    const regularRows = rows.filter(r => !IRREGULAR.has(r.pt));
+    if (regularRows.length === 0) {
+      return res.status(400).json({ error: "No regular verbs found in selected categories" });
+    }
 
-Verbs to use (pick from this list, use each at most once): ${verbs.join(", ")}
+    // Build the English meaning lookup from seed data (preserves differentiators)
+    const enMap = Object.fromEntries(regularRows.map(r => [r.pt, r.en]));
 
-For each card:
-- Pick ONE tense from exactly: presente do indicativo, pretérito perfeito. DO NOT use futuro do presente, pretérito imperfeito, or futuro do pretérito (condicional).
-- Pick ONE person from: eu, você, ele/ela, nós, vocês, eles/elas.
-- Distribute tenses roughly evenly across the 20 cards, and vary persons too.
-- Conjugate the verb correctly in Brazilian Portuguese — be especially careful with irregulars (ser, estar, ter, ir, vir, fazer, dar, saber, querer, poder, dizer, ver, pôr, trazer, etc.).
+    const pronouns = [
+      { pt: 'eu', en: 'I' },
+      { pt: 'você', en: 'you' },
+      { pt: 'ele', en: 'he' },
+      { pt: 'ela', en: 'she' },
+      { pt: 'nós', en: 'we' },
+      { pt: 'elas', en: 'they (f)' },
+      { pt: 'eles', en: 'they (m)' },
+      { pt: 'vocês', en: 'you all' },
+    ];
+    const tenses = ['presente', 'pretérito perfeito'];
 
-Translate each tense into English using these EXACT patterns (no variations):
-- presente do indicativo → simple present: "I walk", "you walk", "he walks", "we walk", "they walk"
-- pretérito perfeito → simple past: "I walked", "you walked", "he walked"
+    // Generate 20 random combos: verb + pronoun + tense
+    const combos = [];
+    const shuffledVerbs = shuffle(regularRows.map(r => r.pt));
+    for (let i = 0; i < 20; i++) {
+      combos.push({
+        verb: shuffledVerbs[i % shuffledVerbs.length],
+        pronoun: pronouns[Math.floor(Math.random() * pronouns.length)],
+        tense: tenses[Math.floor(Math.random() * tenses.length)],
+      });
+    }
 
-Each card is just a pronoun + conjugated verb (no object, no full sentence):
-- "pt": "<pronoun> <conjugated verb>"
-- "en": "<English subject + English conjugated verb>"
+    const comboList = combos.map((c, i) =>
+      `${i + 1}. ${c.verb} (${enMap[c.verb]}) — ${c.pronoun.pt} (${c.pronoun.en}) — ${c.tense}`
+    ).join('\n');
 
-Examples:
-  {"pt":"eu andei","en":"I walked"}
-  {"pt":"nós comemos","en":"we ate"}
-  {"pt":"vocês foram","en":"you all went"}
-  {"pt":"elas têm","en":"they have"}
+    const prompt = `Conjugate each verb below for the given pronoun and tense. Return a JSON array of cards.
 
-Return STRICT JSON only, no prose, no markdown fence. The "cards" array must contain exactly 20 items:
+For each item, produce:
+- "pt": the Portuguese pronoun + conjugated verb (e.g. "eu andei")
+- "en": the English subject + conjugated verb + meaning from the parentheses (e.g. "I walked (strolled)")
+
+Use regular -ar/-er/-ir conjugation rules only. Keep the English meaning/differentiator from the parentheses in each "en" value.
+
+Items:
+${comboList}
+
+Return STRICT JSON only, no prose, no markdown fence:
 {"cards":[{"pt":"...","en":"..."}]}`;
 
     const response = await anthropic.messages.create({
