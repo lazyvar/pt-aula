@@ -2,7 +2,7 @@
   import { session, toggleMode, shuffleRemaining, startDeck, deleteSession } from '../stores/session';
   import { allCards, hydrateCards } from '../stores/cards';
   import { resetStats } from '../stores/stats';
-  import { isGenerating, generatedMode, generate } from '../stores/generated';
+  import { generatingKind, generatedMode, generate, type GenerateKind } from '../stores/generated';
   import { snapshotDeck, applyGeneratedDeck } from '../stores/session';
   import { get } from 'svelte/store';
 
@@ -23,8 +23,9 @@
     startDeck(get(allCards));
   }
 
-  async function onGenerate() {
+  async function onGenerate(kind: GenerateKind) {
     const err = await generate(
+      kind,
       get(session).activeCats,
       snapshotDeck,
       applyGeneratedDeck,
@@ -41,8 +42,15 @@
 <button class="ctrl-btn" on:click={onReseed}>Reseed</button>
 <button
   class="ctrl-btn gen-btn"
-  on:click={onGenerate}
-  disabled={$isGenerating || $generatedMode}
+  on:click={() => onGenerate('sentences')}
+  disabled={$generatingKind !== null || $generatedMode}
 >
-  {$isGenerating ? '⏳ Generating…' : '✨ Generate'}
+  {$generatingKind === 'sentences' ? '⏳ Generating…' : '✨ Sentences'}
+</button>
+<button
+  class="ctrl-btn gen-btn"
+  on:click={() => onGenerate('conjugations')}
+  disabled={$generatingKind !== null || $generatedMode}
+>
+  {$generatingKind === 'conjugations' ? '⏳ Generating…' : '✨ Conjugations'}
 </button>

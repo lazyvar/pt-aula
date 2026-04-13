@@ -3,8 +3,10 @@ import { writable, get } from 'svelte/store';
 import type { Card, DeckSnapshot } from '../types';
 import { GENERATED_CAT } from '../types';
 
+export type GenerateKind = 'sentences' | 'conjugations';
+
 export const generatedMode = writable<boolean>(false);
-export const isGenerating = writable<boolean>(false);
+export const generatingKind = writable<GenerateKind | null>(null);
 export const generatedCards = writable<Card[]>([]);
 
 // Snapshot of real deck state before entering gen mode.
@@ -12,28 +14,22 @@ export const generatedCards = writable<Card[]>([]);
 // to react to snapshot changes.
 let savedSnapshot: DeckSnapshot | null = null;
 
-/**
- * Call POST /api/generate-conjugations with the active categories, swap the
- * deck to the generated cards on success.
- *
- * @param activeCats  array of category ids
- * @param takeSnapshot  called to capture the current deck state before the swap
- * @param applyGenerated  called with the generated Card[] to install into the app
- * @returns error message string on failure, null on success (or user-cancel)
- */
 export async function generate(
+  kind: GenerateKind,
   activeCats: string[],
   takeSnapshot: () => DeckSnapshot,
   applyGenerated: (cards: Card[]) => void,
 ): Promise<string | null> {
-  if (get(isGenerating) || get(generatedMode)) return null;
+  if (get(generatingKind) !== null || get(generatedMode)) return null;
   if (activeCats.length === 0) {
     return 'Select at least one category first.';
   }
 
-  isGenerating.set(true);
+  const url = kind === 'sentences' ? '/api/generate-sentences' : '/api/generate-conjugations';
+
+  generatingKind.set(kind);
   try {
-    const res = await fetch('/api/generate-conjugations', {
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ activeCats }),
@@ -52,7 +48,7 @@ export async function generate(
   } catch (err) {
     return 'Generation failed: ' + (err instanceof Error ? err.message : String(err));
   } finally {
-    isGenerating.set(false);
+    generatingKind.set(null);
   }
 }
 
