@@ -11,6 +11,7 @@ const INITIAL: Session = {
   mode: 'pt-to-en',
   activeCats: [],
   wrongCards: [],
+  typeMode: false,
 };
 
 export const session = writable<Session>(INITIAL);
@@ -70,6 +71,7 @@ export async function hydrateSession(allCards: Card[]): Promise<boolean | null> 
   // and we want startDeck() to use them.
   session.set({
     ...s,
+    typeMode: !!s.typeMode,
     // Keep the deckOrder from server so hydrated=true write-back is a no-op.
   });
   deck.set(resolvedDeck);
@@ -203,6 +205,13 @@ export function toggleCat(cat: string, allCardsIn: Card[]): void {
       deckOrder: newDeck.map((c) => c.pt),
     }));
   }
+}
+
+/**
+ * Toggle desktop "type to answer" mode.
+ */
+export function toggleTypeMode(): void {
+  session.update((s) => ({ ...s, typeMode: !s.typeMode }));
 }
 
 /**

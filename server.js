@@ -35,6 +35,7 @@ async function init() {
     )
   `);
   await pool.query(`ALTER TABLE session ADD COLUMN IF NOT EXISTS wrong_cards JSONB NOT NULL DEFAULT '[]'`);
+  await pool.query(`ALTER TABLE session ADD COLUMN IF NOT EXISTS type_mode BOOLEAN NOT NULL DEFAULT false`);
   await pool.query(`
     CREATE TABLE IF NOT EXISTS categories (
       id TEXT PRIMARY KEY,
@@ -116,18 +117,19 @@ app.get("/api/session", async (req, res) => {
     mode: r.mode,
     activeCats: r.active_cats,
     wrongCards: r.wrong_cards,
+    typeMode: r.type_mode,
   });
 });
 
 // PUT /api/session
 app.put("/api/session", async (req, res) => {
-  const { deckOrder, currentIndex, correct, wrong, mode, activeCats, wrongCards } = req.body;
+  const { deckOrder, currentIndex, correct, wrong, mode, activeCats, wrongCards, typeMode } = req.body;
   await pool.query(
-    `INSERT INTO session (id, deck_order, current_index, correct, wrong, mode, active_cats, wrong_cards)
-     VALUES (1, $1, $2, $3, $4, $5, $6, $7)
+    `INSERT INTO session (id, deck_order, current_index, correct, wrong, mode, active_cats, wrong_cards, type_mode)
+     VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8)
      ON CONFLICT (id) DO UPDATE SET
-       deck_order = $1, current_index = $2, correct = $3, wrong = $4, mode = $5, active_cats = $6, wrong_cards = $7`,
-    [JSON.stringify(deckOrder), currentIndex, correct, wrong, mode, JSON.stringify(activeCats), JSON.stringify(wrongCards || [])]
+       deck_order = $1, current_index = $2, correct = $3, wrong = $4, mode = $5, active_cats = $6, wrong_cards = $7, type_mode = $8`,
+    [JSON.stringify(deckOrder), currentIndex, correct, wrong, mode, JSON.stringify(activeCats), JSON.stringify(wrongCards || []), !!typeMode]
   );
   res.json({ ok: true });
 });

@@ -63,6 +63,20 @@
     isFlipped = !isFlipped;
   }
 
+  // --- Type-to-answer mode ---
+  let typedAnswer = '';
+
+  function normalizeForCompare(s: string): string {
+    return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  async function checkTypedAnswer() {
+    if (!currentCard || back == null) return;
+    const ok = normalizeForCompare(typedAnswer) === normalizeForCompare(back);
+    typedAnswer = '';
+    await mark(ok);
+  }
+
   async function mark(gotIt: boolean) {
     if (!currentCard) return;
     const card = currentCard;
@@ -143,6 +157,9 @@
   // Exposed to App.svelte for keyboard handlers.
   export function handleKeydown(e: KeyboardEvent) {
     if (!currentCard) return;
+    // In type mode the input owns the keyboard; the global card shortcuts
+    // (space to flip, Enter to mark right, etc.) would otherwise hijack typing.
+    if ($session.typeMode) return;
     if (e.code === 'Space' || e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
       e.preventDefault();
       flipCard();
@@ -208,9 +225,27 @@
     </div>
   </div>
 
-  <div class="buttons">
-    <button class="btn btn-wrong" data-testid="btn-wrong" on:click={() => mark(false)}>✗ Again</button>
-    <button class="btn btn-right" data-testid="btn-right" on:click={() => mark(true)}>✓ Got it</button>
-  </div>
-  <div class="keyboard-hint">Space/←/→ = flip · Enter = got it · Delete = again</div>
+  {#if $session.typeMode}
+    <div class="type-row">
+      <input
+        class="type-input"
+        data-testid="type-input"
+        type="text"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        placeholder="Type the {backLabel.toLowerCase()} answer…"
+        bind:value={typedAnswer}
+        on:keydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); checkTypedAnswer(); } }}
+      />
+      <button class="btn btn-right" data-testid="type-check" on:click={checkTypedAnswer}>Check</button>
+    </div>
+    <div class="keyboard-hint">Type the answer · Enter to check</div>
+  {:else}
+    <div class="buttons">
+      <button class="btn btn-wrong" data-testid="btn-wrong" on:click={() => mark(false)}>✗ Again</button>
+      <button class="btn btn-right" data-testid="btn-right" on:click={() => mark(true)}>✓ Got it</button>
+    </div>
+    <div class="keyboard-hint">Space/←/→ = flip · Enter = got it · Delete = again</div>
+  {/if}
 </div>

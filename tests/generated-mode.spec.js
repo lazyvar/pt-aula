@@ -26,7 +26,7 @@ test.describe('Generated Mode', () => {
 
   test('clicking Generate enters gen mode, shows banner, shows generated cards', async ({ page }) => {
     // Desktop sidebar has the Generate button
-    await page.getByRole('button', { name: /Generate/ }).first().click();
+    await page.getByRole('button', { name: '✨ Conjugations', exact: true }).first().click();
 
     // Gen banner visible
     await expect(page.getByText(/Generated Mode/)).toBeVisible();
@@ -46,7 +46,7 @@ test.describe('Generated Mode', () => {
 
   test('in gen mode, marking cards does NOT write stats or session', async ({ page }) => {
     // Enter gen mode
-    await page.getByRole('button', { name: /Generate/ }).first().click();
+    await page.getByRole('button', { name: '✨ Conjugations', exact: true }).first().click();
     await expect(page.getByText(/Generated Mode/)).toBeVisible();
 
     // Mark a card correct
@@ -82,7 +82,7 @@ test.describe('Generated Mode', () => {
     const afterMarkRemaining = await page.getByTestId('counter-remaining').textContent();
 
     // Enter gen mode
-    await page.getByRole('button', { name: /Generate/ }).first().click();
+    await page.getByRole('button', { name: '✨ Conjugations', exact: true }).first().click();
     await expect(page.getByText(/Generated Mode/)).toBeVisible();
 
     // Exit gen mode
@@ -122,10 +122,77 @@ test.describe('Generated Mode', () => {
       await dialog.dismiss();
     });
 
-    await page.getByRole('button', { name: /Generate/ }).first().click();
+    await page.getByRole('button', { name: '✨ Conjugations', exact: true }).first().click();
     await page.waitForTimeout(200);
     expect(alertFired).toBe(true);
     // Should NOT be in gen mode
     await expect(page.locator('body')).not.toHaveClass(/gen-mode/);
+  });
+});
+
+test.describe('Generate Sentences', () => {
+  const MOCK_SENTENCES_S = Array.from({ length: 20 }, (_, i) => ({
+    pt: `Sentença gerada ${i + 1}`,
+    en: `Generated sentence ${i + 1}`,
+  }));
+
+  test.beforeEach(async ({ page }) => {
+    await resetAll();
+    await page.route('**/api/generate-sentences', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ cards: MOCK_SENTENCES_S }),
+      });
+    });
+    // Make sure the conjugations endpoint is NOT what gets hit.
+    await page.route('**/api/generate-conjugations', async (route) => {
+      await route.fulfill({ status: 500, body: 'should not be called' });
+    });
+    await page.goto('/');
+    await expect(page.getByTestId('card-container')).toBeVisible();
+  });
+
+  test('only the pressed button shows the Generating… label', async ({ page }) => {
+    // Hold the response open so we can inspect the in-flight UI state.
+    let release;
+    const gate = new Promise((resolve) => { release = resolve; });
+    await page.unroute('**/api/generate-sentences');
+    await page.route('**/api/generate-sentences', async (route) => {
+      await gate;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ cards: MOCK_SENTENCES_S }),
+      });
+    });
+
+    await page.getByRole('button', { name: '✨ Sentences', exact: true }).first().click();
+
+    // While the request is pending, the Sentences button should be in its Generating… state…
+    await expect(
+      page.getByRole('button', { name: '⏳ Generating…', exact: true }).first()
+    ).toBeVisible();
+    // …and the Conjugations button should still show its normal label.
+    await expect(
+      page.getByRole('button', { name: '✨ Conjugations', exact: true }).first()
+    ).toBeVisible();
+
+    release();
+    await expect(page.getByText(/Generated Mode/)).toBeVisible();
+  });
+
+  test('Sentences button calls /api/generate-sentences and enters gen mode', async ({ page }) => {
+    const reqPromise = page.waitForRequest('**/api/generate-sentences');
+    await page.getByRole('button', { name: '✨ Sentences', exact: true }).first().click();
+    await reqPromise;
+
+    await expect(page.getByText(/Generated Mode/)).toBeVisible();
+    await expect(page.locator('body')).toHaveClass(/gen-mode/);
+
+    const front = (await page.getByTestId('card-front').locator('.card-word').textContent())?.trim();
+    const mockPts = new Set(MOCK_SENTENCES_S.map(s => s.pt));
+    expect(mockPts.has(front)).toBe(true);
+    await expect(page.getByTestId('counter-remaining')).toContainText('20');
   });
 });

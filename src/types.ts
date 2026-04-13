@@ -22,6 +22,7 @@ export interface Session {
   mode: 'pt-to-en' | 'en-to-pt';
   activeCats: string[];      // array of category ids
   wrongCards: string[];      // array of pt strings
+  typeMode: boolean;
 }
 
 export interface CardStat {

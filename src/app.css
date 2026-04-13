@@ -564,6 +564,28 @@
   }
   .btn-right:hover { background: rgba(46,204,113,0.2); }
 
+  .type-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .type-input {
+    flex: 0 1 360px;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated, rgba(255,255,255,0.04));
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    outline: none;
+  }
+  .type-input:focus {
+    border-color: var(--accent);
+  }
+
   .controls {
     display: flex;
     justify-content: center;
