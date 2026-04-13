@@ -3,8 +3,9 @@
   import { allCards, hydrateCards } from '../stores/cards';
   import { resetStats } from '../stores/stats';
   import { generatingKind, generatedMode, generate, type GenerateKind } from '../stores/generated';
-  import { snapshotDeck, applyGeneratedDeck } from '../stores/session';
+  import { snapshotDeck, applyGeneratedDeck, reviewDifficultCards } from '../stores/session';
   import { get } from 'svelte/store';
+  import { difficultCount } from '../stores/difficulty';
 
   // When true (default), the mode-toggle button carries data-testid="mode-toggle".
   // Pass false in contexts where a second instance would create strict-mode violations.
@@ -38,6 +39,14 @@
   {$session.mode === 'pt-to-en' ? 'PT → EN' : 'EN → PT'}
 </button>
 <button class="ctrl-btn" on:click={() => shuffleRemaining($allCards)}>Shuffle</button>
+<button
+  class="ctrl-btn"
+  data-testid="difficult-btn"
+  on:click={() => reviewDifficultCards($allCards)}
+  disabled={$difficultCount === 0}
+>
+  Difficult ({$difficultCount})
+</button>
 <button class="ctrl-btn" on:click={onResetStats}>Reset Stats</button>
 <button class="ctrl-btn" on:click={onReseed}>Reseed</button>
 <button
