@@ -20,7 +20,7 @@ export async function hydrateStats(): Promise<void> {
  */
 export function getCardStats(card: Card): CardStat {
   const id = getCardId(card);
-  return get(statsCache)[id] || { right: 0, wrong: 0 };
+  return get(statsCache)[id] || { right: 0, wrong: 0, recent_history: 0 };
 }
 
 /**

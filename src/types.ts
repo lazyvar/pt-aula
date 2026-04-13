@@ -28,6 +28,7 @@ export interface Session {
 export interface CardStat {
   right: number;
   wrong: number;
+  recent_history: number; // 5-bit ring buffer, low bit = most recent; 1 = wrong
 }
 
 export type StatsMap = Record<string, CardStat>;
