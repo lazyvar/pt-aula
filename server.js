@@ -77,12 +77,18 @@ async function seedCardsAndCategories() {
   console.log(`Seeded ${categories.length} categories and ${cards.length} cards`);
 }
 
-// GET /api/stats — return all card stats as { [card_id]: { right, wrong } }
+// GET /api/stats — return all card stats as { [card_id]: { right, wrong, recent_history } }
 app.get("/api/stats", async (req, res) => {
-  const { rows } = await pool.query("SELECT card_id, right_count, wrong_count FROM card_stats");
+  const { rows } = await pool.query(
+    "SELECT card_id, right_count, wrong_count, recent_history FROM card_stats"
+  );
   const stats = {};
   for (const row of rows) {
-    stats[row.card_id] = { right: row.right_count, wrong: row.wrong_count };
+    stats[row.card_id] = {
+      right: row.right_count,
+      wrong: row.wrong_count,
+      recent_history: row.recent_history,
+    };
   }
   res.json(stats);
 });
@@ -92,17 +98,24 @@ app.post("/api/stats/:cardId/mark", async (req, res) => {
   const { cardId } = req.params;
   const { correct } = req.body;
   const col = correct ? "right_count" : "wrong_count";
+  const bit = correct ? 0 : 1;
   await pool.query(
-    `INSERT INTO card_stats (card_id, ${col})
-     VALUES ($1, 1)
-     ON CONFLICT (card_id) DO UPDATE SET ${col} = card_stats.${col} + 1`,
-    [cardId]
+    `INSERT INTO card_stats (card_id, ${col}, recent_history)
+     VALUES ($1, 1, $2)
+     ON CONFLICT (card_id) DO UPDATE SET
+       ${col} = card_stats.${col} + 1,
+       recent_history = ((card_stats.recent_history << 1) | $2) & 31`,
+    [cardId, bit]
   );
   const { rows } = await pool.query(
-    "SELECT right_count, wrong_count FROM card_stats WHERE card_id = $1",
+    "SELECT right_count, wrong_count, recent_history FROM card_stats WHERE card_id = $1",
     [cardId]
   );
-  res.json({ right: rows[0].right_count, wrong: rows[0].wrong_count });
+  res.json({
+    right: rows[0].right_count,
+    wrong: rows[0].wrong_count,
+    recent_history: rows[0].recent_history,
+  });
 });
 
 // GET /api/session
