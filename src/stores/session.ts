@@ -2,6 +2,8 @@
 import { writable, get } from 'svelte/store';
 import type { Card, Session } from '../types';
 import { generatedMode } from './generated';
+import { difficultCards } from '../lib/difficulty';
+import { statsCache } from './stats';
 
 const INITIAL: Session = {
   deckOrder: [],
@@ -157,6 +159,35 @@ export function reviewWrongCards(): void {
   wrongCardsList.set([]);
   session.update((s) => ({
     ...s,
+    deckOrder: shuffled.map((c) => c.pt),
+    currentIndex: 0,
+    correct: 0,
+    wrong: 0,
+    wrongCards: [],
+  }));
+}
+
+/**
+ * Rebuild the deck from cards the user is historically bad at (see
+ * src/lib/difficulty.ts). Scoped to activeCats by default; if that set has
+ * no difficult cards, falls back to all cards across every category.
+ */
+export function reviewDifficultCards(allCardsIn: Card[]): void {
+  const s = get(session);
+  const stats = get(statsCache);
+  const active = new Set(s.activeCats);
+
+  let pool = difficultCards(allCardsIn, stats, active);
+  if (pool.length === 0) {
+    pool = difficultCards(allCardsIn, stats);
+  }
+  if (pool.length === 0) return;
+
+  const shuffled = shuffle(pool);
+  deck.set(shuffled);
+  wrongCardsList.set([]);
+  session.update((ss) => ({
+    ...ss,
     deckOrder: shuffled.map((c) => c.pt),
     currentIndex: 0,
     correct: 0,
