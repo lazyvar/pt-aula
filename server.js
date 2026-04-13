@@ -22,6 +22,7 @@ async function init() {
       wrong_count INTEGER NOT NULL DEFAULT 0
     )
   `);
+  await pool.query(`ALTER TABLE card_stats ADD COLUMN IF NOT EXISTS recent_history INTEGER NOT NULL DEFAULT 0`);
   await pool.query(`
     CREATE TABLE IF NOT EXISTS session (
       id INTEGER PRIMARY KEY DEFAULT 1,
