@@ -234,6 +234,7 @@ Rules:
 - For verbs with multiple meanings, clarify the specific sense in the English translation with a brief parenthetical, e.g. "to know (a place/person)" for conhecer vs "to know (a fact)" for saber, "to play (music)" for tocar vs "to play (a game)" for jogar, "to take (carry)" for levar vs "to take (grab)" for pegar, etc.
 - Vary tenses across the set (present, preterite, imperfect, future, subjunctive where natural).
 - Vary subjects (eu, você, ele/ela, nós, eles/elas) — don't start every sentence the same way.
+- When the subject is "eles" or "elas", the English translation MUST disambiguate gender with a parenthetical: "they (m)" for eles, "they (f)" for elas. Never leave plain "they" for these subjects.
 - Vary structure and length: mix short (5-8 words) and longer (10-15 words, with clauses).
 - Natural, conversational Brazilian Portuguese.
 - English translations should be natural and idiomatic, not literal.
@@ -364,6 +365,8 @@ For each item, produce:
 - "en": the English subject + conjugated verb + meaning from the parentheses (e.g. "I walked (strolled)")
 
 Use regular -ar/-er/-ir conjugation rules only. Keep the English meaning/differentiator from the parentheses in each "en" value.
+
+For "eles" and "elas", the English subject MUST include a gender parenthetical: "they (m)" for eles, "they (f)" for elas. Never output plain "they" for these pronouns.
 
 Items:
 ${comboList}
