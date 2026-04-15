@@ -208,6 +208,7 @@ app.post("/api/generate-sentences", async (req, res) => {
        WHERE c.category_id = ANY($1)`,
       [activeCats]
     );
+
     const shuffle = (arr) => {
       const a = arr.slice();
       for (let i = a.length - 1; i > 0; i--) {
@@ -216,8 +217,9 @@ app.post("/api/generate-sentences", async (req, res) => {
       }
       return a;
     };
-    const verbs = shuffle(rows.filter(r => r.group_name === "Verbs").map(r => r.pt)).slice(0, 30);
-    const topics = shuffle(rows.filter(r => r.group_name === "Topics").map(r => r.pt)).slice(0, 30);
+
+    const verbs = shuffle([...new Set(rows.filter(r => r.group_name === "Verbs").map(r => r.pt))]).slice(0, 30);
+    const topics = shuffle([...new Set(rows.filter(r => r.group_name === "Topics").map(r => r.pt))]).slice(0, 30);
 
     if (verbs.length === 0 && topics.length === 0) {
       return res.status(400).json({ error: "Select at least one Verb or Topic category" });
@@ -268,8 +270,9 @@ Return STRICT JSON only, no prose, no markdown fence. The "sentences" array must
 
     res.json({ cards });
   } catch (err) {
-    console.error("Generate failed:", err.message);
-    res.status(502).json({ error: err.message });
+    const msg = err && err.message ? err.message : String(err);
+    console.error("Generate failed:", msg);
+    res.status(502).json({ error: msg });
   }
 });
 
