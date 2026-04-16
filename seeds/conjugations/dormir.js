@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela dormiu", en: "He/She slept", category_id: "dormir-conj" },
   { pt: "Nós dormimos (past)", en: "We slept", category_id: "dormir-conj" },
   { pt: "Vocês dormiram", en: "You all slept", category_id: "dormir-conj" },
-  { pt: "Eles/Elas dormiram", en: "They slept", category_id: "dormir-conj" },
-  { pt: "Eu dormirei", en: "I will sleep", category_id: "dormir-conj" },
-  { pt: "Você dormirá", en: "You will sleep", category_id: "dormir-conj" },
-  { pt: "Ele/Ela dormirá", en: "He/She will sleep", category_id: "dormir-conj" },
-  { pt: "Nós dormiremos", en: "We will sleep", category_id: "dormir-conj" },
-  { pt: "Vocês dormirão", en: "You all will sleep", category_id: "dormir-conj" },
-  { pt: "Eles/Elas dormirão", en: "They will sleep", category_id: "dormir-conj" },
-  { pt: "Eu dormiria", en: "I would sleep", category_id: "dormir-conj" },
-  { pt: "Você dormiria", en: "You would sleep", category_id: "dormir-conj" },
-  { pt: "Ele/Ela dormiria", en: "He/She would sleep", category_id: "dormir-conj" },
-  { pt: "Nós dormiríamos", en: "We would sleep", category_id: "dormir-conj" },
-  { pt: "Vocês dormiriam", en: "You all would sleep", category_id: "dormir-conj" },
-  { pt: "Eles/Elas dormiriam", en: "They would sleep", category_id: "dormir-conj" }
+  { pt: "Eles/Elas dormiram", en: "They slept", category_id: "dormir-conj" }
 ];
 
 module.exports = { categories: [category], cards };

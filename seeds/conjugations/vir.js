@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela veio", en: "He/She came", category_id: "vir-conj" },
   { pt: "Nós viemos", en: "We came", category_id: "vir-conj" },
   { pt: "Vocês vieram", en: "You all came", category_id: "vir-conj" },
-  { pt: "Eles/Elas vieram", en: "They came", category_id: "vir-conj" },
-  { pt: "Eu viria", en: "I would come", category_id: "vir-conj" },
-  { pt: "Você viria", en: "You would come", category_id: "vir-conj" },
-  { pt: "Ele/Ela viria", en: "He/She would come", category_id: "vir-conj" },
-  { pt: "Nós viríamos", en: "We would come", category_id: "vir-conj" },
-  { pt: "Vocês viriam", en: "You all would come", category_id: "vir-conj" },
-  { pt: "Eles/Elas viriam", en: "They would come", category_id: "vir-conj" },
-  { pt: "Eu virei", en: "I will come", category_id: "vir-conj" },
-  { pt: "Você virá", en: "You will come", category_id: "vir-conj" },
-  { pt: "Ele/Ela virá", en: "He/She will come", category_id: "vir-conj" },
-  { pt: "Nós viremos", en: "We will come", category_id: "vir-conj" },
-  { pt: "Vocês virão", en: "You all will come", category_id: "vir-conj" },
-  { pt: "Eles/Elas virão", en: "They will come", category_id: "vir-conj" }
+  { pt: "Eles/Elas vieram", en: "They came", category_id: "vir-conj" }
 ];
 
 module.exports = { categories: [category], cards };

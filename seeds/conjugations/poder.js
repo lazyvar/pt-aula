@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela pôde", en: "He/She was able to", category_id: "poder-conj" },
   { pt: "Nós pudemos", en: "We were able to", category_id: "poder-conj" },
   { pt: "Vocês puderam", en: "You all were able to", category_id: "poder-conj" },
-  { pt: "Eles/Elas puderam", en: "They were able to", category_id: "poder-conj" },
-  { pt: "Eu poderia", en: "I could / I would be able to", category_id: "poder-conj" },
-  { pt: "Você poderia", en: "You could", category_id: "poder-conj" },
-  { pt: "Ele/Ela poderia", en: "He/She could", category_id: "poder-conj" },
-  { pt: "Nós poderíamos", en: "We could", category_id: "poder-conj" },
-  { pt: "Vocês poderiam", en: "You all could", category_id: "poder-conj" },
-  { pt: "Eles/Elas poderiam", en: "They could", category_id: "poder-conj" },
-  { pt: "Eu poderei", en: "I will be able to", category_id: "poder-conj" },
-  { pt: "Você poderá", en: "You will be able to", category_id: "poder-conj" },
-  { pt: "Ele/Ela poderá", en: "He/She will be able to", category_id: "poder-conj" },
-  { pt: "Nós poderemos", en: "We will be able to", category_id: "poder-conj" },
-  { pt: "Vocês poderão", en: "You all will be able to", category_id: "poder-conj" },
-  { pt: "Eles/Elas poderão", en: "They will be able to", category_id: "poder-conj" }
+  { pt: "Eles/Elas puderam", en: "They were able to", category_id: "poder-conj" }
 ];
 
 module.exports = { categories: [category], cards };

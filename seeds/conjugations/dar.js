@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela deu", en: "He/She gave", category_id: "dar-conj" },
   { pt: "Nós demos", en: "We gave", category_id: "dar-conj" },
   { pt: "Vocês deram", en: "You all gave", category_id: "dar-conj" },
-  { pt: "Eles/Elas deram", en: "They gave", category_id: "dar-conj" },
-  { pt: "Eu daria", en: "I would give", category_id: "dar-conj" },
-  { pt: "Você daria", en: "You would give", category_id: "dar-conj" },
-  { pt: "Ele/Ela daria", en: "He/She would give", category_id: "dar-conj" },
-  { pt: "Nós daríamos", en: "We would give", category_id: "dar-conj" },
-  { pt: "Vocês dariam", en: "You all would give", category_id: "dar-conj" },
-  { pt: "Eles/Elas dariam", en: "They would give", category_id: "dar-conj" },
-  { pt: "Eu darei", en: "I will give", category_id: "dar-conj" },
-  { pt: "Você dará", en: "You will give", category_id: "dar-conj" },
-  { pt: "Ele/Ela dará", en: "He/She will give", category_id: "dar-conj" },
-  { pt: "Nós daremos", en: "We will give", category_id: "dar-conj" },
-  { pt: "Vocês darão", en: "You all will give", category_id: "dar-conj" },
-  { pt: "Eles/Elas darão", en: "They will give", category_id: "dar-conj" }
+  { pt: "Eles/Elas deram", en: "They gave", category_id: "dar-conj" }
 ];
 
 module.exports = { categories: [category], cards };

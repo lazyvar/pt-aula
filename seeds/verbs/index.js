@@ -6,6 +6,7 @@ const parts = [
   require("./expanding"),
   require("./advanced"),
   require("./extra"),
+  require("./irregulars"),
 ];
 
 const categories = parts.flatMap(p => p.categories);

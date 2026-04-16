@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela caiu", en: "He/She fell", category_id: "cair-conj" },
   { pt: "Nós caímos (past)", en: "We fell", category_id: "cair-conj" },
   { pt: "Vocês caíram", en: "You all fell", category_id: "cair-conj" },
-  { pt: "Eles/Elas caíram", en: "They fell", category_id: "cair-conj" },
-  { pt: "Eu cairei", en: "I will fall", category_id: "cair-conj" },
-  { pt: "Você cairá", en: "You will fall", category_id: "cair-conj" },
-  { pt: "Ele/Ela cairá", en: "He/She will fall", category_id: "cair-conj" },
-  { pt: "Nós cairemos", en: "We will fall", category_id: "cair-conj" },
-  { pt: "Vocês cairão", en: "You all will fall", category_id: "cair-conj" },
-  { pt: "Eles/Elas cairão", en: "They will fall", category_id: "cair-conj" },
-  { pt: "Eu cairia", en: "I would fall", category_id: "cair-conj" },
-  { pt: "Você cairia", en: "You would fall", category_id: "cair-conj" },
-  { pt: "Ele/Ela cairia", en: "He/She would fall", category_id: "cair-conj" },
-  { pt: "Nós cairíamos", en: "We would fall", category_id: "cair-conj" },
-  { pt: "Vocês cairiam", en: "You all would fall", category_id: "cair-conj" },
-  { pt: "Eles/Elas cairiam", en: "They would fall", category_id: "cair-conj" }
+  { pt: "Eles/Elas caíram", en: "They fell", category_id: "cair-conj" }
 ];
 
 module.exports = { categories: [category], cards };

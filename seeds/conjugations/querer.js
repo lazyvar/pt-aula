@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela quis", en: "He/She wanted", category_id: "querer-conj" },
   { pt: "Nós quisemos", en: "We wanted", category_id: "querer-conj" },
   { pt: "Vocês quiseram", en: "You all wanted", category_id: "querer-conj" },
-  { pt: "Eles/Elas quiseram", en: "They wanted", category_id: "querer-conj" },
-  { pt: "Eu quereria", en: "I would want", category_id: "querer-conj" },
-  { pt: "Você quereria", en: "You would want", category_id: "querer-conj" },
-  { pt: "Ele/Ela quereria", en: "He/She would want", category_id: "querer-conj" },
-  { pt: "Nós quereríamos", en: "We would want", category_id: "querer-conj" },
-  { pt: "Vocês quereriam", en: "You all would want", category_id: "querer-conj" },
-  { pt: "Eles/Elas quereriam", en: "They would want", category_id: "querer-conj" },
-  { pt: "Eu quererei", en: "I will want", category_id: "querer-conj" },
-  { pt: "Você quererá", en: "You will want", category_id: "querer-conj" },
-  { pt: "Ele/Ela quererá", en: "He/She will want", category_id: "querer-conj" },
-  { pt: "Nós quereremos", en: "We will want", category_id: "querer-conj" },
-  { pt: "Vocês quererão", en: "You all will want", category_id: "querer-conj" },
-  { pt: "Eles/Elas quererão", en: "They will want", category_id: "querer-conj" }
+  { pt: "Eles/Elas quiseram", en: "They wanted", category_id: "querer-conj" }
 ];
 
 module.exports = { categories: [category], cards };

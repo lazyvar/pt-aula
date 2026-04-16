@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela ouviu", en: "He/She heard", category_id: "ouvir-conj" },
   { pt: "Nós ouvimos (past)", en: "We heard", category_id: "ouvir-conj" },
   { pt: "Vocês ouviram", en: "You all heard", category_id: "ouvir-conj" },
-  { pt: "Eles/Elas ouviram", en: "They heard", category_id: "ouvir-conj" },
-  { pt: "Eu ouvirei", en: "I will hear", category_id: "ouvir-conj" },
-  { pt: "Você ouvirá", en: "You will hear", category_id: "ouvir-conj" },
-  { pt: "Ele/Ela ouvirá", en: "He/She will hear", category_id: "ouvir-conj" },
-  { pt: "Nós ouviremos", en: "We will hear", category_id: "ouvir-conj" },
-  { pt: "Vocês ouvirão", en: "You all will hear", category_id: "ouvir-conj" },
-  { pt: "Eles/Elas ouvirão", en: "They will hear", category_id: "ouvir-conj" },
-  { pt: "Eu ouviria", en: "I would hear", category_id: "ouvir-conj" },
-  { pt: "Você ouviria", en: "You would hear", category_id: "ouvir-conj" },
-  { pt: "Ele/Ela ouviria", en: "He/She would hear", category_id: "ouvir-conj" },
-  { pt: "Nós ouviríamos", en: "We would hear", category_id: "ouvir-conj" },
-  { pt: "Vocês ouviriam", en: "You all would hear", category_id: "ouvir-conj" },
-  { pt: "Eles/Elas ouviriam", en: "They would hear", category_id: "ouvir-conj" }
+  { pt: "Eles/Elas ouviram", en: "They heard", category_id: "ouvir-conj" }
 ];
 
 module.exports = { categories: [category], cards };

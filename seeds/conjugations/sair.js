@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela saiu", en: "He/She left", category_id: "sair-conj" },
   { pt: "Nós saímos (past)", en: "We left", category_id: "sair-conj" },
   { pt: "Vocês saíram", en: "You all left", category_id: "sair-conj" },
-  { pt: "Eles/Elas saíram", en: "They left", category_id: "sair-conj" },
-  { pt: "Eu sairei", en: "I will leave", category_id: "sair-conj" },
-  { pt: "Você sairá", en: "You will leave", category_id: "sair-conj" },
-  { pt: "Ele/Ela sairá", en: "He/She will leave", category_id: "sair-conj" },
-  { pt: "Nós sairemos", en: "We will leave", category_id: "sair-conj" },
-  { pt: "Vocês sairão", en: "You all will leave", category_id: "sair-conj" },
-  { pt: "Eles/Elas sairão", en: "They will leave", category_id: "sair-conj" },
-  { pt: "Eu sairia", en: "I would leave", category_id: "sair-conj" },
-  { pt: "Você sairia", en: "You would leave", category_id: "sair-conj" },
-  { pt: "Ele/Ela sairia", en: "He/She would leave", category_id: "sair-conj" },
-  { pt: "Nós sairíamos", en: "We would leave", category_id: "sair-conj" },
-  { pt: "Vocês sairiam", en: "You all would leave", category_id: "sair-conj" },
-  { pt: "Eles/Elas sairiam", en: "They would leave", category_id: "sair-conj" }
+  { pt: "Eles/Elas saíram", en: "They left", category_id: "sair-conj" }
 ];
 
 module.exports = { categories: [category], cards };

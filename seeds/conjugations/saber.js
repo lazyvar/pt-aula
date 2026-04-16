@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela soube", en: "He/She found out", category_id: "saber-conj" },
   { pt: "Nós soubemos", en: "We found out", category_id: "saber-conj" },
   { pt: "Vocês souberam", en: "You all found out", category_id: "saber-conj" },
-  { pt: "Eles/Elas souberam", en: "They found out", category_id: "saber-conj" },
-  { pt: "Eu saberia", en: "I would know", category_id: "saber-conj" },
-  { pt: "Você saberia", en: "You would know", category_id: "saber-conj" },
-  { pt: "Ele/Ela saberia", en: "He/She would know", category_id: "saber-conj" },
-  { pt: "Nós saberíamos", en: "We would know", category_id: "saber-conj" },
-  { pt: "Vocês saberiam", en: "You all would know", category_id: "saber-conj" },
-  { pt: "Eles/Elas saberiam", en: "They would know", category_id: "saber-conj" },
-  { pt: "Eu saberei", en: "I will know", category_id: "saber-conj" },
-  { pt: "Você saberá", en: "You will know", category_id: "saber-conj" },
-  { pt: "Ele/Ela saberá", en: "He/She will know", category_id: "saber-conj" },
-  { pt: "Nós saberemos", en: "We will know", category_id: "saber-conj" },
-  { pt: "Vocês saberão", en: "You all will know", category_id: "saber-conj" },
-  { pt: "Eles/Elas saberão", en: "They will know", category_id: "saber-conj" }
+  { pt: "Eles/Elas souberam", en: "They found out", category_id: "saber-conj" }
 ];
 
 module.exports = { categories: [category], cards };

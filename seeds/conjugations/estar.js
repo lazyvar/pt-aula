@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela esteve", en: "He/She was (state, specific occasion)", category_id: "estar-conj" },
   { pt: "Nós estivemos", en: "We were (state, specific occasion)", category_id: "estar-conj" },
   { pt: "Vocês estiveram", en: "You all were (state, specific occasion)", category_id: "estar-conj" },
-  { pt: "Eles/Elas estiveram", en: "They were (state, specific occasion)", category_id: "estar-conj" },
-  { pt: "Eu estarei", en: "I will be (state)", category_id: "estar-conj" },
-  { pt: "Você estará", en: "You will be (state)", category_id: "estar-conj" },
-  { pt: "Ele/Ela estará", en: "He/She will be (state)", category_id: "estar-conj" },
-  { pt: "Nós estaremos", en: "We will be (state)", category_id: "estar-conj" },
-  { pt: "Vocês estarão", en: "You all will be (state)", category_id: "estar-conj" },
-  { pt: "Eles/Elas estarão", en: "They will be (state)", category_id: "estar-conj" },
-  { pt: "Eu estaria", en: "I would be (state)", category_id: "estar-conj" },
-  { pt: "Você estaria", en: "You would be (state)", category_id: "estar-conj" },
-  { pt: "Ele/Ela estaria", en: "He/She would be (state)", category_id: "estar-conj" },
-  { pt: "Nós estaríamos", en: "We would be (state)", category_id: "estar-conj" },
-  { pt: "Vocês estariam", en: "You all would be (state)", category_id: "estar-conj" },
-  { pt: "Eles/Elas estariam", en: "They would be (state)", category_id: "estar-conj" }
+  { pt: "Eles/Elas estiveram", en: "They were (state, specific occasion)", category_id: "estar-conj" }
 ];
 
 module.exports = { categories: [category], cards };

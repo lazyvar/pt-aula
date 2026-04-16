@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela foi (ser)", en: "He/She was", category_id: "ser-conj" },
   { pt: "Nós fomos (ser)", en: "We were", category_id: "ser-conj" },
   { pt: "Vocês foram (ser)", en: "You all were", category_id: "ser-conj" },
-  { pt: "Eles/Elas foram (ser)", en: "They were", category_id: "ser-conj" },
-  { pt: "Eu serei", en: "I will be", category_id: "ser-conj" },
-  { pt: "Você será", en: "You will be", category_id: "ser-conj" },
-  { pt: "Ele/Ela será", en: "He/She will be", category_id: "ser-conj" },
-  { pt: "Nós seremos", en: "We will be", category_id: "ser-conj" },
-  { pt: "Vocês serão", en: "You all will be", category_id: "ser-conj" },
-  { pt: "Eles/Elas serão", en: "They will be", category_id: "ser-conj" },
-  { pt: "Eu seria", en: "I would be", category_id: "ser-conj" },
-  { pt: "Você seria", en: "You would be", category_id: "ser-conj" },
-  { pt: "Ele/Ela seria", en: "He/She would be", category_id: "ser-conj" },
-  { pt: "Nós seríamos", en: "We would be", category_id: "ser-conj" },
-  { pt: "Vocês seriam", en: "You all would be", category_id: "ser-conj" },
-  { pt: "Eles/Elas seriam", en: "They would be", category_id: "ser-conj" }
+  { pt: "Eles/Elas foram (ser)", en: "They were", category_id: "ser-conj" }
 ];
 
 module.exports = { categories: [category], cards };

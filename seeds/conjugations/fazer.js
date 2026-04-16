@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela fez", en: "He/She did / made", category_id: "fazer-conj" },
   { pt: "Nós fizemos", en: "We did / We made", category_id: "fazer-conj" },
   { pt: "Vocês fizeram", en: "You all did / made", category_id: "fazer-conj" },
-  { pt: "Eles/Elas fizeram", en: "They did / made", category_id: "fazer-conj" },
-  { pt: "Eu farei", en: "I will do / I will make", category_id: "fazer-conj" },
-  { pt: "Você fará", en: "You will do / You will make", category_id: "fazer-conj" },
-  { pt: "Ele/Ela fará", en: "He/She will do / will make", category_id: "fazer-conj" },
-  { pt: "Nós faremos", en: "We will do / We will make", category_id: "fazer-conj" },
-  { pt: "Vocês farão", en: "You all will do / will make", category_id: "fazer-conj" },
-  { pt: "Eles/Elas farão", en: "They will do / will make", category_id: "fazer-conj" },
-  { pt: "Eu faria", en: "I would do / I would make", category_id: "fazer-conj" },
-  { pt: "Você faria", en: "You would do / You would make", category_id: "fazer-conj" },
-  { pt: "Ele/Ela faria", en: "He/She would do / would make", category_id: "fazer-conj" },
-  { pt: "Nós faríamos", en: "We would do / We would make", category_id: "fazer-conj" },
-  { pt: "Vocês fariam", en: "You all would do / would make", category_id: "fazer-conj" },
-  { pt: "Eles/Elas fariam", en: "They would do / would make", category_id: "fazer-conj" }
+  { pt: "Eles/Elas fizeram", en: "They did / made", category_id: "fazer-conj" }
 ];
 
 module.exports = { categories: [category], cards };

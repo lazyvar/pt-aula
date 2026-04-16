@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela viu", en: "He/She saw", category_id: "ver-conj" },
   { pt: "Nós vimos (ver)", en: "We saw", category_id: "ver-conj" },
   { pt: "Vocês viram", en: "You all saw", category_id: "ver-conj" },
-  { pt: "Eles/Elas viram", en: "They saw", category_id: "ver-conj" },
-  { pt: "Eu veria", en: "I would see", category_id: "ver-conj" },
-  { pt: "Você veria", en: "You would see", category_id: "ver-conj" },
-  { pt: "Ele/Ela veria", en: "He/She would see", category_id: "ver-conj" },
-  { pt: "Nós veríamos", en: "We would see", category_id: "ver-conj" },
-  { pt: "Vocês veriam", en: "You all would see", category_id: "ver-conj" },
-  { pt: "Eles/Elas veriam", en: "They would see", category_id: "ver-conj" },
-  { pt: "Eu verei", en: "I will see", category_id: "ver-conj" },
-  { pt: "Você verá", en: "You will see", category_id: "ver-conj" },
-  { pt: "Ele/Ela verá", en: "He/She will see", category_id: "ver-conj" },
-  { pt: "Nós veremos", en: "We will see", category_id: "ver-conj" },
-  { pt: "Vocês verão", en: "You all will see", category_id: "ver-conj" },
-  { pt: "Eles/Elas verão", en: "They will see", category_id: "ver-conj" }
+  { pt: "Eles/Elas viram", en: "They saw", category_id: "ver-conj" }
 ];
 
 module.exports = { categories: [category], cards };

@@ -18,19 +18,7 @@ const cards = [
   { pt: "Ele/Ela leu", en: "He/She read (past)", category_id: "ler-conj" },
   { pt: "Nós lemos (past)", en: "We read (past)", category_id: "ler-conj" },
   { pt: "Vocês leram", en: "You all read (past)", category_id: "ler-conj" },
-  { pt: "Eles/Elas leram", en: "They read (past)", category_id: "ler-conj" },
-  { pt: "Eu lerei", en: "I will read", category_id: "ler-conj" },
-  { pt: "Você lerá", en: "You will read", category_id: "ler-conj" },
-  { pt: "Ele/Ela lerá", en: "He/She will read", category_id: "ler-conj" },
-  { pt: "Nós leremos", en: "We will read", category_id: "ler-conj" },
-  { pt: "Vocês lerão", en: "You all will read", category_id: "ler-conj" },
-  { pt: "Eles/Elas lerão", en: "They will read", category_id: "ler-conj" },
-  { pt: "Eu leria", en: "I would read", category_id: "ler-conj" },
-  { pt: "Você leria", en: "You would read", category_id: "ler-conj" },
-  { pt: "Ele/Ela leria", en: "He/She would read", category_id: "ler-conj" },
-  { pt: "Nós leríamos", en: "We would read", category_id: "ler-conj" },
-  { pt: "Vocês leriam", en: "You all would read", category_id: "ler-conj" },
-  { pt: "Eles/Elas leriam", en: "They would read", category_id: "ler-conj" }
+  { pt: "Eles/Elas leram", en: "They read (past)", category_id: "ler-conj" }
 ];
 
 module.exports = { categories: [category], cards };
