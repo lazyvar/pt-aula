@@ -230,7 +230,6 @@ app.post("/api/generate-sentences", async (req, res) => {
 Rules:
 - Each sentence must use at least one verb from this list, conjugated naturally. Use each verb at most once, picked randomly: ${verbs.join(", ") || "(none specified)"}
 - Weave in vocabulary from this topic list where it fits naturally. Use each at most once: ${topics.join(", ") || "(none specified)"}
-- Only use REGULAR verb conjugations. Do not use any irregular conjugation forms — stick to standard -ar, -er, -ir conjugation patterns.
 - For verbs with multiple meanings, clarify the specific sense in the English translation with a brief parenthetical, e.g. "to know (a place/person)" for conhecer vs "to know (a fact)" for saber, "to play (music)" for tocar vs "to play (a game)" for jogar, "to take (carry)" for levar vs "to take (grab)" for pegar, etc.
 - Vary tenses across the set (present, preterite, imperfect, future, subjunctive where natural).
 - Vary subjects (eu, você, ele/ela, nós, eles/elas) — don't start every sentence the same way.
@@ -308,22 +307,8 @@ app.post("/api/generate-conjugations", async (req, res) => {
       return a;
     };
 
-    // Filter out irregular verbs — only keep regular -ar/-er/-ir patterns.
-    const IRREGULAR = new Set([
-      'Ser', 'Estar', 'Ter', 'Ir', 'Vir', 'Ver', 'Dar', 'Fazer', 'Dizer', 'Saber',
-      'Poder', 'Querer', 'Pôr', 'Trazer', 'Ler', 'Rir', 'Ouvir', 'Haver', 'Caber',
-      'Sentir', 'Mentir', 'Vestir', 'Servir', 'Seguir', 'Conseguir', 'Competir',
-      'Medir', 'Pedir', 'Investir', 'Preferir', 'Sugerir', 'Repetir', 'Perseguir',
-      'Despedir', 'Ferir', 'Divertir', 'Advertir', 'Aderir',
-      'Dormir', 'Cobrir', 'Descobrir', 'Tossir', 'Engolir', 'Subir',
-      'Fugir', 'Acudir', 'Sacudir', 'Sumir', 'Cuspir',
-      'Construir', 'Destruir', 'Contribuir', 'Diminuir', 'Incluir', 'Substituir',
-      'Traduzir', 'Produzir', 'Conduzir', 'Reduzir',
-      'Cair', 'Sair', 'Sorrir', 'Abrir', 'Imprimir', 'Perder', 'Valer',
-      'Manter', 'Deter', 'Morrer', 'Ferver', 'Render',
-      'Jogar fora', 'Levantar peso', 'Sextar / Sextou',
-    ]);
-    const regularRows = rows.filter(r => !IRREGULAR.has(r.pt));
+    const regularRows = rows;
+
     if (regularRows.length === 0) {
       return res.status(400).json({ error: "No regular verbs found in selected categories" });
     }
@@ -341,6 +326,7 @@ app.post("/api/generate-conjugations", async (req, res) => {
       { pt: 'eles', en: 'they (m)' },
       { pt: 'vocês', en: 'you all' },
     ];
+
     const tenses = ['presente', 'pretérito perfeito'];
 
     // Generate 20 random combos: verb + pronoun + tense

@@ -21,6 +21,7 @@ const cards = [
   { pt: "Dormir", en: "To sleep", category_id: "verbs-irregulars" },
   { pt: "Sair", en: "To leave / To go out", category_id: "verbs-irregulars" },
   { pt: "Cair", en: "To fall", category_id: "verbs-irregulars" },
+  { pt: "Haver", en: "There to be / To exist", category_id: "verbs-irregulars" },
 ];
 
 module.exports = { categories: [category], cards };

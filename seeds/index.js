@@ -5,8 +5,9 @@ const aulas = require("./aulas");
 const ir = require("./ir");
 const conjugations = require("./conjugations");
 const verbEndings = require("./verb-endings");
+const a2 = require("./a2");
 
-const groups = [topics, phrases, verbs, aulas, ir, conjugations, verbEndings];
+const groups = [topics, phrases, verbs, aulas, ir, conjugations, verbEndings, a2];
 
 const categories = groups.flatMap(g => g.categories);
 const cards = groups.flatMap(g => g.cards);
