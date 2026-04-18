@@ -218,19 +218,52 @@ app.post("/api/generate-sentences", async (req, res) => {
       return a;
     };
 
-    const verbs = shuffle([...new Set(rows.filter(r => r.group_name === "Verbs").map(r => r.pt))]).slice(0, 30);
-    const topics = shuffle([...new Set(rows.filter(r => r.group_name === "Topics").map(r => r.pt))]).slice(0, 30);
+    // Map each group_name to a role. Verb Endings are literal suffixes
+    // ("-amos") and aren't usable as sentence content, so they're skipped.
+    const groupRole = (name) => {
+      if (name === "Verbs") return "infinitives";
+      if (name === "Verb Endings") return "skip";
+      return "drills";
+    };
 
-    if (verbs.length === 0 && topics.length === 0) {
-      return res.status(400).json({ error: "Select at least one Verb or Topic category" });
+    const infinitiveRows = rows.filter(r => groupRole(r.group_name) === "infinitives");
+    const drillRows = rows.filter(r => groupRole(r.group_name) === "drills");
+
+    const infinitives = shuffle([...new Set(infinitiveRows.map(r => r.pt))]).slice(0, 30);
+
+    const seenDrill = new Set();
+    const drills = shuffle(
+      drillRows.filter(r => {
+        if (seenDrill.has(r.pt)) return false;
+        seenDrill.add(r.pt);
+        return true;
+      }).map(r => ({ pt: r.pt, en: r.en }))
+    ).slice(0, 30);
+
+    if (infinitives.length === 0 && drills.length === 0) {
+      return res.status(400).json({
+        error: "Select at least one category with usable content (Verb Endings alone cannot generate sentences)"
+      });
     }
+
+    const verbRule = infinitives.length > 0
+      ? `- Each sentence must use at least one verb from this list, conjugated naturally. Use each verb at most once, picked randomly: ${infinitives.join(", ")}
+- For verbs with multiple meanings, clarify the specific sense in the English translation with a brief parenthetical, e.g. "to know (a place/person)" for conhecer vs "to know (a fact)" for saber, "to play (music)" for tocar vs "to play (a game)" for jogar, "to take (carry)" for levar vs "to take (grab)" for pegar, etc.`
+      : "";
+
+    const drillRule = drills.length > 0
+      ? `- Incorporate items from this drill list where they fit naturally. Use each at most once. For each item:
+  - if it's a pre-conjugated verb form (e.g. "Eu fui", "Nós estávamos"), use it as a tense/verb hint — you may conjugate the same verb in the same tense for a different subject
+  - if it's a phrase or time marker (e.g. "Ontem", "De repente"), use it verbatim
+  - if it's a noun or other vocabulary, weave it into a sentence as-is
+  Drill items:
+${drills.map(d => `  - ${d.pt} — ${d.en}`).join("\n")}`
+      : "";
 
     const prompt = `Generate exactly 20 Brazilian Portuguese sentences for an intermediate learner to translate.
 
 Rules:
-- Each sentence must use at least one verb from this list, conjugated naturally. Use each verb at most once, picked randomly: ${verbs.join(", ") || "(none specified)"}
-- Weave in vocabulary from this topic list where it fits naturally. Use each at most once: ${topics.join(", ") || "(none specified)"}
-- For verbs with multiple meanings, clarify the specific sense in the English translation with a brief parenthetical, e.g. "to know (a place/person)" for conhecer vs "to know (a fact)" for saber, "to play (music)" for tocar vs "to play (a game)" for jogar, "to take (carry)" for levar vs "to take (grab)" for pegar, etc.
+${[verbRule, drillRule].filter(Boolean).join("\n")}
 - Vary tenses across the set (present, preterite, imperfect, future, subjunctive where natural).
 - Vary subjects (eu, você, ele/ela, nós, eles/elas) — don't start every sentence the same way.
 - When the subject is "eles" or "elas", the English translation MUST disambiguate gender with a parenthetical: "they (m)" for eles, "they (f)" for elas. Never leave plain "they" for these subjects.
