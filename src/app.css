@@ -713,11 +713,13 @@
   padding: 12px 20px 24px;
   border-top: 1px solid rgba(255,255,255,0.06);
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   flex-shrink: 0;
 }
 .bottom-sheet-controls .ctrl-btn {
-  flex: 1;
+  flex: 1 1 calc(33.333% - 8px);
+  min-width: 0;
   text-align: center;
   padding: 10px;
   border-radius: 12px;

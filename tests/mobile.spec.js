@@ -71,6 +71,26 @@ test.describe('Mobile UI — core flows', () => {
     expect(pair, `front "${front}" should be an english value in truth`).toBeTruthy();
   });
 
+  test('all control buttons in bottom sheet are fully within viewport', async ({ page }) => {
+    await page.getByTestId('mobile-cat-dropdown').click();
+    const sheet = page.locator('#bottomSheet');
+    await expect(sheet).toHaveClass(/open/);
+
+    const controls = sheet.locator('.bottom-sheet-controls .ctrl-btn');
+    const count = await controls.count();
+    expect(count).toBeGreaterThan(0);
+
+    const viewport = page.viewportSize();
+    for (let i = 0; i < count; i++) {
+      const btn = controls.nth(i);
+      const label = (await btn.textContent())?.trim();
+      await expect(btn, `control button "${label}" should be in viewport`).toBeInViewport({ ratio: 1 });
+      const box = await btn.boundingBox();
+      expect(box, `control button "${label}" should have a bounding box`).not.toBeNull();
+      expect(box.x + box.width, `control button "${label}" should not overflow right edge`).toBeLessThanOrEqual(viewport.width);
+    }
+  });
+
   test('toggling a category in bottom sheet removes its cards from the deck', async ({ page }) => {
     const truth = await loadTruth();
 
