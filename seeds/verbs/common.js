@@ -34,7 +34,7 @@ const cards = [
   { pt: "Servir", en: "To serve", category_id: "verbs-common" },
   { pt: "Trazer", en: "To bring", category_id: "verbs-common" },
   { pt: "Pôr", en: "To put", category_id: "verbs-common" },
-  { pt: "Tirar", en: "To take off / To remove", category_id: "verbs-common" },
+  { pt: "Tirar", en: "To take away / To remove", category_id: "verbs-common" },
   { pt: "Buscar", en: "To search / To pick up", category_id: "verbs-common" },
   { pt: "Subir", en: "To go up / To climb", category_id: "verbs-common" },
   { pt: "Descer", en: "To go down", category_id: "verbs-common" },

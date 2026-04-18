@@ -44,7 +44,7 @@ const cards = [
   { pt: "Sentir", en: "To feel", category_id: "verbs-essential" },
   { pt: "Comprar", en: "To buy", category_id: "verbs-essential" },
   { pt: "Sair", en: "To leave / To go out", category_id: "verbs-essential" },
-  { pt: "Tomar", en: "To take / To drink", category_id: "verbs-essential" },
+  { pt: "Tomar", en: "To take / To drink / To consume", category_id: "verbs-essential" },
   { pt: "Lembrar", en: "To remember", category_id: "verbs-essential" },
   { pt: "Voltar", en: "To return / To come back", category_id: "verbs-essential" },
   { pt: "Acabar", en: "To finish / To end (broad)", category_id: "verbs-essential" },
