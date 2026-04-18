@@ -79,7 +79,7 @@ const nouns = [
   { pt: "Reunião", en: "Meeting", category_id: "a2-w1-nouns" },
   { pt: "Prazo", en: "Deadline", category_id: "a2-w1-nouns" },
   { pt: "Salário", en: "Salary", category_id: "a2-w1-nouns" },
-  { pt: "Férias", en: "Vacation (always plural: as férias)", category_id: "a2-w1-nouns" },
+  { pt: "Férias", en: "Vacation", category_id: "a2-w1-nouns" },
 ];
 
 module.exports = {
