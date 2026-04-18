@@ -31,7 +31,7 @@ const verbs = [
   { pt: "Nós vínhamos", en: "We used to come (imperfect)", category_id: "a2-w2-verbs" },
   { pt: "Eu dei", en: "I gave (preterite)", category_id: "a2-w2-verbs" },
   { pt: "Eu dava", en: "I used to give (imperfect)", category_id: "a2-w2-verbs" },
-  { pt: "Você pôde", en: "You could / were able (preterite)", category_id: "a2-w2-verbs" },
+  { pt: "Você pôde", en: "You could / was able to (preterite)", category_id: "a2-w2-verbs" },
   { pt: "Você podia", en: "You used to be able (imperfect)", category_id: "a2-w2-verbs" },
   { pt: "Eu quis", en: "I wanted (preterite — one-time decision)", category_id: "a2-w2-verbs" },
   { pt: "Eu queria", en: "I wanted / used to want (imperfect — polite or ongoing)", category_id: "a2-w2-verbs" },
