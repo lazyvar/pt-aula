@@ -360,7 +360,7 @@ app.post("/api/generate-conjugations", async (req, res) => {
       { pt: 'vocês', en: 'you all' },
     ];
 
-    const tenses = ['presente', 'pretérito perfeito'];
+    const tenses = ['presente', 'pretérito perfeito', 'pretérito imperfeito'];
 
     // Generate 20 random combos: verb + pronoun + tense
     const combos = [];
