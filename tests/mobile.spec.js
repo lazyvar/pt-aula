@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { resetAll } = require('./fixtures/reset');
+const { resetAll, setActiveCategories } = require('./fixtures/reset');
 const { loadTruth, cardId, BASE } = require('./fixtures/truth');
 const { waitForSessionWrite } = require('./fixtures/waits');
 
@@ -89,6 +89,30 @@ test.describe('Mobile UI — core flows', () => {
       expect(box, `control button "${label}" should have a bounding box`).not.toBeNull();
       expect(box.x + box.width, `control button "${label}" should not overflow right edge`).toBeLessThanOrEqual(viewport.width);
     }
+  });
+
+  test('typing mode is never shown on mobile even when enabled in session', async ({ page }) => {
+    // Seed typeMode=true in the persisted session (as if the user toggled it
+    // on desktop before resizing to mobile). Preserve the rest of the session
+    // that was created by the beforeEach goto so the deck isn't wiped.
+    await waitForSessionWrite(page);
+    const current = await fetch(`${BASE}/api/session`).then(r => r.json());
+    expect(current).toBeTruthy();
+    const put = await fetch(`${BASE}/api/session`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...current, typeMode: true }),
+    });
+    expect(put.ok).toBe(true);
+
+    await page.reload();
+    await expect(page.getByTestId('card-container')).toBeVisible();
+
+    // Mobile must always show the button UI, regardless of the persisted typeMode.
+    await expect(page.getByTestId('btn-right')).toBeVisible();
+    await expect(page.getByTestId('btn-wrong')).toBeVisible();
+    await expect(page.getByTestId('type-input')).toHaveCount(0);
+    await expect(page.getByTestId('type-check')).toHaveCount(0);
   });
 
   test('toggling a category in bottom sheet removes its cards from the deck', async ({ page }) => {

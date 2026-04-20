@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import { onMount, onDestroy, tick } from 'svelte';
   import { session, deck, mark as sessionMark } from '../stores/session';
   import { catConfig } from '../stores/cards';
   import { statsCache, markCard, getCardStats } from '../stores/stats';
@@ -9,6 +9,23 @@
   let isFlipped = false;
   let cardEl: HTMLDivElement;
   let containerEl: HTMLDivElement;
+
+  // Mobile hides the sidebar (and thus the type-mode toggle). Force button
+  // mode here so a persisted typeMode=true can't strand users without a way
+  // to mark cards. Breakpoint matches app.css's `@media (max-width: 768px)`.
+  let isMobile = false;
+  let mq: MediaQueryList | null = null;
+  const onMqChange = (e: MediaQueryListEvent) => { isMobile = e.matches; };
+  onMount(() => {
+    mq = window.matchMedia('(max-width: 768px)');
+    isMobile = mq.matches;
+    mq.addEventListener('change', onMqChange);
+  });
+  onDestroy(() => {
+    mq?.removeEventListener('change', onMqChange);
+  });
+
+  $: typingActive = $session.typeMode && !isMobile;
 
   // Reset flip on card change. When advancing while flipped, we must suppress
   // the flip-back transition — otherwise the .card element animates from
@@ -159,7 +176,7 @@
     if (!currentCard) return;
     // In type mode the input owns the keyboard; the global card shortcuts
     // (space to flip, Enter to mark right, etc.) would otherwise hijack typing.
-    if ($session.typeMode) return;
+    if (typingActive) return;
     if (e.code === 'Space' || e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
       e.preventDefault();
       flipCard();
@@ -225,7 +242,7 @@
     </div>
   </div>
 
-  {#if $session.typeMode}
+  {#if typingActive}
     <div class="type-row">
       <input
         class="type-input"
