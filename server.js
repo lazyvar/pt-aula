@@ -381,14 +381,16 @@ app.post("/api/generate-conjugations", async (req, res) => {
 
 For each item, produce:
 - "pt": the Portuguese pronoun + conjugated verb (e.g. "eu andei")
-- "en": the English subject + conjugated verb + meaning from the parentheses
+- "en": three comma-separated parts: subject, infinitive with "to", tense label. Include the meaning/differentiator from the parentheses after the verb when present. Examples: "I, to walk (stroll), preterite"; "he, to laugh, present"; "we, to write, imperfect".
 
-Match the English to the Portuguese tense:
-- presente → simple present (e.g. "I walk (stroll)")
-- pretérito perfeito → simple past (e.g. "I walked (strolled)")
-- pretérito imperfeito → "used to" form (e.g. "I used to walk (stroll)"). Do NOT use simple past for imperfect.
+Do NOT inflect the English verb. Always use "to [base form]" regardless of the Portuguese tense. The tense label tells the learner which conjugation to apply.
 
-Use regular -ar/-er/-ir conjugation rules only. Keep the English meaning/differentiator from the parentheses in each "en" value.
+Tense labels:
+- presente → "present"
+- pretérito perfeito → "preterite"
+- pretérito imperfeito → "imperfect"
+
+Use regular -ar/-er/-ir conjugation rules only.
 
 For "eles" and "elas", the English subject MUST include a gender parenthetical: "they (m)" for eles, "they (f)" for elas. Never output plain "they" for these pronouns.
 
