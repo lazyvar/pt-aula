@@ -36,6 +36,8 @@ const parts = [
   require("./nouns-essential"),
   require("./nouns-common"),
   require("./nouns-everyday"),
+  require("./nouns-abstract"),
+  require("./nouns-modern"),
 ];
 
 const categories = parts.flatMap(p => p.categories);

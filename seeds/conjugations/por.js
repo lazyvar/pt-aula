@@ -18,13 +18,7 @@ const cards = [
   { pt: "Ele/Ela pôs", en: "He/She put (preterite)", category_id: "por-conj" },
   { pt: "Nós pusemos", en: "We put (preterite)", category_id: "por-conj" },
   { pt: "Vocês puseram", en: "You all put (preterite)", category_id: "por-conj" },
-  { pt: "Eles/Elas puseram", en: "They put (preterite)", category_id: "por-conj" },
-  { pt: "Eu poria", en: "I would put (conditional)", category_id: "por-conj" },
-  { pt: "Você poria", en: "You would put (conditional)", category_id: "por-conj" },
-  { pt: "Ele/Ela poria", en: "He/She would put (conditional)", category_id: "por-conj" },
-  { pt: "Nós poríamos", en: "We would put (conditional)", category_id: "por-conj" },
-  { pt: "Vocês poriam", en: "You all would put (conditional)", category_id: "por-conj" },
-  { pt: "Eles/Elas poriam", en: "They would put (conditional)", category_id: "por-conj" }
+  { pt: "Eles/Elas puseram", en: "They put (preterite)", category_id: "por-conj" }
 ];
 
 module.exports = { categories: [category], cards };
