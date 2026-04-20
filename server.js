@@ -381,7 +381,12 @@ app.post("/api/generate-conjugations", async (req, res) => {
 
 For each item, produce:
 - "pt": the Portuguese pronoun + conjugated verb (e.g. "eu andei")
-- "en": the English subject + conjugated verb + meaning from the parentheses (e.g. "I walked (strolled)")
+- "en": the English subject + conjugated verb + meaning from the parentheses
+
+Match the English to the Portuguese tense:
+- presente → simple present (e.g. "I walk (stroll)")
+- pretérito perfeito → simple past (e.g. "I walked (strolled)")
+- pretérito imperfeito → "used to" form (e.g. "I used to walk (stroll)"). Do NOT use simple past for imperfect.
 
 Use regular -ar/-er/-ir conjugation rules only. Keep the English meaning/differentiator from the parentheses in each "en" value.
 
