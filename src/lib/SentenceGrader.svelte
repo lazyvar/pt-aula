@@ -96,15 +96,15 @@
     </div>
 
     {#if $graderInput.trim()}
-      <div class="grader-yours" data-testid="grader-yours">
-        <div class="card-label">Your answer</div>
-        <div class="card-word">{$graderInput}</div>
+      <div class="grader-yours grade-border-{$graderResult.grade}" data-testid="grader-yours">
+        <div class="grader-panel-label">You wrote</div>
+        <div class="grader-panel-text">{$graderInput}</div>
       </div>
     {/if}
 
     <div class="grader-reference" data-testid="grader-reference">
-      <div class="card-label">Reference</div>
-      <div class="card-word">{card.pt}</div>
+      <div class="grader-panel-label">✓ Should be</div>
+      <div class="grader-panel-text">{card.pt}</div>
     </div>
 
     {#if $graderResult.mistakes.length > 0}
@@ -181,9 +181,36 @@
   .grader-summary { flex: 1; font-size: 0.95rem; }
   .grader-yours,
   .grader-reference {
-    padding: 12px;
+    padding: 12px 14px;
     border-radius: 8px;
-    background: var(--card-bg, #1f2937);
+    border-left-width: 4px;
+    border-left-style: solid;
+  }
+  .grader-yours {
+    background: rgba(148, 163, 184, 0.08);
+    border-left-color: #64748b;
+  }
+  .grade-border-1 { border-left-color: #ef4444 !important; background: rgba(239, 68, 68, 0.08) !important; }
+  .grade-border-2 { border-left-color: #f59e0b !important; background: rgba(245, 158, 11, 0.08) !important; }
+  .grade-border-3 { border-left-color: #10b981 !important; background: rgba(16, 185, 129, 0.08) !important; }
+  .grader-reference {
+    background: rgba(16, 185, 129, 0.1);
+    border-left-color: #10b981;
+  }
+  .grader-panel-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim, #9ca3af);
+    margin-bottom: 4px;
+  }
+  .grader-reference .grader-panel-label {
+    color: #10b981;
+    font-weight: 600;
+  }
+  .grader-panel-text {
+    font-size: 1.05rem;
+    line-height: 1.45;
   }
   .grader-warnings {
     padding: 10px 12px;
