@@ -35,7 +35,7 @@
   }
 </script>
 
-<button class="ctrl-btn" data-testid={testIds ? 'mode-toggle' : undefined} on:click={toggleMode}>
+<button class="ctrl-btn" data-testid={testIds ? 'mode-toggle' : undefined} data-mode={$session.mode} on:click={toggleMode}>
   {$session.mode === 'pt-to-en' ? 'PT → EN' : 'EN → PT'}
 </button>
 <button class="ctrl-btn" on:click={() => shuffleRemaining($allCards)}>Shuffle</button>
