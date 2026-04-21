@@ -41,4 +41,15 @@ export interface DeckSnapshot {
   wrongCards: Card[];
 }
 
+export type Grade = 1 | 2 | 3;
+
+export interface GradeResponse {
+  grade: Grade;
+  summary: string;
+  mistakes: string[];
+  rule: string | null;
+}
+
+export type GraderState = 'idle' | 'grading' | 'graded';
+
 export const GENERATED_CAT = '__generated__';
