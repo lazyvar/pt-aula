@@ -48,6 +48,7 @@ export function giveUp(): void {
     grade: 1,
     summary: 'Skipped — see the reference translation.',
     mistakes: [],
+    warnings: [],
     rule: null,
   });
   graderState.set('graded');

@@ -434,7 +434,7 @@ Return STRICT JSON only, no prose, no markdown fence:
 });
 
 // POST /api/grade-sentence — body: { en, userPt, referencePt }
-// Returns { grade: 1|2|3, summary, mistakes: string[], rule: string|null }
+// Returns { grade: 1|2|3, summary, mistakes: string[], warnings: string[], rule: string|null }
 app.post("/api/grade-sentence", async (req, res) => {
   const { en, userPt, referencePt } = req.body || {};
   if (typeof en !== "string" || typeof userPt !== "string" || typeof referencePt !== "string") {
@@ -463,19 +463,23 @@ Grade on a 1–3 scale:
 
 Pay special attention to these common mistake classes:
 - Article gender (o/a/os/as)
-- Contractions: de + o/a → do/da; em + o/a → no/na; a + a → à (crase)
+- Contractions: de + o/a → do/da; em + o/a → no/na; a + a → à (crase, counts only when the whole contraction is missing; a bare missing grave on "à" is a warning, not a mistake)
 - Missing or incorrect connectors (para, que, de)
 - Verb tense and conjugation
 - Word order and agreement
+
+IMPORTANT — accent/diacritic rules:
+- Missing or incorrect acute/circumflex/tilde accents (á é í ó ú â ê ô ã õ ç) are WARNINGS, not mistakes. They do NOT count toward the grade and MUST NOT appear in the "mistakes" array. Put them in the "warnings" array instead.
+- Exception: if the missing accent changes the word entirely (e.g. "e" vs "é", "por" vs "pôr", "esta" vs "está"), that IS a mistake — the word is wrong, not just unaccented.
 
 For each concrete mistake, name the error and show the fix in a short bullet.
 
 When grade is 1 or 2, include a "rule" field: a short, memorable rule the learner can apply next time (e.g. "de + o = do, de + a = da — always contract when 'de' meets a definite article"). When grade is 3, set "rule" to null.
 
-The "mistakes" array should be empty when grade is 3.
+The "mistakes" array should be empty when grade is 3. The "warnings" array may be non-empty at any grade (including 3) and lists accent-only issues that don't affect the grade.
 
 Return STRICT JSON only, no prose, no markdown fence:
-{"grade":1|2|3,"summary":"one short sentence","mistakes":["..."],"rule":"..."|null}`;
+{"grade":1|2|3,"summary":"one short sentence","mistakes":["..."],"warnings":["..."],"rule":"..."|null}`;
 
     const response = await anthropic.messages.create({
       model: "claude-haiku-4-5",
@@ -503,10 +507,13 @@ Return STRICT JSON only, no prose, no markdown fence:
     const mistakes = Array.isArray(parsed.mistakes)
       ? parsed.mistakes.filter((m) => typeof m === "string")
       : [];
+    const warnings = Array.isArray(parsed.warnings)
+      ? parsed.warnings.filter((w) => typeof w === "string")
+      : [];
     const summary = typeof parsed.summary === "string" ? parsed.summary : "";
     const rule = typeof parsed.rule === "string" ? parsed.rule : null;
 
-    res.json({ grade, summary, mistakes, rule });
+    res.json({ grade, summary, mistakes, warnings, rule });
   } catch (err) {
     const msg = err && err.message ? err.message : String(err);
     console.error("Grade failed:", msg);

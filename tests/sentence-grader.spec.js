@@ -57,6 +57,7 @@ function gradeStub(grade, overrides = {}) {
       grade,
       summary: overrides.summary ?? `Grade ${grade} summary`,
       mistakes: overrides.mistakes ?? (grade === 3 ? [] : ['Mistake A', 'Mistake B']),
+      warnings: overrides.warnings ?? [],
       rule: overrides.rule ?? (grade === 3 ? null : 'Remember: de + a = da.'),
     }),
   };

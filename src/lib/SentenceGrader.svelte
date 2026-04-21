@@ -95,6 +95,13 @@
       <div class="grader-summary">{$graderResult.summary}</div>
     </div>
 
+    {#if $graderInput.trim()}
+      <div class="grader-yours" data-testid="grader-yours">
+        <div class="card-label">Your answer</div>
+        <div class="card-word">{$graderInput}</div>
+      </div>
+    {/if}
+
     <div class="grader-reference" data-testid="grader-reference">
       <div class="card-label">Reference</div>
       <div class="card-word">{card.pt}</div>
@@ -106,6 +113,17 @@
           <li>{m}</li>
         {/each}
       </ul>
+    {/if}
+
+    {#if $graderResult.warnings.length > 0}
+      <div class="grader-warnings" data-testid="grader-warnings">
+        <div class="grader-warnings-label">Heads up (doesn't affect grade):</div>
+        <ul>
+          {#each $graderResult.warnings as w}
+            <li>{w}</li>
+          {/each}
+        </ul>
+      </div>
     {/if}
 
     {#if $graderResult.rule}
@@ -161,11 +179,30 @@
   .grade-2 { background: #f59e0b; color: white; }
   .grade-1 { background: #ef4444; color: white; }
   .grader-summary { flex: 1; font-size: 0.95rem; }
+  .grader-yours,
   .grader-reference {
     padding: 12px;
     border-radius: 8px;
     background: var(--card-bg, #1f2937);
   }
+  .grader-warnings {
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(245, 158, 11, 0.12);
+    border-left: 3px solid #f59e0b;
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+  .grader-warnings-label {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #f59e0b;
+  }
+  .grader-warnings ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+  .grader-warnings li { margin: 2px 0; }
   .grader-mistakes {
     margin: 0;
     padding-left: 20px;

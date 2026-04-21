@@ -47,6 +47,7 @@ export interface GradeResponse {
   grade: Grade;
   summary: string;
   mistakes: string[];
+  warnings: string[];
   rule: string | null;
 }
 
