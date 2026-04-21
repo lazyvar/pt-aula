@@ -8,6 +8,7 @@
     "test:ui": "npm run build && docker compose -f docker-compose.test.yml up -d --wait && playwright test --ui",
     "test:headed": "npm run build && docker compose -f docker-compose.test.yml up -d --wait && playwright test --headed",
     "dev": "vite",
+    "dev:all": "bash scripts/dev.sh",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
