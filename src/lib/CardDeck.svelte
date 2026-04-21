@@ -4,9 +4,8 @@
   import { catConfig } from '../stores/cards';
   import { statsCache, markCard, getCardStats } from '../stores/stats';
   import { generatedMode } from '../stores/generated';
-  import type { Card } from '../types';
   import SentenceGrader from './SentenceGrader.svelte';
-  import { GENERATED_CAT } from '../types';
+  import { GENERATED_CAT, type Card } from '../types';
 
   let isFlipped = false;
   let cardEl: HTMLDivElement;
