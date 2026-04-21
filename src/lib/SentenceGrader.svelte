@@ -41,6 +41,7 @@
   function onPageKeydown(e: KeyboardEvent) {
     if ($graderState === 'graded' && e.key === 'Enter') {
       e.preventDefault();
+      e.stopPropagation();
       onNext();
     }
   }
