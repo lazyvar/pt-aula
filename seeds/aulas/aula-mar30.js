@@ -9,7 +9,7 @@ const cards = [
   { pt: "Eu estava irritado", en: "I was irritated (ongoing state)", category_id: "aula-mar30" },
   { pt: "Pouco", en: "A little / Few", category_id: "aula-mar30" },
   { pt: "Você viu o site que eu tive que mudar?", en: "Did you see the site that I had to change?", category_id: "aula-mar30" },
-  { pt: "Enviar", en: "To send (letters / emails)", category_id: "aula-mar30" },
+  { pt: "Enviar", en: "To send", category_id: "aula-mar30" },
   { pt: "Mandar", en: "To send / To order", category_id: "aula-mar30" },
   { pt: "Mudar", en: "To change / To move", category_id: "aula-mar30" },
   { pt: "Me testa", en: "Test me", category_id: "aula-mar30" },

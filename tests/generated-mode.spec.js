@@ -106,12 +106,12 @@ test.describe('Generated Mode', () => {
     const headerCount = await headers.count();
     for (let i = 0; i < headerCount; i++) await headers.nth(i).click();
 
-    // Click every active filter to deactivate.
-    // We loop until none remain active.
-    for (let guard = 0; guard < 50; guard++) {
-      const active = page.locator('.sidebar [data-testid="category-filter"].active').first();
-      if (await active.count() === 0) break;
-      await active.click();
+    // Click every active filter to deactivate. Default activeCats includes
+    // every non-Topics category (~70), so use the live count as the loop
+    // bound rather than a fixed guard.
+    const activeFilters = page.locator('.sidebar [data-testid="category-filter"].active');
+    while (await activeFilters.count() > 0) {
+      await activeFilters.first().click();
     }
 
     // Set up a dialog handler for the alert.

@@ -3,12 +3,14 @@ const { test, expect } = require('@playwright/test');
 const { resetAll, setActiveCategories } = require('./fixtures/reset');
 const { loadTruth } = require('./fixtures/truth');
 
-// Pick the smallest non-Topics category for fast walks.
-function pickSmallestCategory(truth) {
+// Pick the smallest non-Topics category with at least `min` cards. Tests below
+// mark up to 2 cards wrong, so picking a 1-card category breaks the review-round
+// assertions.
+function pickSmallestCategory(truth, min = 2) {
   const counts = Object.keys(truth.categories)
     .filter(id => truth.categories[id].group !== 'Topics')
     .map(id => ({ id, count: truth.getCardsInCategories([id]).length }))
-    .filter(x => x.count > 0)
+    .filter(x => x.count >= min)
     .sort((a, b) => a.count - b.count);
   return counts[0].id;
 }
