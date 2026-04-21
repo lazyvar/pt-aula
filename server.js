@@ -444,8 +444,74 @@ app.post("/api/grade-sentence", async (req, res) => {
     return res.status(500).json({ error: "ANTHROPIC_API_KEY not configured on server" });
   }
 
-  // AI call added in the next task.
-  return res.status(501).json({ error: "not implemented" });
+  try {
+    const prompt = `You are grading a Brazilian Portuguese translation produced by an intermediate learner.
+
+English prompt:
+${en}
+
+Reference translation (known-good):
+${referencePt}
+
+Learner's translation:
+${userPt}
+
+Grade on a 1–3 scale:
+- 3 = near-perfect: at most 1 minor mistake.
+- 2 = understandable but flawed: 2–3 mistakes.
+- 1 = failing: 4+ mistakes, or meaning lost.
+
+Pay special attention to these common mistake classes:
+- Article gender (o/a/os/as)
+- Contractions: de + o/a → do/da; em + o/a → no/na; a + a → à (crase)
+- Missing or incorrect connectors (para, que, de)
+- Verb tense and conjugation
+- Word order and agreement
+
+For each concrete mistake, name the error and show the fix in a short bullet.
+
+When grade is 1 or 2, include a "rule" field: a short, memorable rule the learner can apply next time (e.g. "de + o = do, de + a = da — always contract when 'de' meets a definite article"). When grade is 3, set "rule" to null.
+
+The "mistakes" array should be empty when grade is 3.
+
+Return STRICT JSON only, no prose, no markdown fence:
+{"grade":1|2|3,"summary":"one short sentence","mistakes":["..."],"rule":"..."|null}`;
+
+    const response = await anthropic.messages.create({
+      model: "claude-haiku-4-5",
+      max_tokens: 800,
+      temperature: 0.2,
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    let text = response.content[0].text.trim();
+    text = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch (e) {
+      console.error("Grade: failed to parse Claude response:", text);
+      return res.status(502).json({ error: "Claude returned malformed JSON" });
+    }
+
+    const grade = parsed && parsed.grade;
+    if (grade !== 1 && grade !== 2 && grade !== 3) {
+      return res.status(502).json({ error: "Claude response missing or invalid grade" });
+    }
+
+    const mistakes = Array.isArray(parsed.mistakes)
+      ? parsed.mistakes.filter((m) => typeof m === "string")
+      : [];
+    const summary = typeof parsed.summary === "string" ? parsed.summary : "";
+    const rule = typeof parsed.rule === "string" ? parsed.rule : null;
+
+    res.json({ grade, summary, mistakes, rule });
+  } catch (err) {
+    const msg = err && err.message ? err.message : String(err);
+    console.error("Grade failed:", msg);
+    res.status(502).json({ error: msg });
+  }
 });
 
 // GET /api/cards — return all cards and categories

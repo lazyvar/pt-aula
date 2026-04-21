@@ -3,6 +3,10 @@ const { test, expect } = require('@playwright/test');
 const { BASE } = require('./fixtures/truth');
 
 test.describe('POST /api/grade-sentence — server validation', () => {
+  // Assumes the test server runs without ANTHROPIC_API_KEY set.
+  // The playwright webServer config (playwright.config.js) does not set it,
+  // so POSTs with valid bodies deterministically hit the env-check branch.
+
   test('400 when body is missing fields', async () => {
     const res = await fetch(`${BASE}/api/grade-sentence`, {
       method: 'POST',
