@@ -5,6 +5,8 @@
   import { statsCache, markCard, getCardStats } from '../stores/stats';
   import { generatedMode } from '../stores/generated';
   import type { Card } from '../types';
+  import SentenceGrader from './SentenceGrader.svelte';
+  import { GENERATED_CAT } from '../types';
 
   let isFlipped = false;
   let cardEl: HTMLDivElement;
@@ -26,6 +28,10 @@
   });
 
   $: typingActive = $session.typeMode && !isMobile;
+  $: useAIGrader =
+    $generatedMode &&
+    $session.mode === 'en-to-pt' &&
+    currentCard?.cat === GENERATED_CAT;
 
   // Reset flip on card change. When advancing while flipped, we must suppress
   // the flip-back transition — otherwise the .card element animates from
@@ -177,6 +183,7 @@
     // In type mode the input owns the keyboard; the global card shortcuts
     // (space to flip, Enter to mark right, etc.) would otherwise hijack typing.
     if (typingActive) return;
+    if (useAIGrader) return;  // grader owns keyboard via its own svelte:window
     if (e.code === 'Space' || e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
       e.preventDefault();
       flipCard();
@@ -208,61 +215,68 @@
 </div>
 
 <div class="card-area">
-  <div
-    class="card-container"
-    id="cardContainer"
-    data-testid="card-container"
-    bind:this={containerEl}
-    on:click={flipCard}
-    on:keydown={(e) => e.key === 'Enter' && flipCard()}
-    role="button"
-    tabindex="0"
-  >
-    <div class="card {isFlipped ? 'flipped' : ''}" id="theCard" bind:this={cardEl}>
-      <div class="card-face card-front" data-testid="card-front">
-        {#if cc}<span class="category-tag {cc.cls}">{cc.label}</span>{/if}
-        <div class="card-label">{frontLabel}</div>
-        <div class="card-word">{front}</div>
-        {#if showCardStats}
-          <div style="font-size:0.7rem;color:var(--text-dim);margin-top:8px">
-            {cardStats.right}&#10003; {cardStats.wrong}&#10007;
-          </div>
-        {/if}
-      </div>
-      <div class="card-face card-back" data-testid="card-back">
-        {#if cc}<span class="category-tag {cc.cls}">{cc.label}</span>{/if}
-        <div class="card-label">{backLabel}</div>
-        <div class="card-word">{back}</div>
-        {#if showCardStats}
-          <div style="font-size:0.7rem;color:var(--text-dim);margin-top:8px">
-            {cardStats.right}&#10003; {cardStats.wrong}&#10007;
-          </div>
-        {/if}
-      </div>
-    </div>
-  </div>
-
-  {#if typingActive}
-    <div class="type-row">
-      <input
-        class="type-input"
-        data-testid="type-input"
-        type="text"
-        autocomplete="off"
-        autocapitalize="off"
-        spellcheck="false"
-        placeholder="Type the {backLabel.toLowerCase()} answer…"
-        bind:value={typedAnswer}
-        on:keydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); checkTypedAnswer(); } }}
-      />
-      <button class="btn btn-right" data-testid="type-check" on:click={checkTypedAnswer}>Check</button>
-    </div>
-    <div class="keyboard-hint">Type the answer · Enter to check</div>
+  {#if useAIGrader && currentCard}
+    <SentenceGrader
+      card={currentCard}
+      onAdvance={(gotIt) => mark(gotIt)}
+    />
   {:else}
-    <div class="buttons">
-      <button class="btn btn-wrong" data-testid="btn-wrong" on:click={() => mark(false)}>✗ Again</button>
-      <button class="btn btn-right" data-testid="btn-right" on:click={() => mark(true)}>✓ Got it</button>
+    <div
+      class="card-container"
+      id="cardContainer"
+      data-testid="card-container"
+      bind:this={containerEl}
+      on:click={flipCard}
+      on:keydown={(e) => e.key === 'Enter' && flipCard()}
+      role="button"
+      tabindex="0"
+    >
+      <div class="card {isFlipped ? 'flipped' : ''}" id="theCard" bind:this={cardEl}>
+        <div class="card-face card-front" data-testid="card-front">
+          {#if cc}<span class="category-tag {cc.cls}">{cc.label}</span>{/if}
+          <div class="card-label">{frontLabel}</div>
+          <div class="card-word">{front}</div>
+          {#if showCardStats}
+            <div style="font-size:0.7rem;color:var(--text-dim);margin-top:8px">
+              {cardStats.right}&#10003; {cardStats.wrong}&#10007;
+            </div>
+          {/if}
+        </div>
+        <div class="card-face card-back" data-testid="card-back">
+          {#if cc}<span class="category-tag {cc.cls}">{cc.label}</span>{/if}
+          <div class="card-label">{backLabel}</div>
+          <div class="card-word">{back}</div>
+          {#if showCardStats}
+            <div style="font-size:0.7rem;color:var(--text-dim);margin-top:8px">
+              {cardStats.right}&#10003; {cardStats.wrong}&#10007;
+            </div>
+          {/if}
+        </div>
+      </div>
     </div>
-    <div class="keyboard-hint">Space/←/→ = flip · Enter = got it · Delete = again</div>
+
+    {#if typingActive}
+      <div class="type-row">
+        <input
+          class="type-input"
+          data-testid="type-input"
+          type="text"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          placeholder="Type the {backLabel.toLowerCase()} answer…"
+          bind:value={typedAnswer}
+          on:keydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); checkTypedAnswer(); } }}
+        />
+        <button class="btn btn-right" data-testid="type-check" on:click={checkTypedAnswer}>Check</button>
+      </div>
+      <div class="keyboard-hint">Type the answer · Enter to check</div>
+    {:else}
+      <div class="buttons">
+        <button class="btn btn-wrong" data-testid="btn-wrong" on:click={() => mark(false)}>✗ Again</button>
+        <button class="btn btn-right" data-testid="btn-right" on:click={() => mark(true)}>✓ Got it</button>
+      </div>
+      <div class="keyboard-hint">Space/←/→ = flip · Enter = got it · Delete = again</div>
+    {/if}
   {/if}
 </div>
