@@ -433,6 +433,21 @@ Return STRICT JSON only, no prose, no markdown fence:
   }
 });
 
+// POST /api/grade-sentence — body: { en, userPt, referencePt }
+// Returns { grade: 1|2|3, summary, mistakes: string[], rule: string|null }
+app.post("/api/grade-sentence", async (req, res) => {
+  const { en, userPt, referencePt } = req.body || {};
+  if (typeof en !== "string" || typeof userPt !== "string" || typeof referencePt !== "string") {
+    return res.status(400).json({ error: "en, userPt, referencePt are required strings" });
+  }
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return res.status(500).json({ error: "ANTHROPIC_API_KEY not configured on server" });
+  }
+
+  // AI call added in the next task.
+  return res.status(501).json({ error: "not implemented" });
+});
+
 // GET /api/cards — return all cards and categories
 app.get("/api/cards", async (req, res) => {
   const { rows: catRows } = await pool.query("SELECT id, label, css_class, group_name FROM categories");
