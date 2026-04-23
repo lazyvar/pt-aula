@@ -30,7 +30,7 @@ test.describe('Generated Mode', () => {
 
     // Gen banner visible
     await expect(page.getByText(/Generated Mode/)).toBeVisible();
-    await expect(page.getByText(/20 sentences/)).toBeVisible();
+    await expect(page.getByText(/20 verbs/)).toBeVisible();
 
     // body has gen-mode class
     await expect(page.locator('body')).toHaveClass(/gen-mode/);

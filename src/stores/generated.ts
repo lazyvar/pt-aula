@@ -6,7 +6,12 @@ import { GENERATED_CAT } from '../types';
 export type GenerateKind = 'sentences' | 'conjugations';
 
 export const generatedMode = writable<boolean>(false);
+// In-flight marker for the Generate button UI. Cleared when the fetch resolves.
 export const generatingKind = writable<GenerateKind | null>(null);
+// The kind of the currently-active generated session. Persists for the
+// entire generated-mode session (set on entry, cleared on exit) so the UI
+// can pick different grading paths for sentences vs conjugations.
+export const generatedKind = writable<GenerateKind | null>(null);
 export const generatedCards = writable<Card[]>([]);
 
 // Snapshot of real deck state before entering gen mode.
@@ -42,6 +47,7 @@ export async function generate(
     const cards: Card[] = data.cards.map((c) => ({ pt: c.pt, en: c.en, cat: GENERATED_CAT }));
     generatedCards.set(cards);
     applyGenerated(cards);
+    generatedKind.set(kind);
     generatedMode.set(true);
     document.body.classList.add('gen-mode');
     return null;
@@ -61,6 +67,7 @@ export function exitGenerated(applySnapshot: (snap: DeckSnapshot) => void): void
   applySnapshot(savedSnapshot);
   savedSnapshot = null;
   generatedMode.set(false);
+  generatedKind.set(null);
   generatedCards.set([]);
   document.body.classList.remove('gen-mode');
 }

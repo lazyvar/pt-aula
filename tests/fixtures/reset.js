@@ -42,4 +42,13 @@ async function setActiveCategories(catIds) {
   if (!res.ok) throw new Error(`setActiveCategories failed: ${res.status}`);
 }
 
-module.exports = { resetAll, setActiveCategories, BASE };
+// Block the external Google Fonts <link> that index.html loads. The request
+// can hang and delay the window 'load' event, which causes page.goto to
+// time out. Tests don't care about fonts — abort the request so 'load'
+// fires promptly. Call from a beforeEach before page.goto.
+async function blockFonts(page) {
+  await page.route('**/fonts.googleapis.com/**', (route) => route.abort());
+  await page.route('**/fonts.gstatic.com/**', (route) => route.abort());
+}
+
+module.exports = { resetAll, setActiveCategories, blockFonts, BASE };

@@ -3,7 +3,7 @@
   import { session, deck, mark as sessionMark } from '../stores/session';
   import { catConfig } from '../stores/cards';
   import { statsCache, markCard, getCardStats } from '../stores/stats';
-  import { generatedMode } from '../stores/generated';
+  import { generatedMode, generatedKind } from '../stores/generated';
   import SentenceGrader from './SentenceGrader.svelte';
   import { GENERATED_CAT, type Card } from '../types';
 
@@ -27,8 +27,11 @@
   });
 
   $: typingActive = $session.typeMode && !isMobile;
+  // AI grader is scoped to generated-sentences mode only. Conjugations keep
+  // the classic flip + self-mark UI (precise forms, exact-match self-assess).
   $: useAIGrader =
     $generatedMode &&
+    $generatedKind === 'sentences' &&
     $session.mode === 'en-to-pt' &&
     currentCard?.cat === GENERATED_CAT;
 

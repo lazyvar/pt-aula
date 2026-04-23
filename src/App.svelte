@@ -9,7 +9,7 @@
   import { allCards, hydrateCards, getDefaultActiveCats } from './stores/cards';
   import { hydrateStats } from './stores/stats';
   import { session, hydrateSession, startDeck, deck, flushSession, reviewWrongCards, wrongCardsList } from './stores/session';
-  import { generatedMode, generatedCards, exitGenerated } from './stores/generated';
+  import { generatedMode, generatedCards, generatedKind, exitGenerated } from './stores/generated';
   import { restoreSnapshot } from './stores/session';
 
   let loaded = false;
@@ -69,7 +69,7 @@
 {:else}
   {#if $generatedMode}
     <div class="gen-banner">
-      <span>✨ Generated Mode · {$generatedCards.length} sentences</span>
+      <span data-testid="gen-banner-label">✨ Generated Mode · {$generatedCards.length} {$generatedKind === 'conjugations' ? 'verbs' : 'sentences'}</span>
       <button on:click={onExitGenerated}>Exit</button>
     </div>
   {/if}
