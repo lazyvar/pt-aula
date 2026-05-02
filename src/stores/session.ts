@@ -256,6 +256,14 @@ export function toggleMode(): void {
 }
 
 /**
+ * Set mode directly (used for entering/exiting listen-to-pt, where a
+ * 2-cycle toggle would be confusing).
+ */
+export function setMode(mode: Session['mode']): void {
+  session.update((s) => ({ ...s, mode }));
+}
+
+/**
  * Mark the current card correct/wrong. Updates counters, currentIndex,
  * and wrongCards (for review). Does NOT POST stats — caller is responsible.
  * Ported from :1248-1264.

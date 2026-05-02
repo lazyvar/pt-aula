@@ -19,7 +19,7 @@ export interface Session {
   currentIndex: number;
   correct: number;
   wrong: number;
-  mode: 'pt-to-en' | 'en-to-pt';
+  mode: 'pt-to-en' | 'en-to-pt' | 'listen-to-pt';
   activeCats: string[];      // array of category ids
   wrongCards: string[];      // array of pt strings
   typeMode: boolean;
