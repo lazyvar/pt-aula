@@ -85,9 +85,21 @@
     // block fires for the new currentCard.
   }
 
-  function onAudioError() {
-    // Placeholder — Task 8 wires real error detection (status code).
-    audioStatus = 'upstream-error';
+  async function onAudioError() {
+    if (!currentCard) return;
+    try {
+      const res = await fetch(ttsSrc, { method: 'GET' });
+      if (res.status === 500) {
+        const body = await res.json().catch(() => ({}));
+        if (body && typeof body.error === 'string' && body.error.includes('ELEVENLABS_API_KEY')) {
+          audioStatus = 'missing-key';
+          return;
+        }
+      }
+      audioStatus = 'upstream-error';
+    } catch {
+      audioStatus = 'upstream-error';
+    }
   }
 
   onMount(() => {
@@ -103,6 +115,16 @@
 <div class="card-area" data-testid="listening-card">
   {#if currentCard}
     {#if cc}<span class="category-tag {cc.cls}">{cc.label}</span>{/if}
+
+    {#if audioStatus === 'missing-key'}
+      <div class="audio-banner" data-testid="listen-audio-banner-missing">
+        Audio unavailable — set <code>ELEVENLABS_API_KEY</code>
+      </div>
+    {:else if audioStatus === 'upstream-error'}
+      <div class="audio-banner" data-testid="listen-audio-banner-error">
+        Couldn't load audio — <button type="button" class="link" on:click={play}>retry</button>
+      </div>
+    {/if}
 
     <button
       class="btn"
@@ -174,3 +196,22 @@
     <div class="keyboard-hint">Enter = check · Esc = skip</div>
   {/if}
 </div>
+
+<style>
+  .audio-banner {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+  }
+  .audio-banner .link {
+    background: none;
+    border: none;
+    color: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+  }
+</style>
