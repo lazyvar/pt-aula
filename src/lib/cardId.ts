@@ -13,3 +13,19 @@ export function getCardId(card: { pt: string }): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 }
+
+/**
+ * Normalize a typed answer for listen-mode grading: case-insensitive,
+ * diacritic-insensitive, punctuation-insensitive, whitespace-collapsed.
+ * Strictly looser than the typeMode comparator, since punctuation isn't
+ * audible in the prompt.
+ */
+export function normalizeForListening(s: string): string {
+  return s
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, ' ');
+}
