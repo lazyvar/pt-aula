@@ -72,6 +72,57 @@ test.describe('Listening mode', () => {
     await expect(page.getByTestId('counter-correct')).toContainText('1');
   });
 
+  test('after mouse-clicking Check, pressing Enter advances (focus on button)', async ({ page }) => {
+    // Regression: previously, clicking Check with the mouse left focus on the
+    // (now-unmounted) Check button, so subsequent Enter did nothing or re-fired
+    // Check. The fix: a Continue button autofocuses after reveal, AND a
+    // window-level Enter handler advances regardless of focus.
+    await stubTtsOk(page);
+    const truth = await loadTruth();
+    await page.goto('/');
+    await expect(page.getByTestId('card-container')).toBeVisible();
+
+    const front = (await page.getByTestId('card-front').locator('.card-word').textContent())?.trim() ?? '';
+    const card = truth.getCardByPt(front);
+    expect(card).toBeTruthy();
+
+    await page.getByTestId('listen-enter').click();
+    await page.getByTestId('listen-input').fill(card.pt);
+    // Click Check with mouse — focus moves off the input.
+    await page.getByTestId('listen-check').click();
+
+    await expect(page.getByTestId('listen-reveal')).toBeVisible();
+    await expect(page.getByTestId('listen-continue')).toBeVisible();
+    // Skip/Check are gone after reveal; only Continue remains.
+    await expect(page.getByTestId('listen-skip')).toHaveCount(0);
+    await expect(page.getByTestId('listen-check')).toHaveCount(0);
+
+    // Continue is autofocused — pressing Enter on the body advances.
+    await page.keyboard.press('Enter');
+    await expect(page.getByTestId('listen-reveal')).toHaveCount(0);
+    await expect(page.getByTestId('counter-correct')).toContainText('1');
+  });
+
+  test('clicking the Continue button advances', async ({ page }) => {
+    await stubTtsOk(page);
+    const truth = await loadTruth();
+    await page.goto('/');
+    await expect(page.getByTestId('card-container')).toBeVisible();
+
+    const front = (await page.getByTestId('card-front').locator('.card-word').textContent())?.trim() ?? '';
+    const card = truth.getCardByPt(front);
+    expect(card).toBeTruthy();
+
+    await page.getByTestId('listen-enter').click();
+    await page.getByTestId('listen-input').fill(card.pt);
+    await page.getByTestId('listen-input').press('Enter');
+
+    await expect(page.getByTestId('listen-continue')).toBeVisible();
+    await page.getByTestId('listen-continue').click();
+    await expect(page.getByTestId('listen-reveal')).toHaveCount(0);
+    await expect(page.getByTestId('counter-correct')).toContainText('1');
+  });
+
   test('wrong typed answer reveals ✗ and increments wrong counter', async ({ page }) => {
     await stubTtsOk(page);
     await page.goto('/');

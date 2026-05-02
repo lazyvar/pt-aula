@@ -17,6 +17,7 @@
 
   let audioEl: HTMLAudioElement | undefined;
   let inputEl: HTMLInputElement | undefined;
+  let continueBtn: HTMLButtonElement | undefined;
   let typed = '';
   let revealed = false;
   let lastVerdict: 'right' | 'wrong' | null = null;
@@ -53,10 +54,13 @@
 
   async function check() {
     if (!currentCard) return;
+    if (revealed) return; // already checked; ignore re-fires
     if (typed.trim().length === 0) return;
     const ok = normalizeForListening(typed) === normalizeForListening(currentCard.pt);
     lastVerdict = ok ? 'right' : 'wrong';
     revealed = true;
+    await tick();
+    continueBtn?.focus();
   }
 
   async function skip() {
@@ -64,10 +68,26 @@
     if (revealed) { advance(); return; }
     lastVerdict = 'wrong';
     revealed = true;
+    await tick();
+    continueBtn?.focus();
+  }
+
+  function onWindowKeydown(e: KeyboardEvent) {
+    // While revealed, Enter advances regardless of where focus landed.
+    // (Without this, clicking Check with the mouse leaves focus on the
+    // button, so a subsequent Enter would re-fire Check instead of advance.)
+    if (revealed && e.key === 'Enter') {
+      e.preventDefault();
+      advance();
+    }
   }
 
   async function advance() {
     if (!currentCard || !revealed) return;
+    // Reset reveal immediately to guard against double-fire (e.g. window
+    // keydown listener firing for the same Enter that already triggered
+    // a click on the focused Continue button).
+    revealed = false;
     const ok = lastVerdict === 'right';
     const card = currentCard;
     sessionMark(card, ok);
@@ -98,6 +118,8 @@
     }
   });
 </script>
+
+<svelte:window on:keydown={onWindowKeydown} />
 
 <div class="listen-wrap" data-testid="listening-card">
   {#if currentCard}
@@ -149,25 +171,42 @@
         placeholder="Type what you heard…"
         bind:value={typed}
         on:keydown={(e) => {
-          if (e.key === 'Enter') { e.preventDefault(); revealed ? advance() : check(); }
-          else if (e.key === 'Escape') { e.preventDefault(); skip(); }
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            e.stopPropagation(); // prevent window handler from firing on the same event
+            if (revealed) advance(); else check();
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            e.stopPropagation();
+            skip();
+          }
         }}
       />
 
       <div class="action-row">
-        <button
-          class="action-btn skip"
-          data-testid="listen-skip"
-          type="button"
-          on:click={skip}
-        >Skip</button>
-        <button
-          class="action-btn check"
-          data-testid="listen-check"
-          type="button"
-          disabled={typed.trim().length === 0}
-          on:click={check}
-        >Check</button>
+        {#if revealed}
+          <button
+            bind:this={continueBtn}
+            class="action-btn continue"
+            data-testid="listen-continue"
+            type="button"
+            on:click={advance}
+          >Continue →</button>
+        {:else}
+          <button
+            class="action-btn skip"
+            data-testid="listen-skip"
+            type="button"
+            on:click={skip}
+          >Skip</button>
+          <button
+            class="action-btn check"
+            data-testid="listen-check"
+            type="button"
+            disabled={typed.trim().length === 0}
+            on:click={check}
+          >Check</button>
+        {/if}
       </div>
     </div>
 
@@ -184,7 +223,6 @@
           <div class="reveal-label">English</div>
           <div class="reveal-value">{currentCard.en}</div>
         </div>
-        <div class="reveal-hint">Press Enter to continue</div>
       </div>
     {/if}
 
@@ -294,6 +332,16 @@
   }
   .action-btn.check:hover:not(:disabled) { background: rgba(46,204,113,0.22); }
   .action-btn.check:disabled { opacity: 0.4; cursor: not-allowed; }
+  .action-btn.continue {
+    background: rgba(233,69,96,0.14);
+    color: var(--accent);
+    border-color: rgba(233,69,96,0.3);
+  }
+  .action-btn.continue:hover { background: rgba(233,69,96,0.22); }
+  .action-btn.continue:focus-visible {
+    outline: 2px solid rgba(233,69,96,0.5);
+    outline-offset: 2px;
+  }
 
   .reveal {
     width: 100%;
@@ -335,13 +383,6 @@
     line-height: 1.35;
     color: var(--text);
   }
-  .reveal-hint {
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    margin-top: 4px;
-    font-style: italic;
-  }
-
   .stats-line {
     font-size: 0.7rem;
     color: var(--text-dim);
