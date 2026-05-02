@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { session, toggleMode, shuffleRemaining, startDeck, deleteSession } from '../stores/session';
+  import { session, toggleMode, setMode, shuffleRemaining, startDeck, deleteSession } from '../stores/session';
   import { allCards, hydrateCards } from '../stores/cards';
   import { resetStats } from '../stores/stats';
   import { generatingKind, generatedMode, generate, type GenerateKind } from '../stores/generated';
@@ -35,9 +35,26 @@
   }
 </script>
 
-<button class="ctrl-btn" data-testid={testIds ? 'mode-toggle' : undefined} data-mode={$session.mode} on:click={toggleMode}>
-  {$session.mode === 'pt-to-en' ? 'PT → EN' : 'EN → PT'}
-</button>
+{#if $session.mode === 'listen-to-pt'}
+  <button
+    class="ctrl-btn"
+    data-testid={testIds ? 'listen-exit' : undefined}
+    on:click={() => setMode('pt-to-en')}
+  >
+    ← Flashcards
+  </button>
+{:else}
+  <button class="ctrl-btn" data-testid={testIds ? 'mode-toggle' : undefined} data-mode={$session.mode} on:click={toggleMode}>
+    {$session.mode === 'pt-to-en' ? 'PT → EN' : 'EN → PT'}
+  </button>
+  <button
+    class="ctrl-btn"
+    data-testid={testIds ? 'listen-enter' : undefined}
+    on:click={() => setMode('listen-to-pt')}
+  >
+    🎧 Listen
+  </button>
+{/if}
 <button class="ctrl-btn" on:click={() => shuffleRemaining($allCards)}>Shuffle</button>
 <button
   class="ctrl-btn"
