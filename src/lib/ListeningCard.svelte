@@ -59,10 +59,31 @@
     }
   }
 
-  // Placeholder — Task 7 wires real grading.
-  async function check() {}
-  async function skip() {}
-  async function advance() {}
+  async function check() {
+    if (!currentCard) return;
+    if (typed.trim().length === 0) return; // empty submit is a no-op
+    const ok = normalizeForListening(typed) === normalizeForListening(currentCard.pt);
+    lastVerdict = ok ? 'right' : 'wrong';
+    revealed = true;
+    // Defer sessionMark until advance() so the reveal panel persists.
+  }
+
+  async function skip() {
+    if (!currentCard) return;
+    if (revealed) { advance(); return; }
+    lastVerdict = 'wrong';
+    revealed = true;
+  }
+
+  async function advance() {
+    if (!currentCard || !revealed) return;
+    const ok = lastVerdict === 'right';
+    const card = currentCard;
+    sessionMark(card, ok);
+    if (!$generatedMode) await markCard(card, ok);
+    // onCardChange() will reset typed/revealed/lastVerdict when the reactive
+    // block fires for the new currentCard.
+  }
 
   function onAudioError() {
     // Placeholder — Task 8 wires real error detection (status code).
