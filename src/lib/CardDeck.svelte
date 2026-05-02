@@ -5,6 +5,7 @@
   import { statsCache, markCard, getCardStats } from '../stores/stats';
   import { generatedMode, generatedKind } from '../stores/generated';
   import SentenceGrader from './SentenceGrader.svelte';
+  import ListeningCard from './ListeningCard.svelte';
   import { GENERATED_CAT, type Card } from '../types';
 
   let isFlipped = false;
@@ -34,6 +35,7 @@
     $generatedKind === 'sentences' &&
     $session.mode === 'en-to-pt' &&
     currentCard?.cat === GENERATED_CAT;
+  $: useListening = $session.mode === 'listen-to-pt' && !useAIGrader;
 
   // Reset flip on card change. When advancing while flipped, we must suppress
   // the flip-back transition — otherwise the .card element animates from
@@ -186,6 +188,7 @@
     // (space to flip, Enter to mark right, etc.) would otherwise hijack typing.
     if (typingActive) return;
     if (useAIGrader) return;  // grader owns keyboard via its own svelte:window
+    if (useListening) return; // listening card's input owns the keyboard
     if (e.code === 'Space' || e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
       e.preventDefault();
       flipCard();
@@ -222,6 +225,8 @@
       card={currentCard}
       onAdvance={(gotIt) => mark(gotIt)}
     />
+  {:else if useListening && currentCard}
+    <ListeningCard />
   {:else}
     <div
       class="card-container"
