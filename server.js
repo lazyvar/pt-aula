@@ -433,6 +433,65 @@ Return STRICT JSON only, no prose, no markdown fence:
   }
 });
 
+// POST /api/tts — body: { text }
+// GET  /api/tts?text=… — query string variant for <audio src=…> elements
+// Returns audio/mpeg streamed from ElevenLabs. No caching.
+const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "FGY2WhTYpPnrIDTdsKH5"; // "Camila" (multilingual, pt-BR)
+const ELEVENLABS_MODEL_ID = "eleven_multilingual_v2";
+
+async function handleTts(text, res) {
+  if (typeof text !== "string" || text.length === 0 || text.length > 500) {
+    return res.status(400).json({ error: "text must be a non-empty string ≤ 500 chars" });
+  }
+  if (!process.env.ELEVENLABS_API_KEY) {
+    return res.status(500).json({ error: "ELEVENLABS_API_KEY not configured on server" });
+  }
+
+  try {
+    const upstream = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`,
+      {
+        method: "POST",
+        headers: {
+          "xi-api-key": process.env.ELEVENLABS_API_KEY,
+          "Content-Type": "application/json",
+          "Accept": "audio/mpeg",
+        },
+        body: JSON.stringify({ text, model_id: ELEVENLABS_MODEL_ID }),
+      }
+    );
+
+    if (!upstream.ok) {
+      const errText = await upstream.text().catch(() => "");
+      console.error("TTS upstream error:", upstream.status, errText);
+      return res.status(502).json({ error: `ElevenLabs returned ${upstream.status}` });
+    }
+
+    res.setHeader("Content-Type", "audio/mpeg");
+    // Pipe the upstream Web ReadableStream to the Express response.
+    const reader = upstream.body.getReader();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      res.write(Buffer.from(value));
+    }
+    res.end();
+  } catch (err) {
+    const msg = err && err.message ? err.message : String(err);
+    console.error("TTS failed:", msg);
+    if (!res.headersSent) res.status(502).json({ error: msg });
+    else res.end();
+  }
+}
+
+app.post("/api/tts", async (req, res) => {
+  await handleTts(req.body && req.body.text, res);
+});
+
+app.get("/api/tts", async (req, res) => {
+  await handleTts(req.query.text, res);
+});
+
 // POST /api/grade-sentence — body: { en, userPt, referencePt }
 // Returns { grade: 1|2|3, summary, mistakes: string[], warnings: string[], rule: string|null }
 app.post("/api/grade-sentence", async (req, res) => {
