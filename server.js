@@ -190,7 +190,9 @@ app.post("/api/reseed", async (req, res) => {
     }
     // 3. Prune categories no longer in the seed.
     const seedIds = categories.map((c) => c.id);
-    await client.query("DELETE FROM categories WHERE id <> ALL($1)", [seedIds]);
+    if (seedIds.length > 0) {
+      await client.query("DELETE FROM categories WHERE id <> ALL($1)", [seedIds]);
+    }
     // 4. Re-insert cards (all reference categories that now exist).
     for (const card of cards) {
       await client.query(
