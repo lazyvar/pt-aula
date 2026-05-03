@@ -15,7 +15,13 @@ const cards = [
   { pt: "Ele/Ela traria", en: "He/She would bring (conditional)", category_id: "trazer-conj" },
   { pt: "Nós traríamos", en: "We would bring (conditional)", category_id: "trazer-conj" },
   { pt: "Vocês trariam", en: "You all would bring (conditional)", category_id: "trazer-conj" },
-  { pt: "Eles/Elas trariam", en: "They would bring (conditional)", category_id: "trazer-conj" }
+  { pt: "Eles/Elas trariam", en: "They would bring (conditional)", category_id: "trazer-conj" },
+  { pt: "Eu traga", en: "I bring (present subjunctive)", category_id: "trazer-conj" },
+  { pt: "Você traga", en: "You bring (present subjunctive)", category_id: "trazer-conj" },
+  { pt: "Ele/Ela traga", en: "He/She brings (present subjunctive)", category_id: "trazer-conj" },
+  { pt: "Nós tragamos", en: "We bring (present subjunctive)", category_id: "trazer-conj" },
+  { pt: "Vocês tragam", en: "You all bring (present subjunctive)", category_id: "trazer-conj" },
+  { pt: "Eles/Elas tragam", en: "They bring (present subjunctive)", category_id: "trazer-conj" }
 ];
 
 module.exports = { categories: [category], cards };

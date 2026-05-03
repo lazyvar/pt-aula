@@ -17,7 +17,13 @@ const cards = [
   { pt: "Ele/Ela teve", en: "He/She had (preterite)", category_id: "ter-conj" },
   { pt: "Nós tivemos", en: "We had (preterite)", category_id: "ter-conj" },
   { pt: "Vocês tiveram", en: "You all had (preterite)", category_id: "ter-conj" },
-  { pt: "Eles/Elas tiveram", en: "They had (preterite)", category_id: "ter-conj" }
+  { pt: "Eles/Elas tiveram", en: "They had (preterite)", category_id: "ter-conj" },
+  { pt: "Eu tenha", en: "I have (present subjunctive)", category_id: "ter-conj" },
+  { pt: "Você tenha", en: "You have (present subjunctive)", category_id: "ter-conj" },
+  { pt: "Ele/Ela tenha", en: "He/She has (present subjunctive)", category_id: "ter-conj" },
+  { pt: "Nós tenhamos", en: "We have (present subjunctive)", category_id: "ter-conj" },
+  { pt: "Vocês tenham", en: "You all have (present subjunctive)", category_id: "ter-conj" },
+  { pt: "Eles/Elas tenham", en: "They have (present subjunctive)", category_id: "ter-conj" }
 ];
 
 module.exports = { categories: [category], cards };

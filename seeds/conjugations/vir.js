@@ -17,7 +17,13 @@ const cards = [
   { pt: "Ele/Ela veio", en: "He/She came (preterite)", category_id: "vir-conj" },
   { pt: "Nós viemos", en: "We came (preterite)", category_id: "vir-conj" },
   { pt: "Vocês vieram", en: "You all came (preterite)", category_id: "vir-conj" },
-  { pt: "Eles/Elas vieram", en: "They came (preterite)", category_id: "vir-conj" }
+  { pt: "Eles/Elas vieram", en: "They came (preterite)", category_id: "vir-conj" },
+  { pt: "Eu venha", en: "I come (present subjunctive)", category_id: "vir-conj" },
+  { pt: "Você venha", en: "You come (present subjunctive)", category_id: "vir-conj" },
+  { pt: "Ele/Ela venha", en: "He/She comes (present subjunctive)", category_id: "vir-conj" },
+  { pt: "Nós venhamos", en: "We come (present subjunctive)", category_id: "vir-conj" },
+  { pt: "Vocês venham", en: "You all come (present subjunctive)", category_id: "vir-conj" },
+  { pt: "Eles/Elas venham", en: "They come (present subjunctive)", category_id: "vir-conj" }
 ];
 
 module.exports = { categories: [category], cards };

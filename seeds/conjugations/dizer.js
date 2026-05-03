@@ -15,7 +15,13 @@ const cards = [
   { pt: "Ele/Ela diria", en: "He/She would say (conditional)", category_id: "dizer-conj" },
   { pt: "Nós diríamos", en: "We would say (conditional)", category_id: "dizer-conj" },
   { pt: "Vocês diriam", en: "You all would say (conditional)", category_id: "dizer-conj" },
-  { pt: "Eles/Elas diriam", en: "They would say (conditional)", category_id: "dizer-conj" }
+  { pt: "Eles/Elas diriam", en: "They would say (conditional)", category_id: "dizer-conj" },
+  { pt: "Eu diga", en: "I say (present subjunctive)", category_id: "dizer-conj" },
+  { pt: "Você diga", en: "You say (present subjunctive)", category_id: "dizer-conj" },
+  { pt: "Ele/Ela diga", en: "He/She says (present subjunctive)", category_id: "dizer-conj" },
+  { pt: "Nós digamos", en: "We say (present subjunctive)", category_id: "dizer-conj" },
+  { pt: "Vocês digam", en: "You all say (present subjunctive)", category_id: "dizer-conj" },
+  { pt: "Eles/Elas digam", en: "They say (present subjunctive)", category_id: "dizer-conj" }
 ];
 
 module.exports = { categories: [category], cards };

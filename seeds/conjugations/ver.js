@@ -10,7 +10,13 @@ const cards = [
   { pt: "Ele/Ela viu", en: "He/She saw (preterite)", category_id: "ver-conj" },
   { pt: "Nós vimos (ver)", en: "We saw (preterite)", category_id: "ver-conj" },
   { pt: "Vocês viram", en: "You all saw (preterite)", category_id: "ver-conj" },
-  { pt: "Eles/Elas viram", en: "They saw (preterite)", category_id: "ver-conj" }
+  { pt: "Eles/Elas viram", en: "They saw (preterite)", category_id: "ver-conj" },
+  { pt: "Eu veja", en: "I see (present subjunctive)", category_id: "ver-conj" },
+  { pt: "Você veja", en: "You see (present subjunctive)", category_id: "ver-conj" },
+  { pt: "Ele/Ela veja", en: "He/She sees (present subjunctive)", category_id: "ver-conj" },
+  { pt: "Nós vejamos", en: "We see (present subjunctive)", category_id: "ver-conj" },
+  { pt: "Vocês vejam", en: "You all see (present subjunctive)", category_id: "ver-conj" },
+  { pt: "Eles/Elas vejam", en: "They see (present subjunctive)", category_id: "ver-conj" }
 ];
 
 module.exports = { categories: [category], cards };
