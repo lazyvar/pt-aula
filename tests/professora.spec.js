@@ -129,4 +129,29 @@ test.describe('Professora', () => {
     const sameRow = page.locator(`[data-testid="manage-row"][data-cat-id="${catId}"]`);
     await expect(sameRow.getByTestId('pill-studying')).toHaveAttribute('aria-pressed', 'true');
   });
+
+  test('grid shows cards from Studying categories only by default', async ({ page, request }) => {
+    // Seed: mark exactly two categories — one studying, one complete.
+    const res0 = await request.get(`${BASE}/api/cards`);
+    const { categories, cards } = await res0.json();
+    const ids = Object.keys(categories);
+    const studyingId = ids[0];
+    const completeId = ids[1];
+    await request.put(`${BASE}/api/categories/${encodeURIComponent(studyingId)}/status`, { data: { status: 'studying' } });
+    await request.put(`${BASE}/api/categories/${encodeURIComponent(completeId)}/status`, { data: { status: 'complete' } });
+
+    const studyingPt = cards.find((c) => c.cat === studyingId).pt;
+    const completePt = cards.find((c) => c.cat === completeId).pt;
+
+    await page.goto(`${BASE}/professora`);
+    // Default filter: Studying only.
+    await expect(page.getByTestId('card-grid')).toBeVisible();
+    await expect(page.getByTestId('card-tile').filter({ hasText: studyingPt })).toBeVisible();
+    await expect(page.getByTestId('card-tile').filter({ hasText: completePt })).toHaveCount(0);
+
+    // Click the Complete chip on; both should now be visible.
+    await page.getByTestId('filter-status-complete').click();
+    await expect(page.getByTestId('card-tile').filter({ hasText: completePt })).toBeVisible();
+    await expect(page.getByTestId('card-tile').filter({ hasText: studyingPt })).toBeVisible();
+  });
 });
