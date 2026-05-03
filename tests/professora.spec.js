@@ -87,4 +87,18 @@ test.describe('Professora', () => {
     await expect(page.getByTestId('professora-page')).toBeVisible();
     await expect(page.getByTestId('card-container')).toHaveCount(0);
   });
+
+  test('filter chips render with Studying selected, Complete deselected by default', async ({ page }) => {
+    await page.goto(`${BASE}/professora`);
+    await expect(page.getByTestId('filter-status-studying')).toBeVisible();
+    await expect(page.getByTestId('filter-status-complete')).toBeVisible();
+    await expect(page.getByTestId('filter-status-studying')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByTestId('filter-status-complete')).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  test('clicking the back link navigates to /', async ({ page }) => {
+    await page.goto(`${BASE}/professora`);
+    await page.getByTestId('professora-back').click();
+    await expect(page).toHaveURL(`${BASE}/`);
+  });
 });
