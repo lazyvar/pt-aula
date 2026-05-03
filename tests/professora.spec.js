@@ -72,4 +72,13 @@ test.describe('Professora', () => {
     expect(cats[id]).toBeTruthy();
     expect(cats[id].status).toBe('complete');
   });
+
+  test('GET /professora serves the SPA shell', async ({ request }) => {
+    const res = await request.get(`${BASE}/professora`);
+    expect(res.ok()).toBe(true);
+    const ct = res.headers()['content-type'] || '';
+    expect(ct).toContain('text/html');
+    const body = await res.text();
+    expect(body).toContain('<div id="app">');
+  });
 });

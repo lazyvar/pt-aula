@@ -671,6 +671,12 @@ app.get("/api/cards", async (req, res) => {
   res.json({ cards, categories });
 });
 
+// SPA fallback: any /professora[/...] URL returns the built index.html.
+// Placed AFTER express.static and AFTER all /api/* routes so it can't shadow them.
+app.get(/^\/professora(\/.*)?$/, (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
 init().then(() => {
   const port = process.env.PORT || 3005;
   app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
