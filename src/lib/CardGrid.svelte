@@ -26,7 +26,11 @@
 
 <div class="grid-wrapper">
   <div class="card-grid" data-testid="card-grid">
-    {#each visibleCards as card (card.pt)}
+    {#each visibleCards as card}
+      <!-- Unkeyed: seed cards include duplicate `pt` strings across categories
+           (e.g. "Medo" appears in multiple groups), so a `(card.pt)` key would
+           crash with "Cannot have duplicate keys". The grid is read-only and
+           has no per-tile state, so positional reuse is fine. -->
       <div class="tile" data-testid="card-tile">
         <div class="pt">{card.pt}</div>
         <div class="en">{card.en}</div>
