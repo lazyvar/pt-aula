@@ -154,4 +154,29 @@ test.describe('Professora', () => {
     await expect(page.getByTestId('card-tile').filter({ hasText: completePt })).toBeVisible();
     await expect(page.getByTestId('card-tile').filter({ hasText: studyingPt })).toBeVisible();
   });
+
+  test('category multiselect restricts the grid; selecting none shows all', async ({ page, request }) => {
+    const res0 = await request.get(`${BASE}/api/cards`);
+    const { categories, cards } = await res0.json();
+    const ids = Object.keys(categories);
+    const a = ids[0], b = ids[1];
+    await request.put(`${BASE}/api/categories/${encodeURIComponent(a)}/status`, { data: { status: 'studying' } });
+    await request.put(`${BASE}/api/categories/${encodeURIComponent(b)}/status`, { data: { status: 'studying' } });
+    const aPt = cards.find((c) => c.cat === a).pt;
+    const bPt = cards.find((c) => c.cat === b).pt;
+
+    await page.goto(`${BASE}/professora`);
+    // Both visible by default (no category restriction).
+    await expect(page.getByTestId('card-tile').filter({ hasText: aPt })).toBeVisible();
+    await expect(page.getByTestId('card-tile').filter({ hasText: bPt })).toBeVisible();
+
+    // Click only category A.
+    await page.locator(`[data-testid="filter-cat"][data-cat-id="${a}"]`).click();
+    await expect(page.getByTestId('card-tile').filter({ hasText: aPt })).toBeVisible();
+    await expect(page.getByTestId('card-tile').filter({ hasText: bPt })).toHaveCount(0);
+
+    // Click again to deselect — back to all.
+    await page.locator(`[data-testid="filter-cat"][data-cat-id="${a}"]`).click();
+    await expect(page.getByTestId('card-tile').filter({ hasText: bPt })).toBeVisible();
+  });
 });
