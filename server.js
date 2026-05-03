@@ -502,15 +502,19 @@ async function handleTts(text, res) {
       return res.status(502).json({ error: `ElevenLabs returned ${upstream.status}` });
     }
 
-    res.setHeader("Content-Type", "audio/mpeg");
-    // Pipe the upstream Web ReadableStream to the Express response.
-    const reader = upstream.body.getReader();
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      res.write(Buffer.from(value));
+    const audio = Buffer.from(await upstream.arrayBuffer());
+
+    try {
+      const tmp = `${cachedPath}.tmp`;
+      await fsp.writeFile(tmp, audio);
+      await fsp.rename(tmp, cachedPath);
+    } catch (err) {
+      console.error("TTS cache write failed:", err.message);
+      // best-effort — still serve the audio below
     }
-    res.end();
+
+    res.setHeader("Content-Type", "audio/mpeg");
+    res.end(audio);
   } catch (err) {
     const msg = err && err.message ? err.message : String(err);
     console.error("TTS failed:", msg);
