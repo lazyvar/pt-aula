@@ -439,14 +439,19 @@ Return STRICT JSON only, no prose, no markdown fence:
 
 // POST /api/tts — body: { text }
 // GET  /api/tts?text=… — query string variant for <audio src=…> elements
-// Returns audio/mpeg streamed from ElevenLabs. No caching.
+// Returns audio/mpeg from ElevenLabs, cached on disk under TTS_CACHE_DIR.
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "FGY2WhTYpPnrIDTdsKH5"; // "Camila" (multilingual, pt-BR)
 const ELEVENLABS_MODEL_ID = "eleven_multilingual_v2";
 
 const TTS_CACHE_DIR = process.env.TTS_CACHE_DIR || "./.tts-cache";
 
 async function ensureTtsCacheDir() {
-  await fsp.mkdir(TTS_CACHE_DIR, { recursive: true });
+  try {
+    await fsp.mkdir(TTS_CACHE_DIR, { recursive: true });
+  } catch (err) {
+    // Don't crash boot — degrade to no-caching. Read path will ENOENT and fall through; write path is best-effort.
+    console.error("TTS cache dir creation failed:", TTS_CACHE_DIR, err.message);
+  }
 }
 
 function ttsCacheKey(text) {
