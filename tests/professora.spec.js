@@ -108,6 +108,9 @@ test.describe('Professora', () => {
     await page.getByTestId('manage-panel-toggle').click();
     await expect(page.getByTestId('manage-panel-body')).toBeVisible();
 
+    // Expand the first group so rows are visible.
+    await page.getByTestId('manage-group-toggle').first().click();
+
     // Pick the first category row and click Studying.
     const firstRow = page.getByTestId('manage-row').first();
     const catId = await firstRow.getAttribute('data-cat-id');
@@ -126,6 +129,8 @@ test.describe('Professora', () => {
     // Reload and verify the panel still shows Studying for that row.
     await page.reload();
     await page.getByTestId('manage-panel-toggle').click();
+    // Expand the first group so the row is visible again.
+    await page.getByTestId('manage-group-toggle').first().click();
     const sameRow = page.locator(`[data-testid="manage-row"][data-cat-id="${catId}"]`);
     await expect(sameRow.getByTestId('pill-studying')).toHaveAttribute('aria-pressed', 'true');
   });
@@ -207,6 +212,8 @@ test.describe('Professora', () => {
 
     await page.goto(`${BASE}/professora`);
     await page.getByTestId('manage-panel-toggle').click();
+    // Expand the first group so rows are visible.
+    await page.getByTestId('manage-group-toggle').first().click();
     const firstRow = page.getByTestId('manage-row').first();
     await firstRow.getByTestId('pill-studying').click();
 
@@ -270,6 +277,12 @@ test.describe('Professora', () => {
     const body = page.getByTestId('manage-panel-body');
     await expect(body).toBeVisible();
 
+    // Expand ALL groups so the body is tall enough to test bounded height.
+    const groupCount = await page.getByTestId('manage-group-toggle').count();
+    for (let i = 0; i < groupCount; i++) {
+      await page.getByTestId('manage-group-toggle').nth(i).click();
+    }
+
     const viewport = page.viewportSize();
     if (!viewport) throw new Error('no viewport');
     const box = await body.boundingBox();
@@ -286,5 +299,23 @@ test.describe('Professora', () => {
     }));
     expect(overflow.scrollHeight).toBeGreaterThan(overflow.clientHeight);
     expect(['auto', 'scroll']).toContain(overflow.overflowY);
+  });
+
+  test('manage panel groups are collapsible and default collapsed', async ({ page }) => {
+    await page.goto(`${BASE}/professora`);
+    await page.getByTestId('manage-panel-toggle').click();
+    await expect(page.getByTestId('manage-panel-body')).toBeVisible();
+
+    // Group headers visible; no rows visible (all collapsed).
+    await expect(page.getByTestId('manage-group-toggle').first()).toBeVisible();
+    await expect(page.getByTestId('manage-row')).toHaveCount(0);
+
+    // Click first group → its rows appear.
+    await page.getByTestId('manage-group-toggle').first().click();
+    await expect(page.getByTestId('manage-row').first()).toBeVisible();
+
+    // Click again → rows hide.
+    await page.getByTestId('manage-group-toggle').first().click();
+    await expect(page.getByTestId('manage-row')).toHaveCount(0);
   });
 });

@@ -32,4 +32,15 @@ test.describe('Professora — mobile', () => {
     // The desktop icon is NOT visible (CSS display:none under the mobile breakpoint).
     await expect(page.getByTestId('professora-entry-desktop')).toBeHidden();
   });
+
+  test('mobile sheet shows panel without duplicate "Manage categories" toggle', async ({ page }) => {
+    await page.goto(`${BASE}/professora`);
+    await page.getByTestId('manage-sheet-toggle').click();
+    // The bottom sheet itself is open.
+    await expect(page.getByTestId('professora-sheet')).toHaveClass(/open/);
+    // Inside the sheet, the inner panel toggle should NOT exist.
+    await expect(page.locator('[data-testid="professora-sheet"] [data-testid="manage-panel-toggle"]')).toHaveCount(0);
+    // Group headers should be visible directly.
+    await expect(page.locator('[data-testid="professora-sheet"] [data-testid="manage-group-toggle"]').first()).toBeVisible();
+  });
 });

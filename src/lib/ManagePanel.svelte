@@ -4,7 +4,13 @@
   import StatusPill from './StatusPill.svelte';
 
   export let defaultOpen = false;
+  export let showToggle = true;
   let open = defaultOpen;
+
+  let groupOpen: Record<string, boolean> = {};
+  function toggleGroup(name: string) {
+    groupOpen = { ...groupOpen, [name]: !groupOpen[name] };
+  }
 
   // Group categories by group_name; preserve insertion order from the server map.
   $: grouped = (() => {
@@ -19,33 +25,46 @@
 </script>
 
 <section class="manage" data-testid="manage-panel">
-  <button
-    type="button"
-    class="toggle"
-    data-testid="manage-panel-toggle"
-    aria-expanded={open}
-    on:click={() => (open = !open)}
-  >
-    {open ? '▾' : '▸'} Manage categories
-  </button>
+  {#if showToggle}
+    <button
+      type="button"
+      class="toggle"
+      data-testid="manage-panel-toggle"
+      aria-expanded={open}
+      on:click={() => (open = !open)}
+    >
+      {open ? '▾' : '▸'} Manage categories
+    </button>
+  {/if}
 
   {#if $statusError}
     <div class="error-toast" data-testid="manage-error">{$statusError}</div>
   {/if}
 
-  {#if open}
+  {#if !showToggle || open}
     <div class="body" data-testid="manage-panel-body">
       {#each grouped as [groupName, entries]}
         <div class="group">
-          <h3 class="group-name">{groupName}</h3>
-          <ul class="rows">
-            {#each entries as [id, cfg] (id)}
-              <li class="row" data-testid="manage-row" data-cat-id={id}>
-                <span class="label">{cfg.label}</span>
-                <StatusPill categoryId={id} status={cfg.status} />
-              </li>
-            {/each}
-          </ul>
+          <button
+            type="button"
+            class="group-toggle"
+            data-testid="manage-group-toggle"
+            data-group-name={groupName}
+            aria-expanded={!!groupOpen[groupName]}
+            on:click={() => toggleGroup(groupName)}
+          >
+            {groupOpen[groupName] ? '▾' : '▸'} {groupName}
+          </button>
+          {#if groupOpen[groupName]}
+            <ul class="rows">
+              {#each entries as [id, cfg] (id)}
+                <li class="row" data-testid="manage-row" data-cat-id={id}>
+                  <span class="label">{cfg.label}</span>
+                  <StatusPill categoryId={id} status={cfg.status} />
+                </li>
+              {/each}
+            </ul>
+          {/if}
         </div>
       {/each}
     </div>
@@ -79,12 +98,23 @@
     max-height: 60vh;
     overflow-y: auto;
   }
-  .group-name {
+  .group-toggle {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--text-dim, #8892a4);
     margin-bottom: 6px;
+    padding: 4px 0;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .group-toggle:hover {
+    color: var(--text, #f0f0f0);
   }
   .rows { list-style: none; display: flex; flex-direction: column; gap: 6px; }
   .row {
