@@ -3,9 +3,8 @@
   import { statusError } from '../stores/categoryStatus';
   import StatusPill from './StatusPill.svelte';
 
-  export let defaultOpen = false;
   export let showToggle = true;
-  let open = defaultOpen;
+  export let open = false;
 
   let groupOpen: Record<string, boolean> = {};
   function toggleGroup(name: string) {

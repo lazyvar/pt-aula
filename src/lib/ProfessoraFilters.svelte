@@ -2,6 +2,8 @@
   import { catConfig } from '../stores/cards';
   import { professoraFilters } from '../stores/professoraFilters';
 
+  export let manageOpen = false;
+
   function toggleStatus(key: 'studying' | 'complete') {
     professoraFilters.update((f) => ({ ...f, [key]: !f[key] }));
   }
@@ -15,28 +17,44 @@
     });
   }
 
-  // Show only non-unmarked categories as chips, in insertion order.
-  $: categoryChips = Object.entries($catConfig).filter(([, c]) => c.status !== 'unmarked');
+  // Show only categories whose status matches an active status filter chip.
+  $: categoryChips = Object.entries($catConfig).filter(([, c]) => {
+    if (c.status === 'studying' && $professoraFilters.studying) return true;
+    if (c.status === 'complete' && $professoraFilters.complete) return true;
+    return false;
+  });
 </script>
 
 <div class="filters">
-  <div class="status-chips">
+  <div class="filter-row">
+    <div class="status-chips">
+      <button
+        type="button"
+        class="chip"
+        class:on={$professoraFilters.studying}
+        data-testid="filter-status-studying"
+        aria-pressed={$professoraFilters.studying}
+        on:click={() => toggleStatus('studying')}
+      >Studying</button>
+      <button
+        type="button"
+        class="chip"
+        class:on={$professoraFilters.complete}
+        data-testid="filter-status-complete"
+        aria-pressed={$professoraFilters.complete}
+        on:click={() => toggleStatus('complete')}
+      >Complete</button>
+    </div>
     <button
       type="button"
-      class="chip"
-      class:on={$professoraFilters.studying}
-      data-testid="filter-status-studying"
-      aria-pressed={$professoraFilters.studying}
-      on:click={() => toggleStatus('studying')}
-    >Studying</button>
-    <button
-      type="button"
-      class="chip"
-      class:on={$professoraFilters.complete}
-      data-testid="filter-status-complete"
-      aria-pressed={$professoraFilters.complete}
-      on:click={() => toggleStatus('complete')}
-    >Complete</button>
+      class="filters-manage-trigger"
+      data-testid="manage-panel-toggle"
+      aria-expanded={manageOpen}
+      on:click={() => (manageOpen = !manageOpen)}
+    >
+      <span class="caret">{manageOpen ? '▾' : '▸'}</span>
+      Manage categories
+    </button>
   </div>
 
   {#if categoryChips.length > 0}
@@ -58,7 +76,22 @@
 
 <style>
   .filters { padding: 12px 20px; display: flex; flex-direction: column; gap: 10px; }
+
+  .filter-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
   .status-chips, .cat-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .cat-chips {
+    margin-top: 6px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
   .chip {
     padding: 6px 14px;
     border-radius: 999px;
@@ -73,5 +106,28 @@
     background: var(--accent, #e94560);
     color: white;
     border-color: transparent;
+  }
+
+  .filters-manage-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: var(--text-dim, #8892a4);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: inherit;
+  }
+  .filters-manage-trigger:hover {
+    color: var(--text, #f0f0f0);
+    background: rgba(255,255,255,0.04);
+  }
+  .filters-manage-trigger .caret { font-size: 0.7rem; opacity: 0.8; }
+
+  @media (max-width: 768px) {
+    .filters-manage-trigger { display: none; }
   }
 </style>

@@ -3,12 +3,14 @@
   import ProfessoraFilters from './ProfessoraFilters.svelte';
   import ManagePanel from './ManagePanel.svelte';
   import CardGrid from './CardGrid.svelte';
+
+  let manageOpen = false;
 </script>
 
 <div class="professora-desktop" data-testid="professora-desktop">
   <ProfessoraHeader />
-  <ManagePanel />
-  <ProfessoraFilters />
+  <ProfessoraFilters bind:manageOpen />
+  <ManagePanel showToggle={false} bind:open={manageOpen} />
   <CardGrid />
 </div>
 

@@ -354,4 +354,24 @@ test.describe('Professora', () => {
     await page.getByTestId('manage-group-toggle').first().click();
     await expect(page.getByTestId('manage-row')).toHaveCount(0);
   });
+
+  test('manage-panel-toggle sits on the same row as the status filter chips, to the right', async ({ page }) => {
+    await page.goto(`${BASE}/professora`);
+    const trigger = page.getByTestId('manage-panel-toggle');
+    const studying = page.getByTestId('filter-status-studying');
+    await expect(trigger).toBeVisible();
+    await expect(studying).toBeVisible();
+
+    const tBox = await trigger.boundingBox();
+    const sBox = await studying.boundingBox();
+    if (!tBox || !sBox) throw new Error('no bounding box');
+
+    // Same row: their vertical centers should be within ~12px of each other.
+    const tCenter = tBox.y + tBox.height / 2;
+    const sCenter = sBox.y + sBox.height / 2;
+    expect(Math.abs(tCenter - sCenter)).toBeLessThan(12);
+
+    // Right-aligned: the trigger's left edge is to the right of the studying chip's right edge.
+    expect(tBox.x).toBeGreaterThan(sBox.x + sBox.width);
+  });
 });
