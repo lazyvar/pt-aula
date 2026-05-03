@@ -40,7 +40,7 @@
     <div class="error-toast" data-testid="manage-error">{$statusError}</div>
   {/if}
 
-  {#if !showToggle || open}
+  {#if open}
     <div class="body" data-testid="manage-panel-body">
       <div class="groups-grid">
         {#each grouped as [groupName, entries]}

@@ -20,7 +20,7 @@
 </div>
 
 <ProfessoraSheet>
-  <ManagePanel showToggle={false} />
+  <ManagePanel showToggle={false} open={true} />
 </ProfessoraSheet>
 
 <style>

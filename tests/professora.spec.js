@@ -374,4 +374,18 @@ test.describe('Professora', () => {
     // Right-aligned: the trigger's left edge is to the right of the studying chip's right edge.
     expect(tBox.x).toBeGreaterThan(sBox.x + sBox.width);
   });
+
+  test('manage panel body is hidden by default and the trigger toggles it', async ({ page }) => {
+    await page.goto(`${BASE}/professora`);
+    // Body should be hidden initially — manage-panel-toggle has not been clicked.
+    await expect(page.getByTestId('manage-panel-body')).toHaveCount(0);
+
+    // Click the trigger to open.
+    await page.getByTestId('manage-panel-toggle').click();
+    await expect(page.getByTestId('manage-panel-body')).toBeVisible();
+
+    // Click again to collapse.
+    await page.getByTestId('manage-panel-toggle').click();
+    await expect(page.getByTestId('manage-panel-body')).toHaveCount(0);
+  });
 });
