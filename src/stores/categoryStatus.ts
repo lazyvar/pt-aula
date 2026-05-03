@@ -1,6 +1,6 @@
 import { get, writable } from 'svelte/store';
 import type { CategoryStatus } from '../types';
-import { catConfig } from './cards';
+import { catConfig, hydrateCards } from './cards';
 
 // Last error message, surfaced by ManagePanel as a small inline toast.
 // Cleared after a short delay.
@@ -20,6 +20,7 @@ export async function setCategoryStatus(id: string, status: CategoryStatus): Pro
     flashError("Couldn't save — category not found.");
     return;
   }
+  if (entry.status === status) return;
   // Optimistic update.
   catConfig.set({ ...before, [id]: { ...entry, status } });
 
@@ -38,6 +39,12 @@ export async function setCategoryStatus(id: string, status: CategoryStatus): Pro
 
   if (!res.ok) {
     catConfig.set(before);
-    flashError("Couldn't save — try again.");
+    if (res.status === 404) {
+      flashError("That category no longer exists — refreshing.");
+      // Re-hydrate so the pruned row disappears from the panel.
+      try { await hydrateCards(); } catch { /* network gone — leave the snapshot */ }
+    } else {
+      flashError("Couldn't save — try again.");
+    }
   }
 }

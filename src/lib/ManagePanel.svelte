@@ -39,7 +39,7 @@
         <div class="group">
           <h3 class="group-name">{groupName}</h3>
           <ul class="rows">
-            {#each entries as [id, cfg]}
+            {#each entries as [id, cfg] (id)}
               <li class="row" data-testid="manage-row" data-cat-id={id}>
                 <span class="label">{cfg.label}</span>
                 <StatusPill categoryId={id} status={cfg.status} />
