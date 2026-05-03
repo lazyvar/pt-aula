@@ -47,6 +47,7 @@ async function init() {
     )
   `);
   await pool.query(`ALTER TABLE categories ADD COLUMN IF NOT EXISTS group_name TEXT NOT NULL DEFAULT 'Topics'`);
+  await pool.query(`ALTER TABLE categories ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'unmarked'`);
   await pool.query(`
     CREATE TABLE IF NOT EXISTS cards (
       id SERIAL PRIMARY KEY,
@@ -625,10 +626,10 @@ Return STRICT JSON only, no prose, no markdown fence:
 
 // GET /api/cards — return all cards and categories
 app.get("/api/cards", async (req, res) => {
-  const { rows: catRows } = await pool.query("SELECT id, label, css_class, group_name FROM categories");
+  const { rows: catRows } = await pool.query("SELECT id, label, css_class, group_name, status FROM categories");
   const categories = {};
   for (const row of catRows) {
-    categories[row.id] = { cls: row.css_class, label: row.label, group: row.group_name };
+    categories[row.id] = { cls: row.css_class, label: row.label, group: row.group_name, status: row.status };
   }
   const { rows: cardRows } = await pool.query("SELECT pt, en, category_id FROM cards ORDER BY id");
   const cards = cardRows.map(r => ({ pt: r.pt, en: r.en, cat: r.category_id }));
