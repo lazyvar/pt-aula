@@ -103,17 +103,16 @@ app.post("/api/stats/:cardId/mark", async (req, res) => {
   const { correct } = req.body;
   const col = correct ? "right_count" : "wrong_count";
   const bit = correct ? 0 : 1;
-  await pool.query(
+  // Single statement with RETURNING — atomic. A concurrent DELETE /api/stats
+  // can't slip between the upsert and the read.
+  const { rows } = await pool.query(
     `INSERT INTO card_stats (card_id, ${col}, recent_history)
      VALUES ($1, 1, $2)
      ON CONFLICT (card_id) DO UPDATE SET
        ${col} = card_stats.${col} + 1,
-       recent_history = ((card_stats.recent_history << 1) | $2) & 31`,
+       recent_history = ((card_stats.recent_history << 1) | $2) & 31
+     RETURNING right_count, wrong_count, recent_history`,
     [cardId, bit]
-  );
-  const { rows } = await pool.query(
-    "SELECT right_count, wrong_count, recent_history FROM card_stats WHERE card_id = $1",
-    [cardId]
   );
   res.json({
     right: rows[0].right_count,
