@@ -101,4 +101,32 @@ test.describe('Professora', () => {
     await page.getByTestId('professora-back').click();
     await expect(page).toHaveURL(`${BASE}/`);
   });
+
+  test('manage panel: marking a category Studying persists across reload', async ({ page, request }) => {
+    await page.goto(`${BASE}/professora`);
+    // Open the panel.
+    await page.getByTestId('manage-panel-toggle').click();
+    await expect(page.getByTestId('manage-panel-body')).toBeVisible();
+
+    // Pick the first category row and click Studying.
+    const firstRow = page.getByTestId('manage-row').first();
+    const catId = await firstRow.getAttribute('data-cat-id');
+    expect(catId).toBeTruthy();
+    await firstRow.getByTestId('pill-studying').click();
+
+    // Verify aria-pressed flipped.
+    await expect(firstRow.getByTestId('pill-studying')).toHaveAttribute('aria-pressed', 'true');
+    await expect(firstRow.getByTestId('pill-unmarked')).toHaveAttribute('aria-pressed', 'false');
+
+    // Verify server-side via API.
+    const res = await request.get(`${BASE}/api/cards`);
+    const cats = (await res.json()).categories;
+    expect(cats[catId].status).toBe('studying');
+
+    // Reload and verify the panel still shows Studying for that row.
+    await page.reload();
+    await page.getByTestId('manage-panel-toggle').click();
+    const sameRow = page.locator(`[data-testid="manage-row"][data-cat-id="${catId}"]`);
+    await expect(sameRow.getByTestId('pill-studying')).toHaveAttribute('aria-pressed', 'true');
+  });
 });

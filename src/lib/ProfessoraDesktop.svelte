@@ -1,12 +1,14 @@
 <script lang="ts">
   import ProfessoraHeader from './ProfessoraHeader.svelte';
   import ProfessoraFilters from './ProfessoraFilters.svelte';
+  import ManagePanel from './ManagePanel.svelte';
 </script>
 
 <div class="professora-desktop" data-testid="professora-desktop">
   <ProfessoraHeader />
+  <ManagePanel />
   <ProfessoraFilters />
-  <!-- Manage panel + grid arrive in later tasks. -->
+  <!-- CardGrid arrives in Task 8. -->
 </div>
 
 <style>
