@@ -164,19 +164,34 @@ app.delete("/api/stats", async (req, res) => {
   res.json({ ok: true });
 });
 
-// POST /api/reseed — truncate cards/categories/stats/session and re-seed from seed files
+// POST /api/reseed — refresh cards/categories from seeds while PRESERVING category.status.
+// We don't TRUNCATE categories anymore — we upsert label/css_class/group_name and
+// leave `status` untouched. Removed categories are pruned (status loss is acceptable
+// for categories the user has explicitly removed from seeds).
 app.post("/api/reseed", async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    await client.query("TRUNCATE cards, categories, card_stats RESTART IDENTITY CASCADE");
+    // 1. Wipe cards and stats. Cards have no preserved state; stats reset is current behavior.
+    await client.query("DELETE FROM cards");
+    await client.query("DELETE FROM card_stats");
     await client.query("DELETE FROM session");
+    // 2. Upsert categories (preserve status by NOT touching it in DO UPDATE).
     for (const cat of categories) {
       await client.query(
-        "INSERT INTO categories (id, label, css_class, group_name) VALUES ($1, $2, $3, $4)",
+        `INSERT INTO categories (id, label, css_class, group_name)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (id) DO UPDATE SET
+           label = EXCLUDED.label,
+           css_class = EXCLUDED.css_class,
+           group_name = EXCLUDED.group_name`,
         [cat.id, cat.label, cat.css_class, cat.group_name]
       );
     }
+    // 3. Prune categories no longer in the seed.
+    const seedIds = categories.map((c) => c.id);
+    await client.query("DELETE FROM categories WHERE id <> ALL($1)", [seedIds]);
+    // 4. Re-insert cards (all reference categories that now exist).
     for (const card of cards) {
       await client.query(
         "INSERT INTO cards (pt, en, category_id) VALUES ($1, $2, $3)",

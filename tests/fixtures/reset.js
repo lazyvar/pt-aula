@@ -4,7 +4,8 @@
 const BASE = 'http://localhost:3006';
 
 async function resetAll() {
-  // 1. Reseed cards + categories from ./seeds
+  // 1. Reseed cards + categories from ./seeds. Reseed now PRESERVES category.status,
+  //    so we explicitly reset statuses below — reseed alone won't clear them.
   const reseedRes = await fetch(`${BASE}/api/reseed`, { method: 'POST' });
   if (!reseedRes.ok) throw new Error(`reseed failed: ${reseedRes.status}`);
 
@@ -12,7 +13,23 @@ async function resetAll() {
   const statsRes = await fetch(`${BASE}/api/stats`, { method: 'DELETE' });
   if (!statsRes.ok) throw new Error(`delete stats failed: ${statsRes.status}`);
 
-  // 3. Delete the session row. GET /api/session then returns null, which makes
+  // 3. Reset all category statuses to 'unmarked'.
+  const cardsRes = await fetch(`${BASE}/api/cards`);
+  if (!cardsRes.ok) throw new Error(`get cards failed: ${cardsRes.status}`);
+  const { categories } = await cardsRes.json();
+  for (const id of Object.keys(categories)) {
+    const r = await fetch(
+      `${BASE}/api/categories/${encodeURIComponent(id)}/status`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'unmarked' }),
+      }
+    );
+    if (!r.ok) throw new Error(`reset status for ${id} failed: ${r.status}`);
+  }
+
+  // 4. Delete the session row. GET /api/session then returns null, which makes
   //    the frontend fall through to startDeck() with its default activeCats
   //    (all non-Topics categories). PUT with activeCats:null would clobber
   //    that default and leave an empty deck, so we DELETE instead.

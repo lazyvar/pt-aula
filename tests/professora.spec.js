@@ -55,4 +55,21 @@ test.describe('Professora', () => {
     });
     expect(put.status()).toBe(404);
   });
+
+  test('reseed preserves category status', async ({ request }) => {
+    const res0 = await request.get(`${BASE}/api/cards`);
+    const id = Object.keys((await res0.json()).categories)[0];
+
+    await request.put(`${BASE}/api/categories/${encodeURIComponent(id)}/status`, {
+      data: { status: 'complete' },
+    });
+
+    const reseed = await request.post(`${BASE}/api/reseed`);
+    expect(reseed.ok()).toBe(true);
+
+    const res1 = await request.get(`${BASE}/api/cards`);
+    const cats = (await res1.json()).categories;
+    expect(cats[id]).toBeTruthy();
+    expect(cats[id].status).toBe('complete');
+  });
 });
