@@ -464,6 +464,20 @@ async function handleTts(text, res) {
   if (typeof text !== "string" || text.length === 0 || text.length > 500) {
     return res.status(400).json({ error: "text must be a non-empty string ≤ 500 chars" });
   }
+
+  const cachedPath = ttsCachePath(text);
+  try {
+    const cached = await fsp.readFile(cachedPath);
+    res.setHeader("Content-Type", "audio/mpeg");
+    res.end(cached);
+    return;
+  } catch (err) {
+    if (err.code !== "ENOENT") {
+      console.error("TTS cache read failed:", err.message);
+    }
+    // fall through to network fetch
+  }
+
   if (!process.env.ELEVENLABS_API_KEY) {
     return res.status(500).json({ error: "ELEVENLABS_API_KEY not configured on server" });
   }
