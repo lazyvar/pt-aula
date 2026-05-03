@@ -3,6 +3,14 @@
   import { professoraFilters } from '../stores/professoraFilters';
 
   export let manageOpen = false;
+  export let manageTestId: string = 'manage-panel-toggle';
+  export let onManageClick: (() => void) | null = null;
+  export let showCaret: boolean = true;
+
+  function handleManageClick() {
+    if (onManageClick) onManageClick();
+    else manageOpen = !manageOpen;
+  }
 
   function toggleStatus(key: 'studying' | 'complete') {
     professoraFilters.update((f) => ({ ...f, [key]: !f[key] }));
@@ -48,11 +56,11 @@
     <button
       type="button"
       class="filters-manage-trigger"
-      data-testid="manage-panel-toggle"
+      data-testid={manageTestId}
       aria-expanded={manageOpen}
-      on:click={() => (manageOpen = !manageOpen)}
+      on:click={handleManageClick}
     >
-      <span class="caret">{manageOpen ? '▾' : '▸'}</span>
+      {#if showCaret}<span class="caret">{manageOpen ? '▾' : '▸'}</span>{/if}
       Manage categories
     </button>
   </div>
@@ -126,8 +134,4 @@
     background: rgba(255,255,255,0.04);
   }
   .filters-manage-trigger .caret { font-size: 0.7rem; opacity: 0.8; }
-
-  @media (max-width: 768px) {
-    .filters-manage-trigger { display: none; }
-  }
 </style>

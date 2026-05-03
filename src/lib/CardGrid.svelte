@@ -5,16 +5,12 @@
   $: includedCatIds = (() => {
     const cfg = $catConfig;
     const f = $professoraFilters;
+    const restrict = new Set(f.categoryIds);
     const passing = new Set<string>();
     for (const [id, c] of Object.entries(cfg)) {
+      if (!restrict.has(id)) continue;
       if (c.status === 'studying' && f.studying) passing.add(id);
       else if (c.status === 'complete' && f.complete) passing.add(id);
-    }
-    if (f.categoryIds.length > 0) {
-      const restrict = new Set(f.categoryIds);
-      for (const id of Array.from(passing)) {
-        if (!restrict.has(id)) passing.delete(id);
-      }
     }
     return passing;
   })();
@@ -25,6 +21,8 @@
   $: noMarked = Object.values($catConfig).every((c) => c.status === 'unmarked');
   // True when both status filter chips are off.
   $: noFilter = !$professoraFilters.studying && !$professoraFilters.complete;
+  // True when the user hasn't picked any category chip yet.
+  $: noCategorySelected = $professoraFilters.categoryIds.length === 0;
 </script>
 
 <div class="grid-wrapper">
@@ -35,6 +33,10 @@
   {:else if noFilter}
     <div class="empty" data-testid="grid-empty-no-filter">
       Pick a status filter.
+    </div>
+  {:else if noCategorySelected}
+    <div class="empty" data-testid="grid-empty-no-cat">
+      Pick a category above.
     </div>
   {:else}
     <div class="card-grid" data-testid="card-grid">

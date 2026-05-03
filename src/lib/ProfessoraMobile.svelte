@@ -25,7 +25,9 @@
 
 <style>
   .manage-trigger {
-    margin: 8px 20px;
+    display: block;
+    width: fit-content;
+    margin: 8px 20px 8px auto;
     padding: 10px 14px;
     background: rgba(255,255,255,0.06);
     color: var(--text, #f0f0f0);
