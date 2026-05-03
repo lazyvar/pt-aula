@@ -195,4 +195,25 @@ test.describe('Professora', () => {
     await page.getByTestId('filter-status-studying').click(); // turn it OFF
     await expect(page.getByTestId('grid-empty-no-filter')).toBeVisible();
   });
+
+  test('PUT failure reverts optimistic update and shows error toast', async ({ page }) => {
+    // Force every PUT /api/categories/:id/status to fail.
+    await page.route('**/api/categories/*/status', (route) => {
+      if (route.request().method() === 'PUT') {
+        return route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ error: 'boom' }) });
+      }
+      return route.continue();
+    });
+
+    await page.goto(`${BASE}/professora`);
+    await page.getByTestId('manage-panel-toggle').click();
+    const firstRow = page.getByTestId('manage-row').first();
+    await firstRow.getByTestId('pill-studying').click();
+
+    // Toast appears.
+    await expect(page.getByTestId('manage-error')).toBeVisible();
+    // Pill reverts to Unmarked.
+    await expect(firstRow.getByTestId('pill-unmarked')).toHaveAttribute('aria-pressed', 'true');
+    await expect(firstRow.getByTestId('pill-studying')).toHaveAttribute('aria-pressed', 'false');
+  });
 });
