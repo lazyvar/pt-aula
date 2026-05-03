@@ -150,7 +150,7 @@
   .rows {
     list-style: none;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 4px 12px;
     padding: 0 12px 12px;
     margin-top: 0;
