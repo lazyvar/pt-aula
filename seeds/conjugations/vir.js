@@ -23,7 +23,13 @@ const cards = [
   { pt: "Ele/Ela venha", en: "He/She comes (present subjunctive)", category_id: "vir-conj" },
   { pt: "Nós venhamos", en: "We come (present subjunctive)", category_id: "vir-conj" },
   { pt: "Vocês venham", en: "You all come (present subjunctive)", category_id: "vir-conj" },
-  { pt: "Eles/Elas venham", en: "They come (present subjunctive)", category_id: "vir-conj" }
+  { pt: "Eles/Elas venham", en: "They come (present subjunctive)", category_id: "vir-conj" },
+  { pt: "Eu viesse", en: "I came (imperfect subjunctive)", category_id: "vir-conj" },
+  { pt: "Você viesse", en: "You came (imperfect subjunctive)", category_id: "vir-conj" },
+  { pt: "Ele/Ela viesse", en: "He/She came (imperfect subjunctive)", category_id: "vir-conj" },
+  { pt: "Nós viéssemos", en: "We came (imperfect subjunctive)", category_id: "vir-conj" },
+  { pt: "Vocês viessem", en: "You all came (imperfect subjunctive)", category_id: "vir-conj" },
+  { pt: "Eles/Elas viessem", en: "They came (imperfect subjunctive)", category_id: "vir-conj" }
 ];
 
 module.exports = { categories: [category], cards };

@@ -15,7 +15,13 @@ const cards = [
   { pt: "Você dê", en: "You give (present subjunctive)", category_id: "dar-conj" },
   { pt: "Ele/Ela dê", en: "He/She gives (present subjunctive)", category_id: "dar-conj" },
   { pt: "Vocês deem", en: "You all give (present subjunctive)", category_id: "dar-conj" },
-  { pt: "Eles/Elas deem", en: "They give (present subjunctive)", category_id: "dar-conj" }
+  { pt: "Eles/Elas deem", en: "They give (present subjunctive)", category_id: "dar-conj" },
+  { pt: "Eu desse", en: "I gave (imperfect subjunctive)", category_id: "dar-conj" },
+  { pt: "Você desse", en: "You gave (imperfect subjunctive)", category_id: "dar-conj" },
+  { pt: "Ele/Ela desse", en: "He/She gave (imperfect subjunctive)", category_id: "dar-conj" },
+  { pt: "Nós déssemos", en: "We gave (imperfect subjunctive)", category_id: "dar-conj" },
+  { pt: "Vocês dessem", en: "You all gave (imperfect subjunctive)", category_id: "dar-conj" },
+  { pt: "Eles/Elas dessem", en: "They gave (imperfect subjunctive)", category_id: "dar-conj" }
 ];
 
 module.exports = { categories: [category], cards };

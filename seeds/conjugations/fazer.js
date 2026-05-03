@@ -21,7 +21,13 @@ const cards = [
   { pt: "Ele/Ela faça", en: "He/She does / makes (present subjunctive)", category_id: "fazer-conj" },
   { pt: "Nós façamos", en: "We do / We make (present subjunctive)", category_id: "fazer-conj" },
   { pt: "Vocês façam", en: "You all do / make (present subjunctive)", category_id: "fazer-conj" },
-  { pt: "Eles/Elas façam", en: "They do / make (present subjunctive)", category_id: "fazer-conj" }
+  { pt: "Eles/Elas façam", en: "They do / make (present subjunctive)", category_id: "fazer-conj" },
+  { pt: "Eu fizesse", en: "I did / I made (imperfect subjunctive)", category_id: "fazer-conj" },
+  { pt: "Você fizesse", en: "You did / You made (imperfect subjunctive)", category_id: "fazer-conj" },
+  { pt: "Ele/Ela fizesse", en: "He/She did / made (imperfect subjunctive)", category_id: "fazer-conj" },
+  { pt: "Nós fizéssemos", en: "We did / We made (imperfect subjunctive)", category_id: "fazer-conj" },
+  { pt: "Vocês fizessem", en: "You all did / made (imperfect subjunctive)", category_id: "fazer-conj" },
+  { pt: "Eles/Elas fizessem", en: "They did / made (imperfect subjunctive)", category_id: "fazer-conj" }
 ];
 
 module.exports = { categories: [category], cards };
