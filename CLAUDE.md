@@ -38,7 +38,7 @@ Single-user Brazilian Portuguese flashcard trainer. Svelte 4 + TypeScript fronte
 **Card IDs (`src/lib/cardId.ts`)** — stats are keyed by a slug derived from `card.pt` (lowercase, strip diacritics, non-alphanumerics → `-`). This algorithm is **load-bearing**: changing it orphans all stats. `tests/fixtures/truth.js` has a matching implementation that tests rely on.
 
 **Modes** — `pt-to-en` / `en-to-pt` flip which side of the card is the prompt. `__generated__` is the sentinel category id (`GENERATED_CAT` in `types.ts`) used while in Generated Mode.
-- A third mode value `listen-to-pt` activates Listening Mode: `<ListeningCard>` replaces the flip card, audio comes from `/api/tts` (ElevenLabs proxy, no caching), and answers are graded with `normalizeForListening` (case/diacritic/punctuation-insensitive).
+- A third mode value `listen-to-pt` activates Listening Mode: `<ListeningCard>` replaces the flip card, audio comes from `/api/tts` (ElevenLabs proxy, cached on a Fly volume at `$TTS_CACHE_DIR`), and answers are graded with `normalizeForListening` (case/diacritic/punctuation-insensitive).
 
 **Components (`src/lib/`)** — `CardDeck` (prompt/flip/mark + owns keyboard shortcuts, exposed via `bind:this` so `App.svelte` can forward keydown), `Sidebar` (desktop category picker + controls), `MobileTopBar` + `BottomSheet` (mobile equivalents), `CategoryPicker`, `ControlButtons`.
 

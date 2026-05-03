@@ -2,6 +2,8 @@ const express = require("express");
 const { Pool } = require("pg");
 const Anthropic = require("@anthropic-ai/sdk");
 const path = require("path");
+const crypto = require("crypto");
+const fsp = require("fs/promises");
 const { categories, cards } = require("./seeds");
 
 const app = express();
@@ -59,6 +61,8 @@ async function init() {
   if (parseInt(catRows[0].count) === 0) {
     await seedCardsAndCategories();
   }
+
+  await ensureTtsCacheDir();
 }
 
 async function seedCardsAndCategories() {
@@ -99,17 +103,16 @@ app.post("/api/stats/:cardId/mark", async (req, res) => {
   const { correct } = req.body;
   const col = correct ? "right_count" : "wrong_count";
   const bit = correct ? 0 : 1;
-  await pool.query(
+  // Single statement with RETURNING — atomic. A concurrent DELETE /api/stats
+  // can't slip between the upsert and the read.
+  const { rows } = await pool.query(
     `INSERT INTO card_stats (card_id, ${col}, recent_history)
      VALUES ($1, 1, $2)
      ON CONFLICT (card_id) DO UPDATE SET
        ${col} = card_stats.${col} + 1,
-       recent_history = ((card_stats.recent_history << 1) | $2) & 31`,
+       recent_history = ((card_stats.recent_history << 1) | $2) & 31
+     RETURNING right_count, wrong_count, recent_history`,
     [cardId, bit]
-  );
-  const { rows } = await pool.query(
-    "SELECT right_count, wrong_count, recent_history FROM card_stats WHERE card_id = $1",
-    [cardId]
   );
   res.json({
     right: rows[0].right_count,
@@ -435,14 +438,50 @@ Return STRICT JSON only, no prose, no markdown fence:
 
 // POST /api/tts — body: { text }
 // GET  /api/tts?text=… — query string variant for <audio src=…> elements
-// Returns audio/mpeg streamed from ElevenLabs. No caching.
+// Returns audio/mpeg from ElevenLabs, cached on disk under TTS_CACHE_DIR.
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "FGY2WhTYpPnrIDTdsKH5"; // "Camila" (multilingual, pt-BR)
 const ELEVENLABS_MODEL_ID = "eleven_multilingual_v2";
+
+const TTS_CACHE_DIR = process.env.TTS_CACHE_DIR || "./.tts-cache";
+
+async function ensureTtsCacheDir() {
+  try {
+    await fsp.mkdir(TTS_CACHE_DIR, { recursive: true });
+  } catch (err) {
+    // Don't crash boot — degrade to no-caching. Read path will ENOENT and fall through; write path is best-effort.
+    console.error("TTS cache dir creation failed:", TTS_CACHE_DIR, err.message);
+  }
+}
+
+function ttsCacheKey(text) {
+  return crypto
+    .createHash("sha256")
+    .update(`${ELEVENLABS_VOICE_ID}:${ELEVENLABS_MODEL_ID}:${text}`)
+    .digest("hex");
+}
+
+function ttsCachePath(text) {
+  return path.join(TTS_CACHE_DIR, `${ttsCacheKey(text)}.mp3`);
+}
 
 async function handleTts(text, res) {
   if (typeof text !== "string" || text.length === 0 || text.length > 500) {
     return res.status(400).json({ error: "text must be a non-empty string ≤ 500 chars" });
   }
+
+  const cachedPath = ttsCachePath(text);
+  try {
+    const cached = await fsp.readFile(cachedPath);
+    res.setHeader("Content-Type", "audio/mpeg");
+    res.end(cached);
+    return;
+  } catch (err) {
+    if (err.code !== "ENOENT") {
+      console.error("TTS cache read failed:", err.message);
+    }
+    // fall through to network fetch
+  }
+
   if (!process.env.ELEVENLABS_API_KEY) {
     return res.status(500).json({ error: "ELEVENLABS_API_KEY not configured on server" });
   }
@@ -467,15 +506,19 @@ async function handleTts(text, res) {
       return res.status(502).json({ error: `ElevenLabs returned ${upstream.status}` });
     }
 
-    res.setHeader("Content-Type", "audio/mpeg");
-    // Pipe the upstream Web ReadableStream to the Express response.
-    const reader = upstream.body.getReader();
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      res.write(Buffer.from(value));
+    const audio = Buffer.from(await upstream.arrayBuffer());
+
+    try {
+      const tmp = `${cachedPath}.tmp`;
+      await fsp.writeFile(tmp, audio);
+      await fsp.rename(tmp, cachedPath);
+    } catch (err) {
+      console.error("TTS cache write failed:", err.message);
+      // best-effort — still serve the audio below
     }
-    res.end();
+
+    res.setHeader("Content-Type", "audio/mpeg");
+    res.end(audio);
   } catch (err) {
     const msg = err && err.message ? err.message : String(err);
     console.error("TTS failed:", msg);
