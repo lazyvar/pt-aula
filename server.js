@@ -2,6 +2,8 @@ const express = require("express");
 const { Pool } = require("pg");
 const Anthropic = require("@anthropic-ai/sdk");
 const path = require("path");
+const crypto = require("crypto");
+const fsp = require("fs/promises");
 const { categories, cards } = require("./seeds");
 
 const app = express();
@@ -59,6 +61,8 @@ async function init() {
   if (parseInt(catRows[0].count) === 0) {
     await seedCardsAndCategories();
   }
+
+  await ensureTtsCacheDir();
 }
 
 async function seedCardsAndCategories() {
@@ -438,6 +442,23 @@ Return STRICT JSON only, no prose, no markdown fence:
 // Returns audio/mpeg streamed from ElevenLabs. No caching.
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "FGY2WhTYpPnrIDTdsKH5"; // "Camila" (multilingual, pt-BR)
 const ELEVENLABS_MODEL_ID = "eleven_multilingual_v2";
+
+const TTS_CACHE_DIR = process.env.TTS_CACHE_DIR || "./.tts-cache";
+
+async function ensureTtsCacheDir() {
+  await fsp.mkdir(TTS_CACHE_DIR, { recursive: true });
+}
+
+function ttsCacheKey(text) {
+  return crypto
+    .createHash("sha256")
+    .update(`${ELEVENLABS_VOICE_ID}:${ELEVENLABS_MODEL_ID}:${text}`)
+    .digest("hex");
+}
+
+function ttsCachePath(text) {
+  return path.join(TTS_CACHE_DIR, `${ttsCacheKey(text)}.mp3`);
+}
 
 async function handleTts(text, res) {
   if (typeof text !== "string" || text.length === 0 || text.length > 500) {
