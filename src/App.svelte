@@ -77,6 +77,19 @@
   <div class="layout">
     <Sidebar />
     <div class="main-content">
+      <a
+        href="/professora"
+        class="professora-entry-desktop"
+        data-testid="professora-entry-desktop"
+        aria-label="Professora view"
+        title="Professora view"
+      >
+        <!-- graduation cap icon -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+      </a>
       <MobileTopBar />
       {#if isEmpty}
         <div class="card-area">

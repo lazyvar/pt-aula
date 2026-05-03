@@ -216,4 +216,11 @@ test.describe('Professora', () => {
     await expect(firstRow.getByTestId('pill-unmarked')).toHaveAttribute('aria-pressed', 'true');
     await expect(firstRow.getByTestId('pill-studying')).toHaveAttribute('aria-pressed', 'false');
   });
+
+  test('desktop entry icon navigates from / to /professora', async ({ page }) => {
+    await page.goto(`${BASE}/`);
+    await page.getByTestId('professora-entry-desktop').click();
+    await expect(page).toHaveURL(`${BASE}/professora`);
+    await expect(page.getByTestId('professora-page')).toBeVisible();
+  });
 });
