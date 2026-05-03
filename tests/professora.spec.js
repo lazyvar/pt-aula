@@ -135,7 +135,7 @@ test.describe('Professora', () => {
     await expect(sameRow.getByTestId('pill-studying')).toHaveAttribute('aria-pressed', 'true');
   });
 
-  test('grid shows cards from Studying categories only by default', async ({ page, request }) => {
+  test('category chips reflect the active status filter; cards appear only after a chip is picked', async ({ page, request }) => {
     // Seed: mark exactly two categories — one studying, one complete.
     const res0 = await request.get(`${BASE}/api/cards`);
     const { categories, cards } = await res0.json();
@@ -149,18 +149,28 @@ test.describe('Professora', () => {
     const completePt = cards.find((c) => c.cat === completeId).pt;
 
     await page.goto(`${BASE}/professora`);
-    // Default filter: Studying only.
-    await expect(page.getByTestId('card-grid')).toBeVisible();
+    // Default filter is Studying only — only the studying category chip is offered;
+    // the complete one is hidden until its status filter is on.
+    await expect(page.locator(`[data-testid="filter-cat"][data-cat-id="${studyingId}"]`)).toBeVisible();
+    await expect(page.locator(`[data-testid="filter-cat"][data-cat-id="${completeId}"]`)).toHaveCount(0);
+
+    // Nothing is selected yet, so the grid is empty.
+    await expect(page.getByTestId('grid-empty-no-cat')).toBeVisible();
+    await expect(page.getByTestId('card-tile')).toHaveCount(0);
+
+    // Pick the studying chip — its cards appear; the complete card is still hidden.
+    await page.locator(`[data-testid="filter-cat"][data-cat-id="${studyingId}"]`).click();
     await expect(page.getByTestId('card-tile').filter({ hasText: studyingPt })).toBeVisible();
     await expect(page.getByTestId('card-tile').filter({ hasText: completePt })).toHaveCount(0);
 
-    // Click the Complete chip on; both should now be visible.
+    // Turn Complete on — its chip becomes available; pick it; both cards visible.
     await page.getByTestId('filter-status-complete').click();
-    await expect(page.getByTestId('card-tile').filter({ hasText: completePt })).toBeVisible();
+    await page.locator(`[data-testid="filter-cat"][data-cat-id="${completeId}"]`).click();
     await expect(page.getByTestId('card-tile').filter({ hasText: studyingPt })).toBeVisible();
+    await expect(page.getByTestId('card-tile').filter({ hasText: completePt })).toBeVisible();
   });
 
-  test('category multiselect restricts the grid; selecting none shows all', async ({ page, request }) => {
+  test('category multiselect: empty selection shows nothing; toggling chips narrows the grid', async ({ page, request }) => {
     const res0 = await request.get(`${BASE}/api/cards`);
     const { categories, cards } = await res0.json();
     const ids = Object.keys(categories);
@@ -171,18 +181,27 @@ test.describe('Professora', () => {
     const bPt = cards.find((c) => c.cat === b).pt;
 
     await page.goto(`${BASE}/professora`);
-    // Both visible by default (no category restriction).
-    await expect(page.getByTestId('card-tile').filter({ hasText: aPt })).toBeVisible();
-    await expect(page.getByTestId('card-tile').filter({ hasText: bPt })).toBeVisible();
+    // Nothing selected → empty grid.
+    await expect(page.getByTestId('grid-empty-no-cat')).toBeVisible();
 
-    // Click only category A.
+    // Click chip A — only A's card visible.
     await page.locator(`[data-testid="filter-cat"][data-cat-id="${a}"]`).click();
     await expect(page.getByTestId('card-tile').filter({ hasText: aPt })).toBeVisible();
     await expect(page.getByTestId('card-tile').filter({ hasText: bPt })).toHaveCount(0);
 
-    // Click again to deselect — back to all.
-    await page.locator(`[data-testid="filter-cat"][data-cat-id="${a}"]`).click();
+    // Add chip B — both visible.
+    await page.locator(`[data-testid="filter-cat"][data-cat-id="${b}"]`).click();
+    await expect(page.getByTestId('card-tile').filter({ hasText: aPt })).toBeVisible();
     await expect(page.getByTestId('card-tile').filter({ hasText: bPt })).toBeVisible();
+
+    // Deselect A — only B visible.
+    await page.locator(`[data-testid="filter-cat"][data-cat-id="${a}"]`).click();
+    await expect(page.getByTestId('card-tile').filter({ hasText: aPt })).toHaveCount(0);
+    await expect(page.getByTestId('card-tile').filter({ hasText: bPt })).toBeVisible();
+
+    // Deselect B — back to empty.
+    await page.locator(`[data-testid="filter-cat"][data-cat-id="${b}"]`).click();
+    await expect(page.getByTestId('grid-empty-no-cat')).toBeVisible();
   });
 
   test('empty state when no categories are marked', async ({ page }) => {
@@ -236,6 +255,8 @@ test.describe('Professora', () => {
     });
 
     await page.goto(`${BASE}/professora`);
+    // Pick the fat category so the grid populates (no chip = empty grid).
+    await page.locator(`[data-testid="filter-cat"][data-cat-id="${fatCatId}"]`).click();
     await expect(page.getByTestId('card-grid')).toBeVisible();
 
     const tiles = page.getByTestId('card-tile');
@@ -299,6 +320,21 @@ test.describe('Professora', () => {
     }));
     expect(overflow.scrollHeight).toBeGreaterThan(overflow.clientHeight);
     expect(['auto', 'scroll']).toContain(overflow.overflowY);
+  });
+
+  test('manage panel renders groups as a card grid with counts', async ({ page }) => {
+    await page.goto(`${BASE}/professora`);
+    await page.getByTestId('manage-panel-toggle').click();
+
+    const toggles = page.getByTestId('manage-group-toggle');
+    const count = await toggles.count();
+    expect(count).toBeGreaterThan(0);
+
+    // Each toggle has a label and a numeric count.
+    for (let i = 0; i < count; i++) {
+      const text = await toggles.nth(i).textContent();
+      expect(text).toMatch(/^\s*\S+.*\s+\d+\s*$/); // label + at least one digit
+    }
   });
 
   test('manage panel groups are collapsible and default collapsed', async ({ page }) => {
