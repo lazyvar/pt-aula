@@ -40,12 +40,15 @@ Single-user Brazilian Portuguese flashcard trainer. Svelte 4 + TypeScript fronte
 **Modes** — `pt-to-en` / `en-to-pt` flip which side of the card is the prompt. `__generated__` is the sentinel category id (`GENERATED_CAT` in `types.ts`) used while in Generated Mode.
 - A third mode value `listen-to-pt` activates Listening Mode: `<ListeningCard>` replaces the flip card, audio comes from `/api/tts` (ElevenLabs proxy, cached on a Fly volume at `$TTS_CACHE_DIR`), and answers are graded with `normalizeForListening` (case/diacritic/punctuation-insensitive).
 
+**Professora page (`/professora`)** — a separate Svelte tree mounted by `main.ts` based on `window.location.pathname`. Express has an SPA fallback for `/professora[/...]` URLs. Each category carries a `status` column (`unmarked` / `studying` / `complete`) on the `categories` table; the column is preserved across `/api/reseed` (reseed now upserts categories instead of truncating them, then prunes any categories not in the seed). The page surfaces a Manage panel (set status), filters (Studying/Complete chips + category multiselect), and a flat card grid. Status is set via `PUT /api/categories/:id/status`.
+
 **Components (`src/lib/`)** — `CardDeck` (prompt/flip/mark + owns keyboard shortcuts, exposed via `bind:this` so `App.svelte` can forward keydown), `Sidebar` (desktop category picker + controls), `MobileTopBar` + `BottomSheet` (mobile equivalents), `CategoryPicker`, `ControlButtons`.
 
 ## Conventions
 
 - Database migrations are done inline in `init()` via `ADD COLUMN IF NOT EXISTS`. When adding new session fields, add a column there **and** update both `GET /api/session` and `PUT /api/session` to read/write it.
 - The `session` table always has exactly one row (`id=1`), written via `INSERT ... ON CONFLICT DO UPDATE`.
+- `/api/reseed` no longer TRUNCATEs `categories` — it upserts label/css_class/group_name (preserving `status`) and prunes categories whose ids are not in the seed.
 
 ## Testing
 
