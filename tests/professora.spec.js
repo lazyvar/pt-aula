@@ -179,4 +179,20 @@ test.describe('Professora', () => {
     await page.locator(`[data-testid="filter-cat"][data-cat-id="${a}"]`).click();
     await expect(page.getByTestId('card-tile').filter({ hasText: bPt })).toBeVisible();
   });
+
+  test('empty state when no categories are marked', async ({ page }) => {
+    await page.goto(`${BASE}/professora`);
+    await expect(page.getByTestId('grid-empty-no-marked')).toBeVisible();
+    await expect(page.getByTestId('card-tile')).toHaveCount(0);
+  });
+
+  test('empty state when both status filters are off', async ({ page, request }) => {
+    const res0 = await request.get(`${BASE}/api/cards`);
+    const id = Object.keys((await res0.json()).categories)[0];
+    await request.put(`${BASE}/api/categories/${encodeURIComponent(id)}/status`, { data: { status: 'studying' } });
+
+    await page.goto(`${BASE}/professora`);
+    await page.getByTestId('filter-status-studying').click(); // turn it OFF
+    await expect(page.getByTestId('grid-empty-no-filter')).toBeVisible();
+  });
 });
