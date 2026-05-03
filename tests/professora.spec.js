@@ -223,4 +223,19 @@ test.describe('Professora', () => {
     await expect(page).toHaveURL(`${BASE}/professora`);
     await expect(page.getByTestId('professora-page')).toBeVisible();
   });
+
+  test('desktop entry icon is anchored to the viewport top-right', async ({ page }) => {
+    await page.goto(`${BASE}/`);
+    const icon = page.getByTestId('professora-entry-desktop');
+    await expect(icon).toBeVisible();
+    const viewport = page.viewportSize();
+    if (!viewport) throw new Error('no viewport size');
+    const box = await icon.boundingBox();
+    if (!box) throw new Error('no bounding box');
+    // The icon's right edge should sit within ~30px of the viewport's right edge.
+    const rightEdge = box.x + box.width;
+    expect(viewport.width - rightEdge).toBeLessThan(30);
+    // And its top should be near the top of the viewport (within ~30px).
+    expect(box.y).toBeLessThan(30);
+  });
 });

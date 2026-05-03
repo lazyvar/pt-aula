@@ -75,7 +75,7 @@
   }
 
   .professora-entry-desktop {
-    position: absolute;
+    position: fixed;
     top: 16px;
     right: 20px;
     width: 36px;
@@ -93,6 +93,10 @@
   .professora-entry-desktop:hover {
     color: var(--text, #f0f0f0);
     background: rgba(255,255,255,0.08);
+  }
+
+  @media (max-width: 768px) {
+    .professora-entry-desktop { display: none; }
   }
 
   .card-area {

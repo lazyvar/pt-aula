@@ -24,4 +24,12 @@ test.describe('Professora — mobile', () => {
     await expect(page.getByTestId('manage-panel-body')).toBeVisible();
     await expect(page.getByTestId('professora-sheet')).toHaveClass(/open/);
   });
+
+  test('desktop entry icon is hidden on mobile', async ({ page }) => {
+    await page.goto(`${BASE}/`);
+    // The mobile icon is visible.
+    await expect(page.getByTestId('professora-entry-mobile')).toBeVisible();
+    // The desktop icon is NOT visible (CSS display:none under the mobile breakpoint).
+    await expect(page.getByTestId('professora-entry-desktop')).toBeHidden();
+  });
 });
