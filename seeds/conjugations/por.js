@@ -18,7 +18,13 @@ const cards = [
   { pt: "Ele/Ela pôs", en: "He/She put (preterite)", category_id: "por-conj" },
   { pt: "Nós pusemos", en: "We put (preterite)", category_id: "por-conj" },
   { pt: "Vocês puseram", en: "You all put (preterite)", category_id: "por-conj" },
-  { pt: "Eles/Elas puseram", en: "They put (preterite)", category_id: "por-conj" }
+  { pt: "Eles/Elas puseram", en: "They put (preterite)", category_id: "por-conj" },
+  { pt: "Eu ponha", en: "I put (present subjunctive)", category_id: "por-conj" },
+  { pt: "Você ponha", en: "You put (present subjunctive)", category_id: "por-conj" },
+  { pt: "Ele/Ela ponha", en: "He/She puts (present subjunctive)", category_id: "por-conj" },
+  { pt: "Nós ponhamos", en: "We put (present subjunctive)", category_id: "por-conj" },
+  { pt: "Vocês ponham", en: "You all put (present subjunctive)", category_id: "por-conj" },
+  { pt: "Eles/Elas ponham", en: "They put (present subjunctive)", category_id: "por-conj" }
 ];
 
 module.exports = { categories: [category], cards };
