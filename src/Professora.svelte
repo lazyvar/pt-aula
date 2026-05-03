@@ -53,5 +53,7 @@
   .professora-root {
     position: relative;
     z-index: 1;
+    height: 100vh;
+    overflow-y: auto;
   }
 </style>

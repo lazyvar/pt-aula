@@ -217,6 +217,31 @@ test.describe('Professora', () => {
     await expect(firstRow.getByTestId('pill-studying')).toHaveAttribute('aria-pressed', 'false');
   });
 
+  test('card grid is reachable by scrolling when content exceeds viewport', async ({ page, request }) => {
+    // Mark the category with the most cards as Studying so the grid is long.
+    const res = await request.get(`${BASE}/api/cards`);
+    const { cards } = await res.json();
+    const counts = {};
+    for (const c of cards) counts[c.cat] = (counts[c.cat] || 0) + 1;
+    const fatCatId = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+    await request.put(`${BASE}/api/categories/${encodeURIComponent(fatCatId)}/status`, {
+      data: { status: 'studying' },
+    });
+
+    await page.goto(`${BASE}/professora`);
+    await expect(page.getByTestId('card-grid')).toBeVisible();
+
+    const tiles = page.getByTestId('card-tile');
+    const count = await tiles.count();
+    expect(count).toBeGreaterThan(15);
+
+    // The last tile should be scrollable into view. Without a scroll container,
+    // scrollIntoViewIfNeeded is a no-op and the tile stays off-screen.
+    const lastTile = tiles.nth(count - 1);
+    await lastTile.scrollIntoViewIfNeeded();
+    await expect(lastTile).toBeInViewport();
+  });
+
   test('desktop entry icon navigates from / to /professora', async ({ page }) => {
     await page.goto(`${BASE}/`);
     await page.getByTestId('professora-entry-desktop').click();
