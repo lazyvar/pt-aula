@@ -457,7 +457,7 @@ Return STRICT JSON only, no prose, no markdown fence:
 // POST /api/tts — body: { text }
 // GET  /api/tts?text=… — query string variant for <audio src=…> elements
 // Returns audio/mpeg from ElevenLabs, cached on disk under TTS_CACHE_DIR.
-const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "FGY2WhTYpPnrIDTdsKH5"; // "Camila" (multilingual, pt-BR)
+const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "GDzHdQOi6jjf8zaXhCYD"; // "Raquel" (multilingual, pt-BR)
 const ELEVENLABS_MODEL_ID = "eleven_multilingual_v2";
 
 const TTS_CACHE_DIR = process.env.TTS_CACHE_DIR || "./.tts-cache";
@@ -514,7 +514,7 @@ async function handleTts(text, res) {
           "Content-Type": "application/json",
           "Accept": "audio/mpeg",
         },
-        body: JSON.stringify({ text, model_id: ELEVENLABS_MODEL_ID }),
+        body: JSON.stringify({ text, model_id: ELEVENLABS_MODEL_ID, voice_settings: { speed: 0.7 } }),
       }
     );
 
