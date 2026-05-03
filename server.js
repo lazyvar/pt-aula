@@ -624,6 +624,24 @@ Return STRICT JSON only, no prose, no markdown fence:
   }
 });
 
+// PUT /api/categories/:id/status — body: { status: 'unmarked' | 'studying' | 'complete' }
+const VALID_CATEGORY_STATUSES = new Set(['unmarked', 'studying', 'complete']);
+app.put("/api/categories/:id/status", async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body || {};
+  if (!VALID_CATEGORY_STATUSES.has(status)) {
+    return res.status(400).json({ error: "status must be one of: unmarked, studying, complete" });
+  }
+  const result = await pool.query(
+    "UPDATE categories SET status = $1 WHERE id = $2",
+    [status, id]
+  );
+  if (result.rowCount === 0) {
+    return res.status(404).json({ error: "category not found" });
+  }
+  res.json({ ok: true });
+});
+
 // GET /api/cards — return all cards and categories
 app.get("/api/cards", async (req, res) => {
   const { rows: catRows } = await pool.query("SELECT id, label, css_class, group_name, status FROM categories");

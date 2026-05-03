@@ -22,4 +22,37 @@ test.describe('Professora', () => {
       });
     }
   });
+
+  test('PUT /api/categories/:id/status updates status and persists', async ({ request }) => {
+    const res0 = await request.get(`${BASE}/api/cards`);
+    const ids = Object.keys((await res0.json()).categories);
+    const id = ids[0];
+
+    const put = await request.put(`${BASE}/api/categories/${encodeURIComponent(id)}/status`, {
+      data: { status: 'studying' },
+    });
+    expect(put.ok()).toBe(true);
+    expect(await put.json()).toEqual({ ok: true });
+
+    const res1 = await request.get(`${BASE}/api/cards`);
+    const cats = (await res1.json()).categories;
+    expect(cats[id].status).toBe('studying');
+  });
+
+  test('PUT rejects invalid status with 400', async ({ request }) => {
+    const res0 = await request.get(`${BASE}/api/cards`);
+    const id = Object.keys((await res0.json()).categories)[0];
+
+    const put = await request.put(`${BASE}/api/categories/${encodeURIComponent(id)}/status`, {
+      data: { status: 'bogus' },
+    });
+    expect(put.status()).toBe(400);
+  });
+
+  test('PUT returns 404 for unknown category id', async ({ request }) => {
+    const put = await request.put(`${BASE}/api/categories/does-not-exist/status`, {
+      data: { status: 'studying' },
+    });
+    expect(put.status()).toBe(404);
+  });
 });
