@@ -81,4 +81,10 @@ test.describe('Professora', () => {
     const body = await res.text();
     expect(body).toContain('<div id="app">');
   });
+
+  test('navigating to /professora renders the professora page (not the study app)', async ({ page }) => {
+    await page.goto(`${BASE}/professora`);
+    await expect(page.getByTestId('professora-page')).toBeVisible();
+    await expect(page.getByTestId('card-container')).toHaveCount(0);
+  });
 });
