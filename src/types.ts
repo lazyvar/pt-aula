@@ -6,10 +6,13 @@ export interface Card {
   cat: string;
 }
 
+export type CategoryStatus = 'unmarked' | 'studying' | 'complete';
+
 export interface CatConfig {
   cls: string;
   label: string;
   group: string;
+  status: CategoryStatus;
 }
 
 export type CatConfigMap = Record<string, CatConfig>;

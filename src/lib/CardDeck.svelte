@@ -77,7 +77,7 @@
 
   // Category tag: generated cards use a sentinel cat. Fallback: cat-generated / "✨ Generated".
   $: cc = currentCard
-    ? $catConfig[currentCard.cat] || { cls: 'cat-generated', label: '✨ Generated', group: '' }
+    ? $catConfig[currentCard.cat] || { cls: 'cat-generated', label: '✨ Generated', group: '', status: 'unmarked' as const }
     : null;
 
   // Per-card stats display (reactively recomputed as statsCache updates).

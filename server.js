@@ -47,6 +47,7 @@ async function init() {
     )
   `);
   await pool.query(`ALTER TABLE categories ADD COLUMN IF NOT EXISTS group_name TEXT NOT NULL DEFAULT 'Topics'`);
+  await pool.query(`ALTER TABLE categories ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'unmarked'`);
   await pool.query(`
     CREATE TABLE IF NOT EXISTS cards (
       id SERIAL PRIMARY KEY,
@@ -163,19 +164,36 @@ app.delete("/api/stats", async (req, res) => {
   res.json({ ok: true });
 });
 
-// POST /api/reseed — truncate cards/categories/stats/session and re-seed from seed files
+// POST /api/reseed — refresh cards/categories from seeds while PRESERVING category.status.
+// We don't TRUNCATE categories anymore — we upsert label/css_class/group_name and
+// leave `status` untouched. Removed categories are pruned (status loss is acceptable
+// for categories the user has explicitly removed from seeds).
 app.post("/api/reseed", async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    await client.query("TRUNCATE cards, categories, card_stats RESTART IDENTITY CASCADE");
+    // 1. Wipe cards and stats. Cards have no preserved state; stats reset is current behavior.
+    await client.query("DELETE FROM cards");
+    await client.query("DELETE FROM card_stats");
     await client.query("DELETE FROM session");
+    // 2. Upsert categories (preserve status by NOT touching it in DO UPDATE).
     for (const cat of categories) {
       await client.query(
-        "INSERT INTO categories (id, label, css_class, group_name) VALUES ($1, $2, $3, $4)",
+        `INSERT INTO categories (id, label, css_class, group_name)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (id) DO UPDATE SET
+           label = EXCLUDED.label,
+           css_class = EXCLUDED.css_class,
+           group_name = EXCLUDED.group_name`,
         [cat.id, cat.label, cat.css_class, cat.group_name]
       );
     }
+    // 3. Prune categories no longer in the seed.
+    const seedIds = categories.map((c) => c.id);
+    if (seedIds.length > 0) {
+      await client.query("DELETE FROM categories WHERE id <> ALL($1)", [seedIds]);
+    }
+    // 4. Re-insert cards (all reference categories that now exist).
     for (const card of cards) {
       await client.query(
         "INSERT INTO cards (pt, en, category_id) VALUES ($1, $2, $3)",
@@ -439,7 +457,7 @@ Return STRICT JSON only, no prose, no markdown fence:
 // POST /api/tts — body: { text }
 // GET  /api/tts?text=… — query string variant for <audio src=…> elements
 // Returns audio/mpeg from ElevenLabs, cached on disk under TTS_CACHE_DIR.
-const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "FGY2WhTYpPnrIDTdsKH5"; // "Camila" (multilingual, pt-BR)
+const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || "sXSV9RZ095VZyL64w3ap"; // "Alexa" (multilingual, pt-BR)
 const ELEVENLABS_MODEL_ID = "eleven_multilingual_v2";
 
 const TTS_CACHE_DIR = process.env.TTS_CACHE_DIR || "./.tts-cache";
@@ -496,7 +514,7 @@ async function handleTts(text, res) {
           "Content-Type": "application/json",
           "Accept": "audio/mpeg",
         },
-        body: JSON.stringify({ text, model_id: ELEVENLABS_MODEL_ID }),
+        body: JSON.stringify({ text, model_id: ELEVENLABS_MODEL_ID, voice_settings: { speed: 0.7 } }),
       }
     );
 
@@ -623,16 +641,40 @@ Return STRICT JSON only, no prose, no markdown fence:
   }
 });
 
+// PUT /api/categories/:id/status — body: { status: 'unmarked' | 'studying' | 'complete' }
+const VALID_CATEGORY_STATUSES = new Set(['unmarked', 'studying', 'complete']);
+app.put("/api/categories/:id/status", async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body || {};
+  if (!VALID_CATEGORY_STATUSES.has(status)) {
+    return res.status(400).json({ error: "status must be one of: unmarked, studying, complete" });
+  }
+  const result = await pool.query(
+    "UPDATE categories SET status = $1 WHERE id = $2",
+    [status, id]
+  );
+  if (result.rowCount === 0) {
+    return res.status(404).json({ error: "category not found" });
+  }
+  res.json({ ok: true });
+});
+
 // GET /api/cards — return all cards and categories
 app.get("/api/cards", async (req, res) => {
-  const { rows: catRows } = await pool.query("SELECT id, label, css_class, group_name FROM categories");
+  const { rows: catRows } = await pool.query("SELECT id, label, css_class, group_name, status FROM categories");
   const categories = {};
   for (const row of catRows) {
-    categories[row.id] = { cls: row.css_class, label: row.label, group: row.group_name };
+    categories[row.id] = { cls: row.css_class, label: row.label, group: row.group_name, status: row.status };
   }
   const { rows: cardRows } = await pool.query("SELECT pt, en, category_id FROM cards ORDER BY id");
   const cards = cardRows.map(r => ({ pt: r.pt, en: r.en, cat: r.category_id }));
   res.json({ cards, categories });
+});
+
+// SPA fallback: any /professora[/...] URL returns the built index.html.
+// Placed AFTER express.static and AFTER all /api/* routes so it can't shadow them.
+app.get(/^\/professora(\/.*)?$/, (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 init().then(() => {

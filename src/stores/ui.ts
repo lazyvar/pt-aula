@@ -8,3 +8,6 @@ export const groupCollapseState = writable<Record<string, boolean>>({});
 
 // bottom sheet open state (only relevant on mobile viewport)
 export const sheetOpen = writable<boolean>(false);
+
+// Open state for the professora manage bottom sheet (mobile only).
+export const professoraSheetOpen = writable<boolean>(false);
