@@ -28,15 +28,15 @@
 <div class="grid-wrapper">
   {#if noMarked}
     <div class="empty" data-testid="grid-empty-no-marked">
-      No categories marked yet — open Manage to set some.
+      <p>No categories marked yet.</p>
     </div>
   {:else if noFilter}
     <div class="empty" data-testid="grid-empty-no-filter">
-      Pick a status filter.
+      <p>Pick a status filter.</p>
     </div>
   {:else if noCategorySelected}
     <div class="empty" data-testid="grid-empty-no-cat">
-      Pick a category above.
+      <p>Pick a category.</p>
     </div>
   {:else}
     <div class="card-grid" data-testid="card-grid">
@@ -55,27 +55,54 @@
 </div>
 
 <style>
-  .grid-wrapper { padding: 12px 20px 40px; }
+  .grid-wrapper { padding: 4px 28px 40px; }
+
   .empty {
-    padding: 32px 20px;
-    text-align: center;
+    min-height: 45vh;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--text-dim, #8892a4);
-    font-size: 0.95rem;
   }
+  .empty p {
+    margin: 0;
+    font-size: 1rem;
+    font-style: italic;
+    opacity: 0.55;
+    text-align: center;
+  }
+
   .card-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 12px;
+    margin-top: 8px;
   }
   .tile {
-    background: var(--card-front, #1a1a2e);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 10px;
+    background: linear-gradient(145deg, var(--card-front, #1a1a2e), #12122a);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
     padding: 14px 16px;
+    transition: border-color 0.15s ease, transform 0.15s ease;
   }
-  .pt { font-size: 1.05rem; color: var(--text, #f0f0f0); margin-bottom: 4px; }
-  .en { font-size: 0.85rem; color: var(--text-dim, #8892a4); }
+  .tile:hover {
+    border-color: rgba(255,255,255,0.12);
+    transform: translateY(-1px);
+  }
+  .pt {
+    font-size: 1.05rem;
+    color: var(--text, #f0f0f0);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .en {
+    font-size: 0.85rem;
+    color: var(--text-dim, #8892a4);
+  }
   @media (max-width: 768px) {
+    .grid-wrapper { padding: 4px 18px 56px; }
     .card-grid { grid-template-columns: 1fr; }
+    .empty { padding: 40px 16px 48px; }
   }
 </style>
