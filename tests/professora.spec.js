@@ -1,15 +1,13 @@
 const { test, expect } = require('@playwright/test');
-const { resetAll } = require('./fixtures/reset');
+const { resetAll, BASE } = require('./fixtures/reset');
 
-const API = 'http://localhost:3006';
-
-test.describe('Professora — API surface', () => {
+test.describe('Professora', () => {
   test.beforeEach(async () => {
     await resetAll();
   });
 
   test('GET /api/cards returns status on each category, defaulting to "unmarked"', async ({ request }) => {
-    const res = await request.get(`${API}/api/cards`);
+    const res = await request.get(`${BASE}/api/cards`);
     expect(res.ok()).toBe(true);
     const body = await res.json();
     expect(body.categories).toBeTruthy();
