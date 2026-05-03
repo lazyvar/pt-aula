@@ -24,7 +24,13 @@ const cards = [
   { pt: "Ele/Ela seria", en: "He/She would be (conditional)", category_id: "ser-conj" },
   { pt: "Nós seríamos", en: "We would be (conditional)", category_id: "ser-conj" },
   { pt: "Vocês seriam", en: "You all would be (conditional)", category_id: "ser-conj" },
-  { pt: "Eles/Elas seriam", en: "They would be (conditional)", category_id: "ser-conj" }
+  { pt: "Eles/Elas seriam", en: "They would be (conditional)", category_id: "ser-conj" },
+  { pt: "Eu seja", en: "I am (present subjunctive)", category_id: "ser-conj" },
+  { pt: "Você seja", en: "You are (present subjunctive)", category_id: "ser-conj" },
+  { pt: "Ele/Ela seja", en: "He/She is (present subjunctive)", category_id: "ser-conj" },
+  { pt: "Nós sejamos", en: "We are (present subjunctive)", category_id: "ser-conj" },
+  { pt: "Vocês sejam", en: "You all are (present subjunctive)", category_id: "ser-conj" },
+  { pt: "Eles/Elas sejam", en: "They are (present subjunctive)", category_id: "ser-conj" }
 ];
 
 module.exports = { categories: [category], cards };

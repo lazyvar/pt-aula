@@ -24,7 +24,13 @@ const cards = [
   { pt: "-eria (ele/ela)", en: "ele/ela (conditional) (-er)", category_id: "end-er" },
   { pt: "-eríamos (nós)", en: "nós (conditional) (-er)", category_id: "end-er" },
   { pt: "-eriam (vocês)", en: "vocês (conditional) (-er)", category_id: "end-er" },
-  { pt: "-eriam (eles/elas)", en: "eles/elas (conditional) (-er)", category_id: "end-er" }
+  { pt: "-eriam (eles/elas)", en: "eles/elas (conditional) (-er)", category_id: "end-er" },
+  { pt: "-a (eu)", en: "eu (present subjunctive) (-er)", category_id: "end-er" },
+  { pt: "-a (você)", en: "você (present subjunctive) (-er)", category_id: "end-er" },
+  { pt: "-a (ele/ela)", en: "ele/ela (present subjunctive) (-er)", category_id: "end-er" },
+  { pt: "-amos (nós)", en: "nós (present subjunctive) (-er)", category_id: "end-er" },
+  { pt: "-am (vocês)", en: "vocês (present subjunctive) (-er)", category_id: "end-er" },
+  { pt: "-am (eles/elas)", en: "eles/elas (present subjunctive) (-er)", category_id: "end-er" }
 ];
 
 module.exports = { categories: [category], cards };
