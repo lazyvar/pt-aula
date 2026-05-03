@@ -238,4 +238,28 @@ test.describe('Professora', () => {
     // And its top should be near the top of the viewport (within ~30px).
     expect(box.y).toBeLessThan(30);
   });
+
+  test('manage panel body has bounded height and is internally scrollable', async ({ page }) => {
+    await page.goto(`${BASE}/professora`);
+    await page.getByTestId('manage-panel-toggle').click();
+    const body = page.getByTestId('manage-panel-body');
+    await expect(body).toBeVisible();
+
+    const viewport = page.viewportSize();
+    if (!viewport) throw new Error('no viewport');
+    const box = await body.boundingBox();
+    if (!box) throw new Error('no bounding box');
+    // The body must not fill more than 80% of the viewport height —
+    // i.e. it has a max-height so the grid below stays reachable.
+    expect(box.height).toBeLessThan(viewport.height * 0.8);
+
+    // And the body must have overflow available to scroll into.
+    const overflow = await body.evaluate((el) => ({
+      scrollHeight: el.scrollHeight,
+      clientHeight: el.clientHeight,
+      overflowY: getComputedStyle(el).overflowY,
+    }));
+    expect(overflow.scrollHeight).toBeGreaterThan(overflow.clientHeight);
+    expect(['auto', 'scroll']).toContain(overflow.overflowY);
+  });
 });

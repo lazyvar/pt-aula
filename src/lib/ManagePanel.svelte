@@ -71,7 +71,14 @@
     color: #ffb4ab;
     font-size: 0.85rem;
   }
-  .body { margin-top: 12px; display: flex; flex-direction: column; gap: 16px; }
+  .body {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
   .group-name {
     font-size: 0.8rem;
     text-transform: uppercase;
