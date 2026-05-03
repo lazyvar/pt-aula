@@ -13,7 +13,7 @@
     reset();
   }
 
-  $: cc = $catConfig[card.cat] || { cls: 'cat-generated', label: '✨ Generated', group: '' };
+  $: cc = $catConfig[card.cat] || { cls: 'cat-generated', label: '✨ Generated', group: '', status: 'unmarked' as const };
 
   async function onSubmit() {
     await submit(card);

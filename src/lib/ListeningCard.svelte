@@ -9,7 +9,7 @@
 
   $: currentCard = $deck[$session.currentIndex] as Card | undefined;
   $: cc = currentCard
-    ? $catConfig[currentCard.cat] || { cls: 'cat-generated', label: '✨ Generated', group: '' }
+    ? $catConfig[currentCard.cat] || { cls: 'cat-generated', label: '✨ Generated', group: '', status: 'unmarked' as const }
     : null;
   $: cardStats = currentCard ? getCardStats(currentCard) : { right: 0, wrong: 0 };
   $: showCardStats = cardStats.right > 0 || cardStats.wrong > 0;
