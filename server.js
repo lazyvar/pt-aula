@@ -339,6 +339,21 @@ app.post("/api/generate-conjugations", async (req, res) => {
   if (!Array.isArray(activeCats) || activeCats.length === 0) {
     return res.status(400).json({ error: "activeCats must be a non-empty array" });
   }
+
+  const ALL_TENSES = [
+    'presente',
+    'pretérito perfeito',
+    'pretérito imperfeito',
+    'futuro do pretérito',
+    'presente do subjuntivo',
+    'pretérito imperfeito do subjuntivo',
+  ];
+  const requestedTenses = Array.isArray(req.body.tenses) ? req.body.tenses : ALL_TENSES;
+  const tenses = requestedTenses.filter((t) => ALL_TENSES.includes(t));
+  if (tenses.length === 0) {
+    return res.status(400).json({ error: 'Pick at least one tense' });
+  }
+
   if (!process.env.ANTHROPIC_API_KEY) {
     return res.status(500).json({ error: "ANTHROPIC_API_KEY not configured on server" });
   }
@@ -380,8 +395,6 @@ app.post("/api/generate-conjugations", async (req, res) => {
       { pt: 'eles', en: 'they (m)' },
       { pt: 'vocês', en: 'you all' },
     ];
-
-    const tenses = ['presente', 'pretérito perfeito', 'pretérito imperfeito', 'futuro do pretérito', 'presente do subjuntivo', 'pretérito imperfeito do subjuntivo'];
 
     // Generate 20 random combos: verb + pronoun + tense
     const combos = [];
