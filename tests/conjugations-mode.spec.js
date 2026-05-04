@@ -51,6 +51,7 @@ async function enterConjugationsMode(page) {
   await page.goto('/');
   await expect(page.getByTestId('card-container')).toBeVisible();
   await page.getByRole('button', { name: '✨ Conjugations', exact: true }).first().click();
+  await page.getByTestId('conjugation-generate').first().click();
   await expect(page.getByText(/Generated Mode/)).toBeVisible();
 }
 
@@ -244,6 +245,7 @@ test.describe('Sentences vs Conjugations isolation', () => {
     await page.getByRole('button', { name: 'Exit' }).click();
     await expect(page.getByText(/Generated Mode/)).not.toBeVisible();
     await page.getByRole('button', { name: '✨ Conjugations', exact: true }).first().click();
+    await page.getByTestId('conjugation-generate').first().click();
     const verbsBanner = page.getByTestId('gen-banner-label');
     await expect(verbsBanner).toContainText('20 verbs');
     await expect(verbsBanner).not.toContainText('sentences');
@@ -264,6 +266,7 @@ test.describe('Sentences vs Conjugations isolation', () => {
 
     // Enter conjugations → grader must NOT appear, classic UI does.
     await page.getByRole('button', { name: '✨ Conjugations', exact: true }).first().click();
+    await page.getByTestId('conjugation-generate').first().click();
     await expect(page.getByText(/Generated Mode/)).toBeVisible();
     await expect(page.getByTestId('sentence-grader')).toHaveCount(0);
     await expect(page.getByTestId('card-container')).toBeVisible();
