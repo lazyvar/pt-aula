@@ -35,10 +35,8 @@
 
   async function onGenerate(kind: GenerateKind) {
     const err = await generate(
-      kind,
-      get(session).activeCats,
-      snapshotDeck,
-      applyGeneratedDeck,
+      { kind, activeCats: get(session).activeCats },
+      { takeSnapshot: snapshotDeck, applyGenerated: applyGeneratedDeck },
     );
     if (err) alert(err);
   }

@@ -20,11 +20,19 @@ export const generatedCards = writable<Card[]>([]);
 let savedSnapshot: DeckSnapshot | null = null;
 
 export async function generate(
-  kind: GenerateKind,
-  activeCats: string[],
-  takeSnapshot: () => DeckSnapshot,
-  applyGenerated: (cards: Card[]) => void,
+  opts: {
+    kind: GenerateKind;
+    activeCats: string[];
+    tenses?: string[];
+  },
+  callbacks: {
+    takeSnapshot: () => DeckSnapshot;
+    applyGenerated: (cards: Card[]) => void;
+  },
 ): Promise<string | null> {
+  const { kind, activeCats, tenses } = opts;
+  const { takeSnapshot, applyGenerated } = callbacks;
+
   if (get(generatingKind) !== null || get(generatedMode)) return null;
   if (activeCats.length === 0) {
     return 'Select at least one category first.';
@@ -32,12 +40,17 @@ export async function generate(
 
   const url = kind === 'sentences' ? '/api/generate-sentences' : '/api/generate-conjugations';
 
+  const body: { activeCats: string[]; tenses?: string[] } = { activeCats };
+  if (kind === 'conjugations' && tenses !== undefined) {
+    body.tenses = tenses;
+  }
+
   generatingKind.set(kind);
   try {
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ activeCats }),
+      body: JSON.stringify(body),
     });
     const data = await res.json() as { cards?: Array<{ pt: string; en: string }>; error?: string };
     if (!res.ok) return data.error || 'Generation failed';
