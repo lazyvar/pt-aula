@@ -21,7 +21,13 @@ const cards = [
   { pt: "Ele/Ela diga", en: "He/She says (present subjunctive)", category_id: "dizer-conj" },
   { pt: "Nós digamos", en: "We say (present subjunctive)", category_id: "dizer-conj" },
   { pt: "Vocês digam", en: "You all say (present subjunctive)", category_id: "dizer-conj" },
-  { pt: "Eles/Elas digam", en: "They say (present subjunctive)", category_id: "dizer-conj" }
+  { pt: "Eles/Elas digam", en: "They say (present subjunctive)", category_id: "dizer-conj" },
+  { pt: "Eu dissesse", en: "I said (imperfect subjunctive)", category_id: "dizer-conj" },
+  { pt: "Você dissesse", en: "You said (imperfect subjunctive)", category_id: "dizer-conj" },
+  { pt: "Ele/Ela dissesse", en: "He/She said (imperfect subjunctive)", category_id: "dizer-conj" },
+  { pt: "Nós disséssemos", en: "We said (imperfect subjunctive)", category_id: "dizer-conj" },
+  { pt: "Vocês dissessem", en: "You all said (imperfect subjunctive)", category_id: "dizer-conj" },
+  { pt: "Eles/Elas dissessem", en: "They said (imperfect subjunctive)", category_id: "dizer-conj" }
 ];
 
 module.exports = { categories: [category], cards };

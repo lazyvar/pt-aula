@@ -13,7 +13,13 @@ const cards = [
   { pt: "Ele/Ela saiba", en: "He/She knows (present subjunctive)", category_id: "saber-conj" },
   { pt: "Nós saibamos", en: "We know (present subjunctive)", category_id: "saber-conj" },
   { pt: "Vocês saibam", en: "You all know (present subjunctive)", category_id: "saber-conj" },
-  { pt: "Eles/Elas saibam", en: "They know (present subjunctive)", category_id: "saber-conj" }
+  { pt: "Eles/Elas saibam", en: "They know (present subjunctive)", category_id: "saber-conj" },
+  { pt: "Eu soubesse", en: "I knew (imperfect subjunctive)", category_id: "saber-conj" },
+  { pt: "Você soubesse", en: "You knew (imperfect subjunctive)", category_id: "saber-conj" },
+  { pt: "Ele/Ela soubesse", en: "He/She knew (imperfect subjunctive)", category_id: "saber-conj" },
+  { pt: "Nós soubéssemos", en: "We knew (imperfect subjunctive)", category_id: "saber-conj" },
+  { pt: "Vocês soubessem", en: "You all knew (imperfect subjunctive)", category_id: "saber-conj" },
+  { pt: "Eles/Elas soubessem", en: "They knew (imperfect subjunctive)", category_id: "saber-conj" }
 ];
 
 module.exports = { categories: [category], cards };

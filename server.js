@@ -381,7 +381,7 @@ app.post("/api/generate-conjugations", async (req, res) => {
       { pt: 'vocês', en: 'you all' },
     ];
 
-    const tenses = ['presente', 'pretérito perfeito', 'pretérito imperfeito', 'futuro do pretérito', 'presente do subjuntivo'];
+    const tenses = ['presente', 'pretérito perfeito', 'pretérito imperfeito', 'futuro do pretérito', 'presente do subjuntivo', 'pretérito imperfeito do subjuntivo'];
 
     // Generate 20 random combos: verb + pronoun + tense
     const combos = [];
@@ -412,6 +412,7 @@ Tense labels:
 - pretérito imperfeito → "imperfect"
 - futuro do pretérito → "conditional"
 - presente do subjuntivo → "present subjunctive"
+- pretérito imperfeito do subjuntivo → "imperfect subjunctive"
 
 Use regular -ar/-er/-ir conjugation rules only.
 

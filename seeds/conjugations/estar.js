@@ -30,7 +30,13 @@ const cards = [
   { pt: "Ele/Ela esteja", en: "He/She is (present subjunctive)", category_id: "estar-conj" },
   { pt: "Nós estejamos", en: "We are (present subjunctive)", category_id: "estar-conj" },
   { pt: "Vocês estejam", en: "You all are (present subjunctive)", category_id: "estar-conj" },
-  { pt: "Eles/Elas estejam", en: "They are (present subjunctive)", category_id: "estar-conj" }
+  { pt: "Eles/Elas estejam", en: "They are (present subjunctive)", category_id: "estar-conj" },
+  { pt: "Eu estivesse", en: "I were (imperfect subjunctive)", category_id: "estar-conj" },
+  { pt: "Você estivesse", en: "You were (imperfect subjunctive)", category_id: "estar-conj" },
+  { pt: "Ele/Ela estivesse", en: "He/She were (imperfect subjunctive)", category_id: "estar-conj" },
+  { pt: "Nós estivéssemos", en: "We were (imperfect subjunctive)", category_id: "estar-conj" },
+  { pt: "Vocês estivessem", en: "You all were (imperfect subjunctive)", category_id: "estar-conj" },
+  { pt: "Eles/Elas estivessem", en: "They were (imperfect subjunctive)", category_id: "estar-conj" }
 ];
 
 module.exports = { categories: [category], cards };

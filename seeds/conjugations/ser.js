@@ -30,7 +30,13 @@ const cards = [
   { pt: "Ele/Ela seja", en: "He/She is (present subjunctive)", category_id: "ser-conj" },
   { pt: "Nós sejamos", en: "We are (present subjunctive)", category_id: "ser-conj" },
   { pt: "Vocês sejam", en: "You all are (present subjunctive)", category_id: "ser-conj" },
-  { pt: "Eles/Elas sejam", en: "They are (present subjunctive)", category_id: "ser-conj" }
+  { pt: "Eles/Elas sejam", en: "They are (present subjunctive)", category_id: "ser-conj" },
+  { pt: "Eu fosse", en: "I were (imperfect subjunctive)", category_id: "ser-conj" },
+  { pt: "Você fosse", en: "You were (imperfect subjunctive)", category_id: "ser-conj" },
+  { pt: "Ele/Ela fosse", en: "He/She were (imperfect subjunctive)", category_id: "ser-conj" },
+  { pt: "Nós fôssemos", en: "We were (imperfect subjunctive)", category_id: "ser-conj" },
+  { pt: "Vocês fossem", en: "You all were (imperfect subjunctive)", category_id: "ser-conj" },
+  { pt: "Eles/Elas fossem", en: "They were (imperfect subjunctive)", category_id: "ser-conj" }
 ];
 
 module.exports = { categories: [category], cards };

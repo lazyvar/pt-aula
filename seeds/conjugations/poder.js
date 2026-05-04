@@ -13,7 +13,13 @@ const cards = [
   { pt: "Ele/Ela possa", en: "He/She can (present subjunctive)", category_id: "poder-conj" },
   { pt: "Nós possamos", en: "We can (present subjunctive)", category_id: "poder-conj" },
   { pt: "Vocês possam", en: "You all can (present subjunctive)", category_id: "poder-conj" },
-  { pt: "Eles/Elas possam", en: "They can (present subjunctive)", category_id: "poder-conj" }
+  { pt: "Eles/Elas possam", en: "They can (present subjunctive)", category_id: "poder-conj" },
+  { pt: "Eu pudesse", en: "I could (imperfect subjunctive)", category_id: "poder-conj" },
+  { pt: "Você pudesse", en: "You could (imperfect subjunctive)", category_id: "poder-conj" },
+  { pt: "Ele/Ela pudesse", en: "He/She could (imperfect subjunctive)", category_id: "poder-conj" },
+  { pt: "Nós pudéssemos", en: "We could (imperfect subjunctive)", category_id: "poder-conj" },
+  { pt: "Vocês pudessem", en: "You all could (imperfect subjunctive)", category_id: "poder-conj" },
+  { pt: "Eles/Elas pudessem", en: "They could (imperfect subjunctive)", category_id: "poder-conj" }
 ];
 
 module.exports = { categories: [category], cards };

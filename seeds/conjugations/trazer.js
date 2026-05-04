@@ -21,7 +21,13 @@ const cards = [
   { pt: "Ele/Ela traga", en: "He/She brings (present subjunctive)", category_id: "trazer-conj" },
   { pt: "Nós tragamos", en: "We bring (present subjunctive)", category_id: "trazer-conj" },
   { pt: "Vocês tragam", en: "You all bring (present subjunctive)", category_id: "trazer-conj" },
-  { pt: "Eles/Elas tragam", en: "They bring (present subjunctive)", category_id: "trazer-conj" }
+  { pt: "Eles/Elas tragam", en: "They bring (present subjunctive)", category_id: "trazer-conj" },
+  { pt: "Eu trouxesse", en: "I brought (imperfect subjunctive)", category_id: "trazer-conj" },
+  { pt: "Você trouxesse", en: "You brought (imperfect subjunctive)", category_id: "trazer-conj" },
+  { pt: "Ele/Ela trouxesse", en: "He/She brought (imperfect subjunctive)", category_id: "trazer-conj" },
+  { pt: "Nós trouxéssemos", en: "We brought (imperfect subjunctive)", category_id: "trazer-conj" },
+  { pt: "Vocês trouxessem", en: "You all brought (imperfect subjunctive)", category_id: "trazer-conj" },
+  { pt: "Eles/Elas trouxessem", en: "They brought (imperfect subjunctive)", category_id: "trazer-conj" }
 ];
 
 module.exports = { categories: [category], cards };

@@ -30,7 +30,13 @@ const cards = [
   { pt: "-a (ele/ela)", en: "ele/ela (present subjunctive) (-ir)", category_id: "end-ir" },
   { pt: "-amos (nós)", en: "nós (present subjunctive) (-ir)", category_id: "end-ir" },
   { pt: "-am (vocês)", en: "vocês (present subjunctive) (-ir)", category_id: "end-ir" },
-  { pt: "-am (eles/elas)", en: "eles/elas (present subjunctive) (-ir)", category_id: "end-ir" }
+  { pt: "-am (eles/elas)", en: "eles/elas (present subjunctive) (-ir)", category_id: "end-ir" },
+  { pt: "-isse (eu)", en: "eu (imperfect subjunctive) (-ir)", category_id: "end-ir" },
+  { pt: "-isse (você)", en: "você (imperfect subjunctive) (-ir)", category_id: "end-ir" },
+  { pt: "-isse (ele/ela)", en: "ele/ela (imperfect subjunctive) (-ir)", category_id: "end-ir" },
+  { pt: "-íssemos (nós)", en: "nós (imperfect subjunctive) (-ir)", category_id: "end-ir" },
+  { pt: "-issem (vocês)", en: "vocês (imperfect subjunctive) (-ir)", category_id: "end-ir" },
+  { pt: "-issem (eles/elas)", en: "eles/elas (imperfect subjunctive) (-ir)", category_id: "end-ir" }
 ];
 
 module.exports = { categories: [category], cards };
