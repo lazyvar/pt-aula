@@ -3,6 +3,7 @@
   import { allCards, catConfig, hydrateCards } from '../stores/cards';
   import { resetStats } from '../stores/stats';
   import { generatingKind, generatedMode, generate, type GenerateKind } from '../stores/generated';
+  import ConjugationsButton from './ConjugationsButton.svelte';
   import { snapshotDeck, applyGeneratedDeck, reviewDifficultCards } from '../stores/session';
   import { get } from 'svelte/store';
   import { difficultCount } from '../stores/difficulty';
@@ -35,10 +36,8 @@
 
   async function onGenerate(kind: GenerateKind) {
     const err = await generate(
-      kind,
-      get(session).activeCats,
-      snapshotDeck,
-      applyGeneratedDeck,
+      { kind, activeCats: get(session).activeCats },
+      { takeSnapshot: snapshotDeck, applyGenerated: applyGeneratedDeck },
     );
     if (err) alert(err);
   }
@@ -90,10 +89,4 @@
 >
   {$generatingKind === 'sentences' ? '⏳ Generating…' : '✨ Sentences'}
 </button>
-<button
-  class="ctrl-btn gen-btn"
-  on:click={() => onGenerate('conjugations')}
-  disabled={$generatingKind !== null || $generatedMode}
->
-  {$generatingKind === 'conjugations' ? '⏳ Generating…' : '✨ Conjugations'}
-</button>
+<ConjugationsButton {testIds} />

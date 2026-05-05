@@ -27,6 +27,7 @@ test.describe('Generated Mode', () => {
   test('clicking Generate enters gen mode, shows banner, shows generated cards', async ({ page }) => {
     // Desktop sidebar has the Generate button
     await page.getByRole('button', { name: '✨ Conjugations', exact: true }).first().click();
+    await page.getByTestId('conjugation-generate').first().click();
 
     // Gen banner visible
     await expect(page.getByText(/Generated Mode/)).toBeVisible();
@@ -47,6 +48,7 @@ test.describe('Generated Mode', () => {
   test('in gen mode, marking cards does NOT write stats or session', async ({ page }) => {
     // Enter gen mode
     await page.getByRole('button', { name: '✨ Conjugations', exact: true }).first().click();
+    await page.getByTestId('conjugation-generate').first().click();
     await expect(page.getByText(/Generated Mode/)).toBeVisible();
 
     // Mark a card correct
@@ -83,6 +85,7 @@ test.describe('Generated Mode', () => {
 
     // Enter gen mode
     await page.getByRole('button', { name: '✨ Conjugations', exact: true }).first().click();
+    await page.getByTestId('conjugation-generate').first().click();
     await expect(page.getByText(/Generated Mode/)).toBeVisible();
 
     // Exit gen mode
@@ -123,6 +126,7 @@ test.describe('Generated Mode', () => {
     });
 
     await page.getByRole('button', { name: '✨ Conjugations', exact: true }).first().click();
+    await page.getByTestId('conjugation-generate').first().click();
     await page.waitForTimeout(200);
     expect(alertFired).toBe(true);
     // Should NOT be in gen mode
