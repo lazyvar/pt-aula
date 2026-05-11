@@ -44,12 +44,12 @@ const phrases = [
   { pt: "Se eu pudesse", en: "If I could", category_id: "a2-w4-phrases" },
   { pt: "Se eu fosse você", en: "If I were you", category_id: "a2-w4-phrases" },
   { pt: "Como se", en: "As if (+ imperfect subj.)", category_id: "a2-w4-phrases" },
-  { pt: "Ainda que", en: "Even though (+ subj.)", category_id: "a2-w4-phrases" },
-  { pt: "Mesmo que", en: "Even if (+ subj.)", category_id: "a2-w4-phrases" },
-  { pt: "A menos que", en: "Unless (+ subj.)", category_id: "a2-w4-phrases" },
-  { pt: "Desde que", en: "Provided that (+ subj.)", category_id: "a2-w4-phrases" },
+  { pt: "Ainda que", en: "Even though — formal (+ subj.)", category_id: "a2-w4-phrases" },
+  { pt: "Mesmo que", en: "Even if — hypothetical (+ subj.)", category_id: "a2-w4-phrases" },
+  { pt: "A menos que", en: "Unless — formal/written (+ subj.)", category_id: "a2-w4-phrases" },
+  { pt: "Desde que", en: "Provided that — formal (+ subj.)", category_id: "a2-w4-phrases" },
   { pt: "Até que", en: "Until (+ subj.)", category_id: "a2-w4-phrases" },
-  { pt: "Nem que", en: "Even if (+ subj.)", category_id: "a2-w4-phrases" },
+  { pt: "Nem que", en: "Even if — colloquial/reluctant (+ subj.)", category_id: "a2-w4-phrases" },
   { pt: "Seria bom se", en: "It would be good if (+ imperfect subj.)", category_id: "a2-w4-phrases" },
 ];
 

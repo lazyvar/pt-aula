@@ -46,11 +46,11 @@ const phrases = [
   { pt: "Duvido que", en: "I doubt that (+ subj.)", category_id: "a2-w3-phrases" },
   { pt: "Talvez", en: "Maybe (+ subj.)", category_id: "a2-w3-phrases" },
   { pt: "Para que", en: "So that (+ subj.)", category_id: "a2-w3-phrases" },
-  { pt: "A não ser que", en: "Unless (+ subj.)", category_id: "a2-w3-phrases" },
+  { pt: "A não ser que", en: "Unless / except if — spoken (+ subj.)", category_id: "a2-w3-phrases" },
   { pt: "Antes que", en: "Before (+ subj.)", category_id: "a2-w3-phrases" },
-  { pt: "Embora", en: "Although / even though (+ subj.)", category_id: "a2-w3-phrases" },
+  { pt: "Embora", en: "Even though — real situation (+ subj.)", category_id: "a2-w3-phrases" },
   { pt: "Caso você precise", en: "In case you need (+ subj.)", category_id: "a2-w3-phrases" },
-  { pt: "Contanto que", en: "As long as (+ subj.)", category_id: "a2-w3-phrases" },
+  { pt: "Contanto que", en: "As long as — spoken (+ subj.)", category_id: "a2-w3-phrases" },
 ];
 
 const nouns = [
