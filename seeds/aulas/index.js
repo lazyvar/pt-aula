@@ -5,6 +5,7 @@ const parts = [
   require("./april-fools"),
   require("./april2"),
   require("./aula-jun15"),
+  require("./aula-jul20"),
 ];
 
 const categories = parts.flatMap(p => p.categories);
