@@ -557,6 +557,11 @@
   .cat-aula-aug6 { background: rgba(171,71,188,0.15); color: #ab47bc; }
   .cat-aula-aug7 { background: rgba(77,208,225,0.15); color: #4dd0e1; }
   .cat-aula-aug10 { background: rgba(255,167,38,0.15); color: #ffa726; }
+  .cat-aula-aug11 { background: rgba(236,64,122,0.15); color: #ec407a; }
+  .cat-aula-aug13 { background: rgba(92,107,192,0.15); color: #5c6bc0; }
+  .cat-aula-aug17 { background: rgba(255,112,67,0.15); color: #ff7043; }
+  .cat-aula-aug18 { background: rgba(38,198,218,0.15); color: #26c6da; }
+  .cat-aula-aug19 { background: rgba(212,225,87,0.15); color: #d4e157; }
 
   .buttons {
     display: flex;
