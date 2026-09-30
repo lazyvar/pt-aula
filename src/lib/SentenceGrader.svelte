@@ -6,11 +6,15 @@
   export let card: Card;
   export let onAdvance: (gotIt: boolean) => void;
 
-  // Reset when card identity changes (new card shown).
+  let scrollEl: HTMLDivElement;
+
+  // Reset when card identity changes (new card shown). The scroll container
+  // persists across cards, so rewind it too.
   let lastPt: string | undefined;
   $: if (card && card.pt !== lastPt) {
     lastPt = card.pt;
     reset();
+    if (scrollEl) scrollEl.scrollTop = 0;
   }
 
   $: cc = $catConfig[card.cat] || { cls: 'cat-generated', label: '✨ Generated', group: '', status: 'unmarked' as const };
@@ -50,90 +54,98 @@
 <svelte:window on:keydown={onPageKeydown} />
 
 <div class="grader" data-testid="sentence-grader">
-  <div class="card grader-card">
-    <span class="category-tag {cc.cls}">{cc.label}</span>
-    <div class="card-label">English</div>
-    <div class="card-word" data-testid="grader-prompt">{card.en}</div>
-  </div>
-
-  {#if $graderState === 'idle'}
-    <textarea
-      class="grader-input"
-      data-testid="grader-input"
-      placeholder="Type the Portuguese translation…"
-      autocomplete="off"
-      autocapitalize="off"
-      spellcheck="false"
-      rows="3"
-      bind:value={$graderInput}
-      on:keydown={onInputKeydown}
-    ></textarea>
-    {#if $graderError}
-      <div class="grader-error" data-testid="grader-error">{$graderError}</div>
-    {/if}
-    <div class="grader-actions">
-      <button
-        class="btn btn-right"
-        data-testid="grader-submit"
-        on:click={onSubmit}
-        disabled={!$graderInput.trim()}
-      >Submit</button>
-      <button
-        class="btn btn-wrong"
-        data-testid="grader-giveup"
-        on:click={onGiveUp}
-      >Give up</button>
+  <!-- Scrollable body. On mobile the feedback can be much taller than the
+       screen, so this region scrolls while the Next button stays pinned. -->
+  <div class="grader-scroll" data-testid="grader-scroll" bind:this={scrollEl}>
+    <div class="card grader-card">
+      <span class="category-tag {cc.cls}">{cc.label}</span>
+      <div class="card-label">English</div>
+      <div class="card-word" data-testid="grader-prompt">{card.en}</div>
     </div>
-    <div class="keyboard-hint">Cmd/Ctrl+Enter to submit</div>
-  {:else if $graderState === 'grading'}
-    <div class="grader-loading" data-testid="grader-loading">Grading…</div>
-  {:else if $graderResult}
-    <div class="grader-verdict" data-testid="grader-verdict">
-      <div class="grader-grade grade-{$graderResult.grade}" data-testid="grader-grade">
-        {$graderResult.grade}/3
+
+    {#if $graderState === 'idle'}
+      <textarea
+        class="grader-input"
+        data-testid="grader-input"
+        placeholder="Type the Portuguese translation…"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        rows="3"
+        bind:value={$graderInput}
+        on:keydown={onInputKeydown}
+      ></textarea>
+      {#if $graderError}
+        <div class="grader-error" data-testid="grader-error">{$graderError}</div>
+      {/if}
+      <div class="grader-actions">
+        <button
+          class="btn btn-right"
+          data-testid="grader-submit"
+          on:click={onSubmit}
+          disabled={!$graderInput.trim()}
+        >Submit</button>
+        <button
+          class="btn btn-wrong"
+          data-testid="grader-giveup"
+          on:click={onGiveUp}
+        >Give up</button>
       </div>
-      <div class="grader-summary">{$graderResult.summary}</div>
-    </div>
-
-    {#if $graderInput.trim()}
-      <div class="grader-yours grade-border-{$graderResult.grade}" data-testid="grader-yours">
-        <div class="grader-panel-label">You wrote</div>
-        <div class="grader-panel-text">{$graderInput}</div>
+      <div class="keyboard-hint">Cmd/Ctrl+Enter to submit</div>
+    {:else if $graderState === 'grading'}
+      <div class="grader-loading" data-testid="grader-loading">Grading…</div>
+    {:else if $graderResult}
+      <div class="grader-verdict" data-testid="grader-verdict">
+        <div class="grader-grade grade-{$graderResult.grade}" data-testid="grader-grade">
+          {$graderResult.grade}/3
+        </div>
+        <div class="grader-summary">{$graderResult.summary}</div>
       </div>
-    {/if}
 
-    <div class="grader-reference" data-testid="grader-reference">
-      <div class="grader-panel-label">✓ Should be</div>
-      <div class="grader-panel-text">{card.pt}</div>
-    </div>
+      {#if $graderInput.trim()}
+        <div class="grader-yours grade-border-{$graderResult.grade}" data-testid="grader-yours">
+          <div class="grader-panel-label">You wrote</div>
+          <div class="grader-panel-text">{$graderInput}</div>
+        </div>
+      {/if}
 
-    {#if $graderResult.mistakes.length > 0}
-      <ul class="grader-mistakes" data-testid="grader-mistakes">
-        {#each $graderResult.mistakes as m}
-          <li>{m}</li>
-        {/each}
-      </ul>
-    {/if}
+      <div class="grader-reference" data-testid="grader-reference">
+        <div class="grader-panel-label">✓ Should be</div>
+        <div class="grader-panel-text">{card.pt}</div>
+      </div>
 
-    {#if $graderResult.warnings.length > 0}
-      <div class="grader-warnings" data-testid="grader-warnings">
-        <div class="grader-warnings-label">Heads up (doesn't affect grade):</div>
-        <ul>
-          {#each $graderResult.warnings as w}
-            <li>{w}</li>
+      {#if $graderResult.mistakes.length > 0}
+        <ul class="grader-mistakes" data-testid="grader-mistakes">
+          {#each $graderResult.mistakes as m}
+            <li>{m}</li>
           {/each}
         </ul>
-      </div>
-    {/if}
+      {/if}
 
-    {#if $graderResult.rule}
-      <div class="grader-rule" data-testid="grader-rule">
-        <strong>Rule:</strong> {$graderResult.rule}
-      </div>
-    {/if}
+      {#if $graderResult.warnings.length > 0}
+        <div class="grader-warnings" data-testid="grader-warnings">
+          <div class="grader-warnings-label">Heads up (doesn't affect grade):</div>
+          <ul>
+            {#each $graderResult.warnings as w}
+              <li>{w}</li>
+            {/each}
+          </ul>
+        </div>
+      {/if}
 
-    <button class="btn btn-right" data-testid="grader-next" on:click={onNext}>Next →</button>
-    <div class="keyboard-hint">Enter = next card</div>
+      {#if $graderResult.rule}
+        <div class="grader-rule" data-testid="grader-rule">
+          <strong>Rule:</strong> {$graderResult.rule}
+        </div>
+      {/if}
+    {/if}
+  </div>
+
+  {#if $graderState === 'graded' && $graderResult}
+    <div class="grader-footer">
+      <button class="btn btn-right grader-next" data-testid="grader-next" on:click={onNext}>Next →</button>
+      <div class="keyboard-hint">Enter = next card</div>
+    </div>
   {/if}
 </div>
 
@@ -143,6 +155,16 @@
     flex-direction: column;
     gap: 12px;
     padding: 16px;
+  }
+  .grader-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .grader-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
   .grader-card {
     padding: 16px;
@@ -251,5 +273,49 @@
   .grader-error {
     color: #ef4444;
     font-size: 0.85rem;
+  }
+
+  /* Mobile: fill the card area, scroll the feedback, pin Next to the bottom.
+     Breakpoint matches app.css's `@media (max-width: 768px)`. */
+  @media (max-width: 768px) {
+    .grader {
+      flex: 1;
+      min-height: 0;
+      padding: 0;
+      gap: 0;
+    }
+    /* app.css makes every mobile .card absolutely positioned to fill the
+       flip-card container; the grader's prompt card must stay in flow. */
+    .grader-card {
+      position: relative;
+      inset: auto;
+      height: auto;
+      flex-shrink: 0;
+    }
+    .grader-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+    /* Leave room so the last panel can scroll clear of the pinned footer. */
+    .grader-scroll:has(+ .grader-footer) {
+      padding-bottom: calc(40px + env(safe-area-inset-bottom));
+    }
+    .grader-footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+      padding: 8px 16px;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      background: var(--bg, #0f0f14);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .grader-next {
+      width: 100%;
+    }
   }
 </style>
