@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tick } from 'svelte';
   import { graderState, graderResult, graderInput, graderError, submit, giveUp, reset } from '../stores/grader';
   import { catConfig } from '../stores/cards';
   import type { Card } from '../types';
@@ -19,12 +20,21 @@
 
   $: cc = $catConfig[card.cat] || { cls: 'cat-generated', label: '✨ Generated', group: '', status: 'unmarked' as const };
 
+  // Start the verdict at the top. Without this the browser keeps (or anchors)
+  // the scroll offset from the input state and the prompt starts off-screen.
+  async function scrollToTop() {
+    await tick();
+    if (scrollEl) scrollEl.scrollTop = 0;
+  }
+
   async function onSubmit() {
     await submit(card);
+    await scrollToTop();
   }
 
   function onGiveUp() {
     giveUp();
+    scrollToTop();
   }
 
   function onNext() {
@@ -156,17 +166,37 @@
     gap: 12px;
     padding: 16px;
   }
+  /* The grader sits in a vertically-centered .card-area under an
+     overflow:hidden body. Let it shrink to the available height and scroll
+     the feedback, so Next (in the footer) is always reachable. */
+  .grader {
+    flex: 0 1 auto;
+    min-height: 0;
+  }
   .grader-scroll {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-anchor: none;
+  }
+  .grader-scroll > * {
+    flex-shrink: 0;
   }
   .grader-footer {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    flex-shrink: 0;
   }
+  .grader-next {
+    justify-content: center;
+  }
+  /* app.css sizes .card for the flip card (height:100%, absolute on
+     mobile); the grader's prompt card should hug its content. */
   .grader-card {
+    height: auto;
     padding: 16px;
     border-radius: 12px;
     background: var(--card-bg, #1f2937);
@@ -284,13 +314,9 @@
       padding: 0;
       gap: 0;
     }
-    /* app.css makes every mobile .card absolutely positioned to fill the
-       flip-card container; the grader's prompt card must stay in flow. */
     .grader-card {
       position: relative;
       inset: auto;
-      height: auto;
-      flex-shrink: 0;
     }
     .grader-scroll {
       flex: 1;

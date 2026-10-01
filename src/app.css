@@ -101,6 +101,7 @@
 
   .card-area {
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -786,6 +787,12 @@
 body.gen-mode .layout {
   height: calc(100dvh - 37px);
   min-height: calc(100dvh - 37px);
+}
+/* Desktop: main column and sidebar are 100vh by default; shrink them to fit
+   under the banner so their bottom edge isn't pushed off-screen. */
+@media (min-width: 769px) {
+  body.gen-mode .main-content { height: calc(100dvh - 37px); }
+  body.gen-mode .sidebar { max-height: calc(100dvh - 37px); }
 }
 .gen-banner button {
   background: rgba(255,255,255,0.2);

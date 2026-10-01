@@ -180,6 +180,48 @@ test.describe('Sentence Grader (en→pt)', () => {
     await expect(page.getByTestId('counter-wrong')).toContainText('1');
   });
 
+  test('long feedback: Next stays on screen and feedback scrolls (desktop)', async ({ page }) => {
+    // Regression: body is overflow:hidden and .card-area centers its content,
+    // so tall feedback was clipped top and bottom with no way to reach Next.
+    await page.setViewportSize({ width: 1280, height: 720 });
+    const LONG = 'This explanation is deliberately long so the feedback overflows the screen. '.repeat(3);
+    await page.route('**/api/grade-sentence', async (route) => {
+      await route.fulfill(gradeStub(1, {
+        summary: `Several problems. ${LONG}`,
+        mistakes: Array.from({ length: 6 }, (_, i) => `Mistake ${i + 1}: ${LONG}`),
+        warnings: [`Heads up: ${LONG}`, `Another: ${LONG}`],
+        rule: `Rule text. ${LONG}`,
+      }));
+    });
+    await enterGeneratedEnToPt(page);
+    await page.getByTestId('grader-input').fill('Eu foi na loja.');
+    await page.getByTestId('grader-submit').click();
+    await expect(page.getByTestId('grader-grade')).toContainText('1/3');
+
+    // Next is fully visible without scrolling; the prompt isn't clipped off the top.
+    await expect(page.getByTestId('grader-next')).toBeInViewport({ ratio: 1 });
+    await expect(page.getByTestId('grader-prompt')).toBeInViewport({ ratio: 1 });
+    // The whole footer (incl. the keyboard hint) fits under the generated-mode banner.
+    await expect(page.locator('.grader-footer')).toBeInViewport({ ratio: 1 });
+    // The prompt card hugs its content instead of filling the scroll area.
+    const cardH = await page.locator('.grader-card').evaluate((el) => el.getBoundingClientRect().height);
+    expect(cardH).toBeLessThan(200);
+
+    // The feedback region scrolls so the rule at the end is reachable.
+    const scroller = page.getByTestId('grader-scroll');
+    const { scrollHeight, clientHeight } = await scroller.evaluate((el) => ({
+      scrollHeight: el.scrollHeight,
+      clientHeight: el.clientHeight,
+    }));
+    expect(scrollHeight).toBeGreaterThan(clientHeight);
+    await scroller.evaluate((el) => { el.scrollTop = el.scrollHeight; });
+    await expect(page.getByTestId('grader-rule')).toBeInViewport({ ratio: 1 });
+    await expect(page.getByTestId('grader-next')).toBeInViewport({ ratio: 1 });
+
+    await page.getByTestId('grader-next').click();
+    await expect(page.getByTestId('counter-wrong')).toContainText('1');
+  });
+
   test('toggling to pt→en mid-deck swaps back to flip UI; toggling back restores grader', async ({ page }) => {
     await enterGeneratedEnToPt(page);
     await expect(page.getByTestId('sentence-grader')).toBeVisible();
