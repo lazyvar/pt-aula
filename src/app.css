@@ -563,6 +563,8 @@
   .cat-aula-aug17 { background: rgba(255,112,67,0.15); color: #ff7043; }
   .cat-aula-aug18 { background: rgba(38,198,218,0.15); color: #26c6da; }
   .cat-aula-aug19 { background: rgba(212,225,87,0.15); color: #d4e157; }
+  .cat-phrases-catchup { background: rgba(255,167,38,0.15); color: #ffa726; }
+  .cat-phrases-hangout { background: rgba(171,71,188,0.15); color: #ab47bc; }
 
   .buttons {
     display: flex;

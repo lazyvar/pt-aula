@@ -47,7 +47,9 @@ const cards = [
   { pt: "Contente", en: "Content / Happy", category_id: "traits" },
   { pt: "Cansado(a)", en: "Tired", category_id: "traits" },
   { pt: "Entediado(a)", en: "Bored", category_id: "traits" },
-  { pt: "Preocupado(a)", en: "Worried", category_id: "traits" }
+  { pt: "Preocupado(a)", en: "Worried", category_id: "traits" },
+  { pt: "Barulhento(a)", en: "Loud / Noisy", category_id: "traits" },
+  { pt: "Quieto(a)", en: "Quiet", category_id: "traits" }
 ];
 
 module.exports = { categories: [category], cards };

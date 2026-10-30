@@ -8,6 +8,8 @@ const parts = [
   require("./shopping"),
   require("./help"),
   require("./health"),
+  require("./catchup"),
+  require("./hangout"),
 ];
 
 const categories = parts.flatMap(p => p.categories);
