@@ -19,6 +19,10 @@ const verbs = [
   require("./dormir"),
   require("./sair"),
   require("./cair"),
+  require("./tense-present"),
+  require("./tense-preterite"),
+  require("./tense-imperfect"),
+  require("./tense-conditional"),
 ];
 
 const categories = verbs.flatMap(v => v.categories);

@@ -427,7 +427,7 @@ Tense labels:
 - presente do subjuntivo → "present subjunctive"
 - pretérito imperfeito do subjuntivo → "imperfect subjunctive"
 
-Use regular -ar/-er/-ir conjugation rules only.
+Use the correct standard Brazilian Portuguese form, including irregular verbs (e.g. "eu fiz", "ele pôs", "nós trouxemos", "eu diria").
 
 For "eles" and "elas", the English subject MUST include a gender parenthetical: "they (m)" for eles, "they (f)" for elas. Never output plain "they" for these pronouns.
 
