@@ -14,6 +14,11 @@ const parts = [
   require("./aula-aug17"),
   require("./aula-aug18"),
   require("./aula-aug19"),
+  require("./aula-nov3"),
+  require("./aula-nov4"),
+  require("./aula-nov5"),
+  require("./aula-nov6"),
+  require("./aula-nov9"),
 ];
 
 const categories = parts.flatMap(p => p.categories);

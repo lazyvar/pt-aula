@@ -563,8 +563,17 @@
   .cat-aula-aug17 { background: rgba(255,112,67,0.15); color: #ff7043; }
   .cat-aula-aug18 { background: rgba(38,198,218,0.15); color: #26c6da; }
   .cat-aula-aug19 { background: rgba(212,225,87,0.15); color: #d4e157; }
+  .cat-aula-nov3 { background: rgba(126,87,194,0.15); color: #7e57c2; }
+  .cat-aula-nov4 { background: rgba(38,166,154,0.15); color: #26a69a; }
+  .cat-aula-nov5 { background: rgba(255,138,101,0.15); color: #ff8a65; }
+  .cat-aula-nov6 { background: rgba(156,204,101,0.15); color: #9ccc65; }
+  .cat-aula-nov9 { background: rgba(240,98,146,0.15); color: #f06292; }
   .cat-phrases-catchup { background: rgba(255,167,38,0.15); color: #ffa726; }
   .cat-phrases-hangout { background: rgba(171,71,188,0.15); color: #ab47bc; }
+  .cat-tense-present { background: rgba(66,165,245,0.15); color: #42a5f5; }
+  .cat-tense-preterite { background: rgba(239,83,80,0.15); color: #ef5350; }
+  .cat-tense-imperfect { background: rgba(102,187,106,0.15); color: #66bb6a; }
+  .cat-tense-conditional { background: rgba(255,202,40,0.15); color: #ffca28; }
 
   .buttons {
     display: flex;
